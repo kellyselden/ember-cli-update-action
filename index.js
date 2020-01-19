@@ -94,19 +94,19 @@ function run(bin, args, options) {
       '-A'
     ]);
 
-    await run('git', [
-      'config',
-      '--global',
-      'user.email',
-      `"${gitEmail}"`
-    ]);
+    // await run('git', [
+    //   'config',
+    //   '--global',
+    //   'user.email',
+    //   `"${gitEmail}"`
+    // ]);
 
-    await run('git', [
-      'config',
-      '--global',
-      'user.name',
-      `"${gitName}"`
-    ]);
+    // await run('git', [
+    //   'config',
+    //   '--global',
+    //   'user.name',
+    //   `"${gitName}"`
+    // ]);
 
     await run('git', [
       'commit',
