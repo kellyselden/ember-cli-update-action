@@ -37,38 +37,38 @@ function run(bin, args, options) {
     let ref = github.context.payload.pull_request.head.ref;
     console.log({ ref });
 
-    await run('git', [
-      'remote',
-      'remove',
-      'origin'
-    ]);
+    // await run('git', [
+    //   'remote',
+    //   'remove',
+    //   'origin'
+    // ]);
 
-    let username = core.getInput('username');
-    process.env.GITHUB_TOKEN = core.getInput('token');
+    // let username = core.getInput('username');
+    // process.env.GITHUB_TOKEN = core.getInput('token');
 
-    let remote = github.context.payload.repository.clone_url;
-    console.log({ remote });
+    // let remote = github.context.payload.repository.clone_url;
+    // console.log({ remote });
 
-    remote = remote.replace('https://', `https://${username}:$GITHUB_TOKEN@`);
+    // remote = remote.replace('https://', `https://${username}:$GITHUB_TOKEN@`);
 
-    await run('git', [
-      'remote',
-      'add',
-      'origin',
-      remote
-    ]);
+    // await run('git', [
+    //   'remote',
+    //   'add',
+    //   'origin',
+    //   remote
+    // ]);
 
-    await run('git', [
-      'fetch',
-      'origin',
-      ref
-    ]);
+    // await run('git', [
+    //   'fetch',
+    //   'origin',
+    //   ref
+    // ]);
 
-    await run('git', [
-      'checkout',
-      '--track',
-      `origin/${ref}`
-    ]);
+    // await run('git', [
+    //   'checkout',
+    //   '--track',
+    //   `origin/${ref}`
+    // ]);
 
     await run('npx', [
       'ember-cli-update',
