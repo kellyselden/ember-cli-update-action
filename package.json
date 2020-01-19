@@ -2,9 +2,9 @@
   "name": "ember-cli-update-action",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint . --ext js,json",
+    "version": "ncc build index.js -o dist && git add -A dist"
   },
   "repository": {
     "type": "git",
@@ -22,5 +22,15 @@
   },
   "engines": {
     "node": ">=8.10"
+  },
+  "devDependencies": {
+    "@zeit/ncc": "^0.21.0",
+    "eslint": "^6.8.0",
+    "eslint-config-sane": "0.8.5",
+    "eslint-config-sane-node": "0.3.0",
+    "eslint-plugin-json-files": "0.8.0",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-prefer-let": "^1.0.1",
+    "renovate-config-standard": "^2.0.0"
   }
 }
