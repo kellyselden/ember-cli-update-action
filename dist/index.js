@@ -792,7 +792,7 @@ function run(bin, args, options = {}) {
       'origin'
     ]);
 
-    process.env.GITHUB_TOKEN = core.getInput('GitHubToken');
+    process.env.GITHUB_TOKEN = core.getInput('token');
 
     let remote = github.context.payload.repository.clone_url;
     console.log({ remote });
