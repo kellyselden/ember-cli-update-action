@@ -2,7 +2,9 @@ name: 'Hello World'
 description: 'Greet someone and record the time'
 inputs:
   git_email:
+    description: 'git email'
   git_name:
+    description: 'git name'
 runs:
   using: 'node12'
   main: 'dist/index.js'
