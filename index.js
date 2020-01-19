@@ -43,8 +43,8 @@ function run(bin, args, options) {
     const payload = JSON.stringify(github.context.payload, undefined, 2)
     console.log(`The event payload: ${payload}`);
 
-    let ref = github.context.payload.pull_request.head.ref;
-    console.log({ ref });
+    // let ref = github.context.payload.pull_request.head.ref;
+    // console.log({ ref });
 
     // await run('git', [
     //   'remote',
@@ -84,10 +84,10 @@ function run(bin, args, options) {
       '-b=@kellyselden/node-template'
     ]);
 
-    let status = await run('git', [
+    let status = (await run('git', [
       'status',
       '--porcelain'
-    ]);
+    ])).stdout;
 
     if (!status) {
       return;
