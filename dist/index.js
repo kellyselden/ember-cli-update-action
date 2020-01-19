@@ -701,6 +701,8 @@ const github = __webpack_require__(469);
 const execa = __webpack_require__(955);
 
 function run(bin, args, options) {
+  console.log([bin, ...args].join(' '), options);
+
   let ps = execa(bin, args, {
     stdio: ['ignore', 'pipe', 'inherit'],
     ...options
@@ -748,6 +750,21 @@ function run(bin, args, options) {
     // Get the JSON webhook payload for the event that triggered the workflow
     const payload = JSON.stringify(github.context.payload, undefined, 2)
     console.log(`The event payload: ${payload}`);
+
+    let ref = github.context.payload.pull_request.head.ref;
+    console.log({ ref });
+
+    await run('git', [
+      'fetch',
+      'origin',
+      ref
+    ]);
+
+    await run('git', [
+      'checkout',
+      '--track',
+      `origin/${ref}`
+    ]);
 
     await run('git', [
       'config',
