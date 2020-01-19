@@ -713,9 +713,10 @@ function run(bin, args, options) {
 
 (async() => {
   try {
-    let email = (await run('npx', [
-      'ember-cli-update',
-      '-b=@kellyselden/node-template'
+    let email = (await run('git', [
+      'show',
+      '-s',
+      '--format=\'%ae\''
     ])).stdout;
 
     if (email === '\'you@example.com\'') {
