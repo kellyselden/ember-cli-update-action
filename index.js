@@ -115,7 +115,8 @@ function run(bin, args, options) {
     ]);
 
     await run('git', [
-      'push'
+      'push',
+      '-f'
     ]);
   } catch (error) {
     core.setFailed(error.message);
