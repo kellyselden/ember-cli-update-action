@@ -1,17 +1,18 @@
 name: 'Hello World'
 description: 'Greet someone and record the time'
 inputs:
-  username:  # id of input
+  username:
     description: 'Who to greet'
     required: true
     default: 'World'
-  token:  # id of input
+  token:
     description: 'Who to greet'
     required: true
     default: 'World'
-# outputs:
-#   time: # id of output
-#     description: 'The time we greeted you'
+  git_email:
+    default: 'you@example.com'
+  git_name:
+    default: 'Your Name'
 runs:
   using: 'node12'
   main: 'dist/index.js'

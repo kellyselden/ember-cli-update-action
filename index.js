@@ -25,7 +25,10 @@ function run(bin, args, options) {
       '--format=\'%ae\''
     ])).stdout;
 
-    if (email === '\'you@example.com\'') {
+    let gitEmail = core.getInput('git_email');
+    let gitName = core.getInput('git_name');
+
+    if (email === `'${gitEmail}'`) {
       console.log('This is the second commit.');
       return;
     }
@@ -95,14 +98,14 @@ function run(bin, args, options) {
       'config',
       '--global',
       'user.email',
-      '"you@example.com"'
+      `"${gitEmail}"`
     ]);
 
     await run('git', [
       'config',
       '--global',
       'user.name',
-      '"Your Name"'
+      `"${gitName}"`
     ]);
 
     await run('git', [
