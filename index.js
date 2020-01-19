@@ -22,16 +22,22 @@ function run(bin, args, options) {
     let email = (await run('git', [
       'show',
       '-s',
-      '--format=\'%ae\''
+      '--format=%ae'
+    ])).stdout;
+
+    let name = (await run('git', [
+      'show',
+      '-s',
+      '--format=%ae'
     ])).stdout;
 
     let gitEmail = core.getInput('git_email');
     let gitName = core.getInput('git_name');
 
-    if (email === `'${gitEmail}'`) {
-      console.log('This is the second commit.');
-      return;
-    }
+    // if (email === gitEmail) {
+    //   console.log('This is the second commit.');
+    //   return;
+    // }
 
     // Get the JSON webhook payload for the event that triggered the workflow
     const payload = JSON.stringify(github.context.payload, undefined, 2)
@@ -78,6 +84,15 @@ function run(bin, args, options) {
       '-b=@kellyselden/node-template'
     ]);
 
+    let status = await run('git', [
+      'status',
+      '--porcelain'
+    ]);
+
+    if (!status) {
+      return;
+    }
+
     await run('npm', [
       'install'
     ]);
@@ -94,19 +109,19 @@ function run(bin, args, options) {
       '-A'
     ]);
 
-    // await run('git', [
-    //   'config',
-    //   '--global',
-    //   'user.email',
-    //   `"${gitEmail}"`
-    // ]);
+    await run('git', [
+      'config',
+      '--global',
+      'user.email',
+      `"${email}"`
+    ]);
 
-    // await run('git', [
-    //   'config',
-    //   '--global',
-    //   'user.name',
-    //   `"${gitName}"`
-    // ]);
+    await run('git', [
+      'config',
+      '--global',
+      'user.name',
+      `"${name}"`
+    ]);
 
     await run('git', [
       'commit',
