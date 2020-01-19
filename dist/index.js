@@ -806,8 +806,8 @@ function run(bin, args, options) {
 
     await run('git', [
       'commit',
-      '-m',
-      '"@kellyselden/node-template"'
+      '--amend',
+      '--no-edit'
     ]);
 
     await run('git', [
