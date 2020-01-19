@@ -700,8 +700,8 @@ const core = __webpack_require__(470);
 const github = __webpack_require__(469);
 const execa = __webpack_require__(955);
 
-function run(bin, args, options = {}) {
-  console.log([bin, ...args].join(' '), options);
+function run(bin, args, options) {
+  console.log(...[[bin, ...args].join(' '), options].filter(Boolean));
 
   let ps = execa(bin, args, {
     stdio: ['ignore', 'pipe', 'inherit'],
@@ -732,6 +732,26 @@ function run(bin, args, options = {}) {
 
     let ref = github.context.payload.pull_request.head.ref;
     console.log({ ref });
+
+    await run('git', [
+      'remote',
+      'remove',
+      'origin'
+    ]);
+
+    process.env.GITHUB_TOKEN = core.getInput('token');
+
+    let remote = github.context.payload.repository.clone_url;
+    console.log({ remote });
+
+    remote = remote.replace('https://', 'https://$GITHUB_TOKEN@');
+
+    await run('git', [
+      'remote',
+      'add',
+      'origin',
+      remote
+    ]);
 
     await run('git', [
       'fetch',
@@ -784,26 +804,6 @@ function run(bin, args, options = {}) {
       'commit',
       '-m',
       '"@kellyselden/node-template"'
-    ]);
-
-    await run('git', [
-      'remote',
-      'remove',
-      'origin'
-    ]);
-
-    process.env.GITHUB_TOKEN = core.getInput('token');
-
-    let remote = github.context.payload.repository.clone_url;
-    console.log({ remote });
-
-    remote = remote.replace('https://', 'https://$GITHUB_TOKEN@');
-
-    await run('git', [
-      'remote',
-      'add',
-      'origin',
-      remote
     ]);
 
     await run('git', [
