@@ -43,12 +43,13 @@ function run(bin, args, options) {
       'origin'
     ]);
 
+    let username = core.getInput('username');
     process.env.GITHUB_TOKEN = core.getInput('token');
 
     let remote = github.context.payload.repository.clone_url;
     console.log({ remote });
 
-    remote = remote.replace('https://', 'https://$GITHUB_TOKEN@');
+    remote = remote.replace('https://', `https://${username}:$GITHUB_TOKEN@`);
 
     await run('git', [
       'remote',
