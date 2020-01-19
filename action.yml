@@ -1,9 +1,9 @@
 name: 'Hello World'
 description: 'Greet someone and record the time'
 inputs:
-  who-to-greet:  # id of input
+  GitHubToken:  # id of input
     description: 'Who to greet'
-    # required: true
+    required: true
     default: 'World'
 # outputs:
 #   time: # id of output
