@@ -2,15 +2,75 @@
 
 const core = require('@actions/core');
 const github = require('@actions/github');
+const execa = require('execa');
+
+function run(bin, args, options) {
+  let ps = execa(bin, args, {
+    stdio: ['ignore', 'pipe', 'inherit'],
+    ...options
+  });
+
+  ps.stdout.pipe(process.stdout);
+
+  return ps;
+}
 
 (async() => {
   try {
-    // `who-to-greet` input defined in action metadata file
-    let nameToGreet = core.getInput('who-to-greet');
-    let time = new Date().toTimeString();
-    core.setOutput('time', time);
-    // Get the JSON webhook payload for the event that triggered the workflow
-    let payload = JSON.stringify(github.context.payload, undefined, 2);
+    let email = (await run('npx', [
+      'ember-cli-update',
+      '-b=@kellyselden/node-template'
+    ])).stdout;
+
+    if (email === '\'you@example.com\'') {
+      console.log('This is the second commit.');
+      return;
+    }
+
+    await run('npx', [
+      'ember-cli-update',
+      '-b=@kellyselden/node-template'
+    ]);
+
+    await run('npm', [
+      'install'
+    ]);
+
+    await run('npm', [
+      'run',
+      'lint',
+      '--',
+      '--fix'
+    ]);
+
+    await run('git', [
+      'add',
+      '-A'
+    ]);
+
+    await run('git', [
+      'config',
+      '--global',
+      'user.email',
+      '"you@example.com"'
+    ]);
+
+    await run('git', [
+      'config',
+      '--global',
+      'user.name',
+      '"Your Name"'
+    ]);
+
+    await run('git', [
+      'commit',
+      '-m',
+      '"@kellyselden/node-template"'
+    ]);
+
+    await run('git', [
+      'push'
+    ]);
   } catch (error) {
     core.setFailed(error.message);
   }

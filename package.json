@@ -18,7 +18,8 @@
   "homepage": "https://github.com/kellyselden/ember-cli-update-action#readme",
   "dependencies": {
     "@actions/core": "^1.2.1",
-    "@actions/github": "^2.0.1"
+    "@actions/github": "^2.0.1",
+    "execa": "^3.4.0"
   },
   "engines": {
     "node": ">=8.10"
