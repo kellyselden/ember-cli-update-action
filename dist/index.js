@@ -738,7 +738,7 @@ function run(bin, args, options) {
       'github:ember-cli/ember-cli-update#stats',
       'stats',
       '-b',
-      'foo'
+      packageName
     ])).stdout;
 
     if (!stats.includes(`${packageName}, current: ${from}, latest: ${to}`)) {
