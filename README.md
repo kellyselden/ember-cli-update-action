@@ -1,3 +1,4 @@
 # ember-cli-update-action
 
-[![npm version](https://badge.fury.io/js/ember-cli-update-action.svg)](https://badge.fury.io/js/ember-cli-update-action)
+![](https://github.com/kellyselden/ember-cli-update-action/workflows/CI/badge.svg)
+![](https://github.com/kellyselden/ember-cli-update-action/workflows/Release/badge.svg)
