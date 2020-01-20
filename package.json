@@ -6,8 +6,13 @@
   "scripts": {
     "lint:git": "commitlint",
     "lint:js": "eslint . --ext js,json",
-    "release": "standard-version",
-    "version": "ncc build index.js -o dist && git add -A dist"
+    "release": "standard-version"
+  },
+  "standard-version": {
+    "scripts": {
+      "prerelease": "ncc build index.js -o dist",
+      "posttag": "git push --follow-tags --atomic"
+    }
   },
   "repository": {
     "type": "git",

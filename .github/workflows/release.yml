@@ -27,5 +27,3 @@ jobs:
     - run: |
         npm run release
         git push --follow-tags --atomic
-        echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-        npm publish
