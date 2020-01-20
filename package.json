@@ -1,7 +1,7 @@
 {
   "private": false,
   "name": "ember-cli-update-action",
-  "version": "1.0.33",
+  "version": "1.0.34",
   "description": "",
   "scripts": {
     "lint:git": "commitlint",
