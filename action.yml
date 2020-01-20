@@ -1,5 +1,5 @@
-name: 'Hello World'
-description: 'Greet someone and record the time'
+name: 'ember-cli-update-action'
+description: 'Run blueprint updates on CI'
 inputs:
   git_email:
     description: 'git email'
