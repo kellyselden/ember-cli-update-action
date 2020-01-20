@@ -21,8 +21,8 @@ function run(bin, args, options) {
 (async() => {
   try {
     // Get the JSON webhook payload for the event that triggered the workflow
-    const payload = JSON.stringify(github.context.payload, undefined, 2)
-    console.log(`The event payload: ${payload}`);
+    // const payload = JSON.stringify(github.context.payload, undefined, 2)
+    // console.log(`The event payload: ${payload}`);
 
     let { body } = github.context.payload.pull_request;
 
@@ -34,6 +34,11 @@ function run(bin, args, options) {
     if (!matches) {
       // dependabot style
       matches = body.match(/^Bumps \[(.+)\].* from (.+) to (.+)\.$/m);
+    }
+
+    if (!matches) {
+      // greenkeeper style
+      matches = body.match(/^## The .+ \[(.+)\].* was updated from `(.+)` to `(.+)`\.$/m);
     }
 
     if (!matches) {
