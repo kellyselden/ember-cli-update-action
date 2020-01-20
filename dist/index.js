@@ -742,12 +742,12 @@ function run(bin, args, options) {
       return;
     }
 
-    let [_, packageName, from, to] = matches;
+    let [, packageName, from, to] = matches;
 
     console.log({ packageName, from, to });
 
     let stats = (await run('npx', [
-      'github:ember-cli/ember-cli-update#stats',
+      'ember-cli-update',
       'stats',
       '-b',
       packageName
