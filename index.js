@@ -31,6 +31,11 @@ function run(bin, args, options) {
     let matches = body.match(/^\| \[([^ ]+)\][^ ]*.*\[`(.+)` -> `(.+)`\]/m);
 
     if (!matches) {
+      // dependabot style
+      matches = body.match(/^Bumps \[(.+)\].* from (.+) to (.+)\.$/m);
+    }
+
+    if (!matches) {
       console.log('not a blueprint');
       return;
     }
