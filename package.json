@@ -2,7 +2,7 @@
   "private": false,
   "name": "ember-cli-update-action",
   "version": "1.0.35",
-  "description": "",
+  "description": "Run blueprint updates on CI",
   "scripts": {
     "lint:git": "commitlint",
     "lint:js": "eslint . --ext js,json",
