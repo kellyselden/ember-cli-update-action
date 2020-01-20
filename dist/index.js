@@ -735,7 +735,8 @@ function run(bin, args, options) {
     console.log({ packageName, from, to });
 
     let stats = (await run('npx', [
-      'github:ember-cli/ember-cli-update#stats'
+      'github:ember-cli/ember-cli-update#stats',
+      'stats'
     ])).stdout;
 
     if (!stats.includes(`${packageName}, current: ${from}, latest: ${to}`)) {

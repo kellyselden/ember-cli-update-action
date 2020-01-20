@@ -1,7 +1,7 @@
 {
   "private": false,
   "name": "ember-cli-update-action",
-  "version": "1.0.21",
+  "version": "1.0.22",
   "description": "",
   "scripts": {
     "lint": "eslint . --ext js,json",
