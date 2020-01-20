@@ -723,6 +723,7 @@ function run(bin, args, options) {
 
     console.log({ body });
 
+    // renovate style
     let matches = body.match(/^\| \[([^ ]+)\][^ ]*.*\[`(.+)` -> `(.+)`\]/m);
 
     if (!matches) {
@@ -741,7 +742,7 @@ function run(bin, args, options) {
       packageName
     ])).stdout;
 
-    if (!stats.includes(`${packageName}, current: ${from}, latest: ${to}`)) {
+    if (stats !== `${packageName}, current: ${from}, latest: ${to}`) {
       console.log('not a blueprint match');
       return;
     }
