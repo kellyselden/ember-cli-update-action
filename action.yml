@@ -5,6 +5,8 @@ inputs:
     description: 'git email'
   git_name:
     description: 'git name'
+  amend:
+    default: false
 runs:
   using: 'node12'
   main: 'dist/index.js'

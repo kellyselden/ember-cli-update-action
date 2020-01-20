@@ -122,11 +122,21 @@ function run(bin, args, options) {
       '-A'
     ]);
 
-    await run('git', [
-      'commit',
-      '--amend',
-      '--no-edit'
-    ]);
+    let amend = core.getInput('amend');
+
+    if (amend) {
+      await run('git', [
+        'commit',
+        '--amend',
+        '--no-edit'
+      ]);
+    } else {
+      await run('git', [
+        'commit',
+        '-m',
+        `"ember-cli-update -b ${packageName} --to ${to}"`
+      ]);
+    }
 
     await run('git', [
       'push',
