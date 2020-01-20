@@ -820,6 +820,8 @@ function run(bin, args, options) {
 
     let amend = core.getInput('amend');
 
+    console.log({ amend });
+
     if (amend) {
       await run('git', [
         'commit',
