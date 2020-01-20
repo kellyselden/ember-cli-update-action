@@ -699,6 +699,7 @@ module.exports = require("os");
 const core = __webpack_require__(470);
 const github = __webpack_require__(469);
 const execa = __webpack_require__(955);
+const yn = __webpack_require__(300);
 
 function run(bin, args, options) {
   console.log(...[[bin, ...args].join(' '), options].filter(Boolean));
@@ -822,7 +823,7 @@ function run(bin, args, options) {
 
     console.log({ amend });
 
-    if (amend) {
+    if (yn(amend)) {
       await run('git', [
         'commit',
         '--amend',
@@ -4117,6 +4118,47 @@ module.exports = class HttpError extends Error {
     this.headers = headers
   }
 }
+
+
+/***/ }),
+
+/***/ 300:
+/***/ (function(module, __unusedexports, __webpack_require__) {
+
+"use strict";
+
+const lenient = __webpack_require__(474);
+
+const yn = (input, options) => {
+	input = String(input).trim();
+
+	options = Object.assign({
+		lenient: false,
+		default: null
+	}, options);
+
+	if (options.default !== null && typeof options.default !== 'boolean') {
+		throw new TypeError(`Expected the \`default\` option to be of type \`boolean\`, got \`${typeof options.default}\``);
+	}
+
+	if (/^(?:y|yes|true|1)$/i.test(input)) {
+		return true;
+	}
+
+	if (/^(?:n|no|false|0)$/i.test(input)) {
+		return false;
+	}
+
+	if (options.lenient === true) {
+		return lenient(input, options);
+	}
+
+	return options.default;
+};
+
+module.exports = yn;
+// TODO: Remove this for the next major release
+module.exports.default = yn;
 
 
 /***/ }),
@@ -7576,6 +7618,119 @@ function authenticationBeforeRequest(state, options) {
 "use strict";
 
 module.exports = /^#!(.*)/;
+
+
+/***/ }),
+
+/***/ 474:
+/***/ (function(module) {
+
+"use strict";
+
+
+const YES_MATCH_SCORE_THRESHOLD = 2;
+const NO_MATCH_SCORE_THRESHOLD = 1.25;
+
+const yMatch = new Map([
+	[5, 0.25],
+	[6, 0.25],
+	[7, 0.25],
+	['t', 0.75],
+	['y', 1],
+	['u', 0.75],
+	['g', 0.25],
+	['h', 0.25],
+	['j', 0.25]
+]);
+
+const eMatch = new Map([
+	[2, 0.25],
+	[3, 0.25],
+	[4, 0.25],
+	['w', 0.75],
+	['e', 1],
+	['r', 0.75],
+	['s', 0.25],
+	['d', 0.25],
+	['f', 0.25]
+]);
+
+const sMatch = new Map([
+	['q', 0.25],
+	['w', 0.25],
+	['e', 0.25],
+	['a', 0.75],
+	['s', 1],
+	['d', 0.75],
+	['z', 0.25],
+	['x', 0.25],
+	['c', 0.25]
+]);
+
+const nMatch = new Map([
+	['h', 0.25],
+	['j', 0.25],
+	['k', 0.25],
+	['b', 0.75],
+	['n', 1],
+	['m', 0.75]
+]);
+
+const oMatch = new Map([
+	[9, 0.25],
+	[0, 0.25],
+	['i', 0.75],
+	['o', 1],
+	['p', 0.75],
+	['k', 0.25],
+	['l', 0.25]
+]);
+
+function getYesMatchScore(value) {
+	const [y, e, s] = value;
+	let score = 0;
+
+	if (yMatch.has(y)) {
+		score += yMatch.get(y);
+	}
+
+	if (eMatch.has(e)) {
+		score += eMatch.get(e);
+	}
+
+	if (sMatch.has(s)) {
+		score += sMatch.get(s);
+	}
+
+	return score;
+}
+
+function getNoMatchScore(value) {
+	const [n, o] = value;
+	let score = 0;
+
+	if (nMatch.has(n)) {
+		score += nMatch.get(n);
+	}
+
+	if (oMatch.has(o)) {
+		score += oMatch.get(o);
+	}
+
+	return score;
+}
+
+module.exports = (input, options) => {
+	if (getYesMatchScore(input) >= YES_MATCH_SCORE_THRESHOLD) {
+		return true;
+	}
+
+	if (getNoMatchScore(input) >= NO_MATCH_SCORE_THRESHOLD) {
+		return false;
+	}
+
+	return options.default;
+};
 
 
 /***/ }),
