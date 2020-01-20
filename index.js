@@ -111,14 +111,12 @@ function run(bin, args, options) {
 
     await run('git', [
       'config',
-      '--global',
       'user.email',
       `"${gitEmail}"`
     ]);
 
     await run('git', [
       'config',
-      '--global',
       'user.name',
       `"${gitName}"`
     ]);

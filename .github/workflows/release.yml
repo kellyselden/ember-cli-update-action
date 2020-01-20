@@ -25,8 +25,6 @@ jobs:
 
     - run: npm ci
     - run: |
-        EMAIL="$(git show -s --format=%ae)"
-        NAME="$(git show -s --format=%an)"
-        git config user.email "$EMAIL"
-        git config user.name "$NAME"
+        git config user.email "$(git show -s --format=%ae)"
+        git config user.name "$(git show -s --format=%an)"
     - run: npm run release
