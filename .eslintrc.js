@@ -10,5 +10,8 @@ module.exports = {
   },
   extends: [
     'sane-node'
-  ]
+  ],
+  rules: {
+    'no-console': 'off'
+  }
 };

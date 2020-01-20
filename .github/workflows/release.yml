@@ -1,0 +1,27 @@
+name: Release
+
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref }}
+    - id: tag
+      run: |
+        git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+        TAG="$(git tag -l --points-at HEAD)"
+        echo "::set-output name=is_tagged::$TAG"
+    - if: steps.tag.outputs.is_tagged != ''
+      run: exit
+
+    - uses: actions/setup-node@v1.1.0
+
+    - run: npm ci
+    - run: npm run release
