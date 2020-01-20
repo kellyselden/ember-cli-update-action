@@ -6,7 +6,7 @@
   "scripts": {
     "lint:git": "commitlint",
     "lint:js": "eslint . --ext js,json",
-    "release": "next release",
+    "release": "standard-version",
     "version": "ncc build index.js -o dist && git add -A dist"
   },
   "repository": {
@@ -37,8 +37,7 @@
     "eslint-plugin-json-files": "0.8.0",
     "eslint-plugin-node": "^11.0.0",
     "eslint-plugin-prefer-let": "^1.0.1",
-    "monorepo-next": "0.2.27",
     "renovate-config-standard": "^2.0.0",
-    "standard-version": "^7.0.1"
+    "standard-version": "^7.1.0"
   }
 }
