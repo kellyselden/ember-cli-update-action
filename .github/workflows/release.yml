@@ -25,5 +25,8 @@ jobs:
 
     - run: npm ci
     - run: |
-        npm run release
-        git push --follow-tags --atomic
+        EMAIL="$(git show -s --format=%ae)"
+        NAME="$(git show -s --format=%an)"
+        git config user.email "$EMAIL"
+        git config user.name "$NAME"
+    - run: npm run release
