@@ -20,7 +20,8 @@
   "dependencies": {
     "@actions/core": "^1.2.1",
     "@actions/github": "^2.0.1",
-    "execa": "^3.4.0"
+    "execa": "^3.4.0",
+    "yn": "^3.1.1"
   },
   "engines": {
     "node": ">=8.10"

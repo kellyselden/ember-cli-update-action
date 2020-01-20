@@ -3,6 +3,7 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const execa = require('execa');
+const yn = require('yn');
 
 function run(bin, args, options) {
   console.log(...[[bin, ...args].join(' '), options].filter(Boolean));
@@ -126,7 +127,7 @@ function run(bin, args, options) {
 
     console.log({ amend });
 
-    if (amend) {
+    if (yn(amend)) {
       await run('git', [
         'commit',
         '--amend',
