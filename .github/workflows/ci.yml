@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
-        ref: ${{ github.event.pull_request.head.ref }}
+        ref: ${{ github.head_ref }}
     - run: |
         git fetch --prune --unshallow
         git branch master origin/master
