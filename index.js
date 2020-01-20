@@ -23,9 +23,34 @@ function run(bin, args, options) {
     const payload = JSON.stringify(github.context.payload, undefined, 2)
     console.log(`The event payload: ${payload}`);
 
+    let { body } = github.context.payload.pull_request;
+
+    console.log({ body });
+
+    let matches = body.match(/^\| \[([^ ]+)\][^ ]*.*\[`(.+)` -> `(.+)`\]/m);
+
+    if (!matches) {
+      console.log('not a blueprint');
+    }
+
+    let [_, packageName, from, to] = matches;
+
+    console.log({ packageName, from, to });
+
+    let stats = (await run('npx', [
+      'github:ember-cli/ember-cli-update#stats'
+    ])).stdout;
+
+    if (!stats.includes(`${packageName}, current: ${from}, latest: ${to}`)) {
+      console.log('not a blueprint match');
+    }
+
     await run('npx', [
       'ember-cli-update',
-      '-b=@kellyselden/node-template'
+      '-b',
+      packageName,
+      '--to',
+      to
     ]);
 
     let status = (await run('git', [
