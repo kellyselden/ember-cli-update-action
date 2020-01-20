@@ -727,6 +727,7 @@ function run(bin, args, options) {
 
     if (!matches) {
       console.log('not a blueprint');
+      return;
     }
 
     let [_, packageName, from, to] = matches;
@@ -739,6 +740,7 @@ function run(bin, args, options) {
 
     if (!stats.includes(`${packageName}, current: ${from}, latest: ${to}`)) {
       console.log('not a blueprint match');
+      return;
     }
 
     await run('npx', [
