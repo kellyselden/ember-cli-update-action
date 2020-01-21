@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.2.0 (2020-01-21)
+
+
+### Features
+
+* extract install_command ([1307754](https://github.com/kellyselden/ember-cli-update-action/commit/1307754afe22b4d809fb000380ed3c065939583f))
+
 ### 1.1.1 (2020-01-21)
 
 ## 1.1.0 (2020-01-21)
