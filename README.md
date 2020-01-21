@@ -27,3 +27,5 @@ Supports [Renovate](https://renovatebot.com), [Dependabot](https://dependabot.co
     with:
       amend: true
 ```
+
+This parses pull request descriptions to find a blueprint match. A dependency update service may push the commit before making the pull request description. For that reason, you may want to put this action after your test job using `needs` to give the update service time to update the description.
