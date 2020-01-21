@@ -13,7 +13,7 @@ Supports [Renovate](https://renovatebot.com), [Dependabot](https://dependabot.co
       ref: ${{ github.head_ref }}
       token: ${{ secrets.GitHubToken }}
   - uses: actions/setup-node@v1.1.0
-  - uses: kellyselden/ember-cli-update-action@v1.0.36
+  - uses: kellyselden/ember-cli-update-action@v1.0.40
 ```
 
 ```yml
@@ -23,7 +23,7 @@ Supports [Renovate](https://renovatebot.com), [Dependabot](https://dependabot.co
       fetch-depth: 2
       token: ${{ secrets.GitHubToken }}
   - uses: actions/setup-node@v1.1.0
-  - uses: kellyselden/ember-cli-update-action@v1.0.36
+  - uses: kellyselden/ember-cli-update-action@v1.0.40
     with:
       amend: true
 ```

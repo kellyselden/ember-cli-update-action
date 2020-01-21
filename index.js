@@ -140,7 +140,7 @@ function run(bin, args, options) {
       await run('git', [
         'commit',
         '-m',
-        `"ember-cli-update -b ${packageName} --to ${to}"`
+        `ember-cli-update -b ${packageName} --to ${to}`
       ]);
     }
 
