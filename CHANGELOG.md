@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.1.0 (2020-01-21)
+
+
+### Features
+
+* extract autofix_command ([9eb20b4](https://github.com/kellyselden/ember-cli-update-action/commit/9eb20b47e8b97904ee9167d7d59621db34161ddd))
+
 ### 1.0.42 (2020-01-21)
 
 ### 1.0.41 (2020-01-21)
