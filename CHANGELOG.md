@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 1.0.40 (2020-01-21)
+
+
+### Bug Fixes
+
+* remove quotes ([c6e4a87](https://github.com/kellyselden/ember-cli-update-action/commit/c6e4a873dda4adc0d7e7fd3d58769ed6876fd17e))
+
 ### 1.0.39 (2020-01-20)
 
 ### 1.0.38 (2020-01-20)
