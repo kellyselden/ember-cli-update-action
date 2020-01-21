@@ -5,10 +5,23 @@ const github = require('@actions/github');
 const execa = require('execa');
 const yn = require('yn');
 
-function run(bin, args, options) {
+function spawn(bin, args, options) {
   console.log(...[[bin, ...args].join(' '), options].filter(Boolean));
 
   let ps = execa(bin, args, {
+    stdio: ['ignore', 'pipe', 'inherit'],
+    ...options
+  });
+
+  ps.stdout.pipe(process.stdout);
+
+  return ps;
+}
+
+async function exec(command, options) {
+  console.log(...[command, options].filter(Boolean));
+
+  let ps = execa.command(command, {
     stdio: ['ignore', 'pipe', 'inherit'],
     ...options
   });
@@ -50,7 +63,7 @@ function run(bin, args, options) {
 
     console.log({ packageName, from, to });
 
-    let stats = (await run('npx', [
+    let stats = (await spawn('npx', [
       'ember-cli-update',
       'stats',
       '-b',
@@ -62,7 +75,7 @@ function run(bin, args, options) {
       return;
     }
 
-    await run('npx', [
+    await spawn('npx', [
       'ember-cli-update',
       '-b',
       packageName,
@@ -70,7 +83,7 @@ function run(bin, args, options) {
       to
     ]);
 
-    let status = (await run('git', [
+    let status = (await spawn('git', [
       'status',
       '--porcelain'
     ])).stdout;
@@ -79,22 +92,20 @@ function run(bin, args, options) {
       return;
     }
 
-    await run('npm', [
+    await spawn('npm', [
       'install'
     ]);
 
-    await run('npm', [
-      'run',
-      'lint',
-      '--',
-      '--fix'
-    ]);
+    let autoFixCommand = core.getInput('autofix_command');
+    if (autoFixCommand) {
+      await exec(autoFixCommand);
+    }
 
     let gitEmail = core.getInput('git_email');
     let gitName = core.getInput('git_name');
 
     if (!gitEmail) {
-      gitEmail = (await run('git', [
+      gitEmail = (await spawn('git', [
         'show',
         '-s',
         '--format=%ae'
@@ -102,26 +113,26 @@ function run(bin, args, options) {
     }
 
     if (!gitName) {
-      gitName = (await run('git', [
+      gitName = (await spawn('git', [
         'show',
         '-s',
         '--format=%an'
       ])).stdout;
     }
 
-    await run('git', [
+    await spawn('git', [
       'config',
       'user.email',
       `"${gitEmail}"`
     ]);
 
-    await run('git', [
+    await spawn('git', [
       'config',
       'user.name',
       `"${gitName}"`
     ]);
 
-    await run('git', [
+    await spawn('git', [
       'add',
       '-A'
     ]);
@@ -131,20 +142,20 @@ function run(bin, args, options) {
     console.log({ amend });
 
     if (yn(amend)) {
-      await run('git', [
+      await spawn('git', [
         'commit',
         '--amend',
         '--no-edit'
       ]);
     } else {
-      await run('git', [
+      await spawn('git', [
         'commit',
         '-m',
         `ember-cli-update -b ${packageName} --to ${to}`
       ]);
     }
 
-    await run('git', [
+    await spawn('git', [
       'push',
       '-f'
     ]);
