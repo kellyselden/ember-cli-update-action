@@ -4,6 +4,7 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 const execa = require('execa');
 const yn = require('yn');
+const fs = require('fs-extra');
 
 function spawn(bin, args, options) {
   console.log(...[[bin, ...args].join(' '), options].filter(Boolean));
@@ -92,9 +93,22 @@ async function exec(command, options) {
       return;
     }
 
-    await spawn('npm', [
-      'install'
-    ]);
+    let installCommand = core.getInput('install_command');
+    if (installCommand) {
+      await exec(installCommand);
+    } else {
+      let hasPackageLock = await fs.pathExists('package-lock.json');
+      if (hasPackageLock) {
+        await spawn('npm', [
+          'install'
+        ]);
+      } else {
+        let hasYarnLock = await fs.pathExists('yarn.lock');
+        if (hasYarnLock) {
+          await spawn('yarn');
+        }
+      }
+    }
 
     let autoFixCommand = core.getInput('autofix_command');
     if (autoFixCommand) {

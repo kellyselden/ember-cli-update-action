@@ -7,6 +7,8 @@ inputs:
     description: 'git name'
   amend:
     default: false
+  install_command:
+    description: 'supply your own package install command'
   autofix_command:
     description: 'post-update linting autofix code'
 runs:
