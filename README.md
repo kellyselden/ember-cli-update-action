@@ -13,7 +13,7 @@ Supports [Renovate](https://renovatebot.com), [Dependabot](https://dependabot.co
       ref: ${{ github.head_ref }}
       token: ${{ secrets.GitHubToken }}
   - uses: actions/setup-node@v1.1.0
-  - uses: kellyselden/ember-cli-update-action@v1.0.42
+  - uses: kellyselden/ember-cli-update-action@v1.2.1
 ```
 
 ```yml
@@ -23,7 +23,7 @@ Supports [Renovate](https://renovatebot.com), [Dependabot](https://dependabot.co
       fetch-depth: 2
       token: ${{ secrets.GitHubToken }}
   - uses: actions/setup-node@v1.1.0
-  - uses: kellyselden/ember-cli-update-action@v1.0.42
+  - uses: kellyselden/ember-cli-update-action@v1.2.1
     with:
       amend: true
 ```
@@ -39,7 +39,7 @@ Supports [Renovate](https://renovatebot.com), [Dependabot](https://dependabot.co
   - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
 
   - uses: actions/setup-node@v1.1.0
-  - uses: kellyselden/ember-cli-update-action@v1.0.42
+  - uses: kellyselden/ember-cli-update-action@v1.2.1
 ```
 
 ```yml
@@ -48,7 +48,7 @@ Supports [Renovate](https://renovatebot.com), [Dependabot](https://dependabot.co
       ref: ${{ github.head_ref }}
       token: ${{ secrets.GitHubToken }}
   - uses: actions/setup-node@v1.1.0
-  - uses: kellyselden/ember-cli-update-action@v1.0.42
+  - uses: kellyselden/ember-cli-update-action@v1.2.1
     with:
       install_command: foo bar
       autofix_command: npm run lint -- --fix
