@@ -50,6 +50,7 @@ Supports [Renovate](https://renovatebot.com), [Dependabot](https://dependabot.co
   - uses: actions/setup-node@v1.1.0
   - uses: kellyselden/ember-cli-update-action@v1.0.42
     with:
+      install_command: foo bar
       autofix_command: npm run lint -- --fix
 ```
 
