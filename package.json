@@ -45,5 +45,9 @@
     "eslint-plugin-prefer-let": "^1.0.1",
     "renovate-config-standard": "^2.0.0",
     "standard-version": "^7.1.0"
+  },
+  "optionalDependencies": {
+    "@kellyselden/node-template": "0.5.2",
+    "standard-node-template": "0.0.1"
   }
 }
