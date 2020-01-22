@@ -94,16 +94,25 @@ async function exec(command, options) {
     }
 
     let installCommand = core.getInput('install_command');
+
+    console.log({ installCommand });
+
     if (installCommand) {
       await exec(installCommand);
     } else {
       let hasPackageLock = await fs.pathExists('package-lock.json');
+
+      console.log({ hasPackageLock });
+
       if (hasPackageLock) {
         await spawn('npm', [
           'install'
         ]);
       } else {
         let hasYarnLock = await fs.pathExists('yarn.lock');
+
+        console.log({ hasYarnLock });
+
         if (hasYarnLock) {
           await spawn('yarn');
         }
@@ -111,6 +120,9 @@ async function exec(command, options) {
     }
 
     let autoFixCommand = core.getInput('autofix_command');
+
+    console.log({ autoFixCommand });
+
     if (autoFixCommand) {
       await exec(autoFixCommand);
     }
