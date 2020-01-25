@@ -3,6 +3,8 @@
 const execa = require('execa');
 const yn = require('yn');
 const fs = require('fs-extra');
+const { promisify } = require('util');
+const request = promisify(require('request'));
 
 function spawn(bin, args, options) {
   console.log(...[[bin, ...args].join(' '), options].filter(Boolean));
@@ -32,12 +34,24 @@ async function exec(command, options) {
 
 async function emberCliUpdateAction({
   body,
+  pullRequestUrl,
   installCommand,
   autoFixCommand,
   gitEmail,
   gitName,
   amend
 }) {
+  if (!body) {
+    console.log({ pullRequestUrl });
+
+    let response = await request({
+      url: pullRequestUrl,
+      json: true
+    });
+
+    body = response.body.body;
+  }
+
   console.log({ body });
 
   let matches;
