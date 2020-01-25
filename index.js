@@ -42,17 +42,21 @@ async function exec(command, options) {
 
     console.log({ body });
 
-    // renovate style
-    let matches = body.match(/^\| \[([^ ]+)\][^ ]*.*\[`(.+)` -> `(.+)`\]/m);
+    let matches;
 
-    if (!matches) {
-      // dependabot style
-      matches = body.match(/^Bumps \[(.+)\].* from (.+) to (.+)\.$/m);
-    }
+    if (body) {
+      // renovate style
+      matches = body.match(/^\| \[([^ ]+)\][^ ]*.*\[`(.+)` -> `(.+)`\]/m);
 
-    if (!matches) {
-      // greenkeeper style
-      matches = body.match(/^## The .+ \[(.+)\].* was updated from `(.+)` to `(.+)`\.$/m);
+      if (!matches) {
+        // dependabot style
+        matches = body.match(/^Bumps \[(.+)\].* from (.+) to (.+)\.$/m);
+      }
+
+      if (!matches) {
+        // greenkeeper style
+        matches = body.match(/^## The .+ \[(.+)\].* was updated from `(.+)` to `(.+)`\.$/m);
+      }
     }
 
     if (!matches) {
