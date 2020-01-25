@@ -195,8 +195,18 @@ async function emberCliUpdateAction({
     ]);
   }
 
+  let branch = (await spawn('git', [
+    'rev-parse',
+    '--abbrev-ref',
+    'HEAD'
+  ])).stdout;
+
+  console.log({ branch });
+
   await spawn('git', [
     'push',
+    'origin',
+    branch,
     ...[amend ? '-f' : ''].filter(Boolean)
   ]);
 }
