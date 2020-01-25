@@ -46,6 +46,9 @@ async function emberCliUpdateAction({
 
     let response = await request({
       url: pullRequestUrl,
+      headers: {
+        'User-Agent': require('../package').name
+      },
       json: true
     });
 
