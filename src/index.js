@@ -49,6 +49,8 @@ async function emberCliUpdateAction({
       json: true
     });
 
+    console.log({ response });
+
     body = response.body.body;
   }
 
