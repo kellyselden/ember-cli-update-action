@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 1.2.6 (2020-01-25)
+
+
+### Bug Fixes
+
+* handle undefined body ([8938bec](https://github.com/kellyselden/ember-cli-update-action/commit/8938bec3d95993f9a7195c0c8a24fbc985dd67bf))
+
 ### 1.2.5 (2020-01-22)
 
 ### 1.2.4 (2020-01-22)
