@@ -3,6 +3,9 @@
   "name": "ember-cli-update-action",
   "version": "1.2.6",
   "description": "Run ember-cli-update updates on CI",
+  "bin": {
+    "ember-cli-update-action": "bin/index.js"
+  },
   "scripts": {
     "lint:git": "commitlint",
     "lint:js": "eslint . --ext js,json",
@@ -29,6 +32,8 @@
     "@actions/github": "^2.0.1",
     "execa": "^3.4.0",
     "fs-extra": "^8.1.0",
+    "request": "^2.88.0",
+    "yargs": "^15.1.0",
     "yn": "^3.1.1"
   },
   "engines": {
