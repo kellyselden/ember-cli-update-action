@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 1.3.3 (2020-01-25)
+
+
+### Bug Fixes
+
+* use `User-Agent` ([7d398bc](https://github.com/kellyselden/ember-cli-update-action/commit/7d398bcc6f24f50b63f33aeeac564825fa2645da))
+
 ### 1.3.2 (2020-01-25)
 
 
