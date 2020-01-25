@@ -10,7 +10,7 @@
   },
   "standard-version": {
     "scripts": {
-      "prerelease": "ncc build index.js -o dist",
+      "prerelease": "ncc build src/index.js -o dist",
       "posttag": "git push --follow-tags --atomic"
     }
   },
