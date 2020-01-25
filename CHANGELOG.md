@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.3.0 (2020-01-25)
+
+
+### Features
+
+* add bin ([12cae32](https://github.com/kellyselden/ember-cli-update-action/commit/12cae32cfe0167120120b64824822b55173932ee))
+
 ### 1.2.7 (2020-01-25)
 
 ### 1.2.6 (2020-01-25)
