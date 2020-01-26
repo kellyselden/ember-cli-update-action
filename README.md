@@ -54,4 +54,13 @@ Supports [Renovate](https://renovatebot.com), [Dependabot](https://dependabot.co
       autofix_command: npm run lint -- --fix
 ```
 
+or without GitHub Actions (Travis CI)
+
+```yml
+  - git checkout $TRAVIS_PULL_REQUEST_SHA
+  - git checkout -B $TRAVIS_PULL_REQUEST_BRANCH
+  - git remote set-url origin https://$GITHUB_TOKEN@github.com/$TRAVIS_PULL_REQUEST_SLUG.git
+  - npx https://github.com/kellyselden/ember-cli-update-action.git#semver:* --pull-request-url https://api.github.com/repos/$TRAVIS_REPO_SLUG/pulls/$TRAVIS_PULL_REQUEST
+```
+
 This parses pull request descriptions to find a blueprint match. A dependency update service may push the commit before making the pull request description. For that reason, you may want to put this action after your test job using `needs` to give the update service time to update the description.
