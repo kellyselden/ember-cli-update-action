@@ -9,7 +9,7 @@
   "scripts": {
     "lint:git": "commitlint",
     "lint:js": "eslint . --ext js,json",
-    "release": "standard-version"
+    "release": "standard-version --commit-all"
   },
   "standard-version": {
     "scripts": {
