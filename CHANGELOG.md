@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 1.3.5 (2020-01-26)
+
+
+### Bug Fixes
+
+* `autofixCommand` typo ([41c7648](https://github.com/kellyselden/ember-cli-update-action/commit/41c76489a7153e256ebeefc031b71456e0d1dd45))
+
 ### 1.3.4 (2020-01-26)
 
 
