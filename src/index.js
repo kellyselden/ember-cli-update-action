@@ -179,7 +179,9 @@ async function emberCliUpdateAction({
 
   console.log({ amend });
 
-  if (yn(amend)) {
+  amend = yn(amend);
+
+  if (amend) {
     await spawn('git', [
       'commit',
       '--amend',
@@ -195,7 +197,7 @@ async function emberCliUpdateAction({
 
   await spawn('git', [
     'push',
-    '-f'
+    ...[amend ? '-f' : ''].filter(Boolean)
   ]);
 }
 
