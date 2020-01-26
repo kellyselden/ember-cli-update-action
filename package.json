@@ -52,7 +52,7 @@
     "standard-version": "^7.1.0"
   },
   "optionalDependencies": {
-    "@kellyselden/node-template": "0.5.2",
+    "@kellyselden/node-template": "0.5.8",
     "standard-node-template": "0.0.1"
   }
 }
