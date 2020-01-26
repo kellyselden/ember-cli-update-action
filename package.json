@@ -13,7 +13,7 @@
   },
   "standard-version": {
     "scripts": {
-      "prerelease": "ncc build src/index.js -o dist && git add -A dist",
+      "prerelease": "ncc build src/action.js -o dist && git add -A dist",
       "posttag": "git push --follow-tags --atomic"
     }
   },
