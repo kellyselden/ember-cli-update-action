@@ -36,7 +36,7 @@ async function emberCliUpdateAction({
   body,
   pullRequestUrl,
   installCommand,
-  autoFixCommand,
+  autofixCommand,
   gitEmail,
   gitName,
   amend
@@ -138,10 +138,10 @@ async function emberCliUpdateAction({
     }
   }
 
-  console.log({ autoFixCommand });
+  console.log({ autofixCommand });
 
-  if (autoFixCommand) {
-    await exec(autoFixCommand);
+  if (autofixCommand) {
+    await exec(autofixCommand);
   }
 
   if (!gitEmail) {
