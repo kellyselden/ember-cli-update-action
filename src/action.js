@@ -14,7 +14,7 @@ const emberCliUpdateAction = require('.');
 
     let installCommand = core.getInput('install_command');
 
-    let autoFixCommand = core.getInput('autofix_command');
+    let autofixCommand = core.getInput('autofix_command');
 
     let gitEmail = core.getInput('git_email');
     let gitName = core.getInput('git_name');
@@ -24,7 +24,7 @@ const emberCliUpdateAction = require('.');
     await emberCliUpdateAction({
       body,
       installCommand,
-      autoFixCommand,
+      autofixCommand,
       gitEmail,
       gitName,
       amend
