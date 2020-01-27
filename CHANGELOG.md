@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.4.0 (2020-01-27)
+
+
+### Features
+
+* use `GITHUB_TOKEN` if available ([10e884a](https://github.com/kellyselden/ember-cli-update-action/commit/10e884ac23b7b7673e2b9c492d78913e069c940c))
+
 ### 1.3.17 (2020-01-27)
 
 
