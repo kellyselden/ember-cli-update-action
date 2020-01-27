@@ -16,7 +16,11 @@
       "version": "0.5.8",
       "blueprints": [
         {
-          "name": "@kellyselden/node-template"
+          "name": "@kellyselden/node-template",
+          "options": [
+            "--repo-slug=kellyselden/ember-cli-update-action",
+            "--ci-provider=github-actions"
+          ]
         }
       ]
     }
