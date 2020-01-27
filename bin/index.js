@@ -28,7 +28,31 @@ const { argv } = require('yargs')
     }
   });
 
+const { promisify } = require('util');
+const request = promisify(require('request'));
+
 (async() => {
+  let {
+    body,
+    pullRequestUrl
+  } = argv;
+
+  if (!body) {
+    console.log({ pullRequestUrl });
+
+    let response = await request({
+      url: pullRequestUrl,
+      headers: {
+        'User-Agent': require('../package').name
+      },
+      json: true
+    });
+
+    console.log({ response });
+
+    argv.body = response.body.body;
+  }
+
   await emberCliUpdateAction(argv);
 })();
 
