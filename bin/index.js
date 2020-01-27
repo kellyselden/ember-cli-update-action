@@ -40,10 +40,13 @@ const request = promisify(require('request'));
   if (!body) {
     console.log({ pullRequestUrl });
 
+    let { GITHUB_TOKEN } = process.env;
+
     let response = await request({
       url: pullRequestUrl,
       headers: {
-        'User-Agent': require('../package').name
+        'User-Agent': require('../package').name,
+        ...GITHUB_TOKEN ? { 'Authorization': `token ${GITHUB_TOKEN}` } : {}
       },
       json: true
     });
