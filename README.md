@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # ember-cli-update-action
 
 ![](https://github.com/kellyselden/ember-cli-update-action/workflows/CI/badge.svg)
@@ -64,3 +65,9 @@ or without GitHub Actions (Travis CI)
 ```
 
 This parses pull request descriptions to find a blueprint match. A dependency update service may push the commit before making the pull request description. For that reason, you may want to put this action after your test job using `needs` to give the update service time to update the description.
+=======
+
+
+
+[![Build Status](https://travis-ci.org/kellyselden/ember-cli-update-action.svg?branch=master)](https://travis-ci.org/kellyselden/ember-cli-update-action)
+>>>>>>> 0a05796... v0.9.2...v0.10.0
