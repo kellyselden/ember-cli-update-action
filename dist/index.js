@@ -12517,7 +12517,7 @@ const execa = __webpack_require__(955);
 const yn = __webpack_require__(300);
 const fs = __webpack_require__(226);
 
-function spawn(bin, args, options) {
+function spawn(bin, args = [], options) {
   console.log(...[[bin, ...args].join(' '), options].filter(Boolean));
 
   let ps = execa(bin, args, {
