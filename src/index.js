@@ -4,7 +4,7 @@ const execa = require('execa');
 const yn = require('yn');
 const fs = require('fs-extra');
 
-function spawn(bin, args, options) {
+function spawn(bin, args = [], options) {
   console.log(...[[bin, ...args].join(' '), options].filter(Boolean));
 
   let ps = execa(bin, args, {
