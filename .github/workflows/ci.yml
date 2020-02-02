@@ -26,6 +26,8 @@ jobs:
     - run: npm run lint:git
 
   test:
+    needs: lint-git
+
     strategy:
       matrix:
         os:
