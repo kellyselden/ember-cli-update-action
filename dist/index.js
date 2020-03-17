@@ -12715,8 +12715,10 @@ async function emberCliUpdateAction({
 
   await spawn('npx', [
     'ember-cli-update',
-    '-b',
-    packageName,
+    ...packageName === 'ember-cli' ? [] : [
+      '-b',
+      packageName
+    ],
     '--to',
     to
   ]);

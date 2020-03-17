@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 1.5.4 (2020-03-17)
+
+
+### Bug Fixes
+
+* skip ember-cli blueprint ([4db98ac](https://github.com/kellyselden/ember-cli-update-action/commit/4db98ac18701465e5258f4dfda3da928de82f26a))
+
 ### 1.5.3 (2020-03-17)
 
 
