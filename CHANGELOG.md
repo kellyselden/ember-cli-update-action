@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.5.0 (2020-03-17)
+
+
+### Features
+
+* detect default ember-cli blueprints ([aae866b](https://github.com/kellyselden/ember-cli-update-action/commit/aae866b715900761c768df69402458b5047bb369))
+
 ### 1.4.11 (2020-02-12)
 
 ### 1.4.10 (2020-02-02)
