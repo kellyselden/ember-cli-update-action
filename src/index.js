@@ -44,7 +44,7 @@ async function emberCliUpdateAction({
 
   if (body) {
     // renovate style
-    matches = body.match(/^\| \[([^ ]+)\][^ ]*.*\[`(.+)` -> `(.+)`\]/m);
+    matches = body.match(/^\| \[([^ ]+)\][^ ]*.*\[`[~^]*(.+)` -> `[~^]*(.+)`\]/m);
 
     if (!matches) {
       // dependabot style
