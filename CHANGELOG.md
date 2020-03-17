@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 1.5.3 (2020-03-17)
+
+
+### Bug Fixes
+
+* exclude semver hints from renovate match ([1fa75cb](https://github.com/kellyselden/ember-cli-update-action/commit/1fa75cb728fea6c256b61e895272e09eb1747a5c))
+
 ### 1.5.2 (2020-03-17)
 
 ### 1.5.1 (2020-03-17)
