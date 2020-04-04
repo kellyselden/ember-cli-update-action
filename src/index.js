@@ -67,6 +67,7 @@ async function emberCliUpdateAction({
   console.log({ packageName, from, to });
 
   let isMatch;
+  let blueprintName;
 
   if (packageName === 'ember-cli') {
     let stats = (await spawn('npx', [
@@ -76,9 +77,13 @@ async function emberCliUpdateAction({
 
     let escapeSemVer = str => str.replace(/\./, '\\.');
 
-    let regex = new RegExp(`^package name: ember-cli\nblueprint name: .+\ncurrent version: ${escapeSemVer(from)}\nlatest version: ${escapeSemVer(to)}`);
+    let regex = new RegExp(`^package name: ember-cli\nblueprint name: (.+)\ncurrent version: ${escapeSemVer(from)}\nlatest version: ${escapeSemVer(to)}`);
 
-    isMatch = regex.test(stats);
+    let matches = regex.match(stats);
+    if (matches) {
+      isMatch = !!matches;
+      blueprintName = matches[1];
+    }
   } else {
     let stats = (await spawn('npx', [
       'ember-cli-update',
@@ -88,6 +93,7 @@ async function emberCliUpdateAction({
     ])).stdout;
 
     isMatch = stats === `${packageName}, current: ${from}, latest: ${to}`;
+    blueprintName = packageName;
   }
 
   if (!isMatch) {
@@ -97,10 +103,10 @@ async function emberCliUpdateAction({
 
   await spawn('npx', [
     'ember-cli-update',
-    ...packageName === 'ember-cli' ? [] : [
-      '-b',
-      packageName
-    ],
+    '-p',
+    packageName,
+    '-b',
+    blueprintName,
     '--to',
     to
   ]);
