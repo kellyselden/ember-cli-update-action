@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 1.6.2 (2020-04-04)
+
+
+### Bug Fixes
+
+* sync real args and commit msg ([85e03b1](https://github.com/kellyselden/ember-cli-update-action/commit/85e03b19016ea9f650bc7dff6ad16fcab7c06b20))
+
 ### 1.6.1 (2020-04-04)
 
 

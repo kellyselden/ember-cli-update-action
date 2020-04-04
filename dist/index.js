@@ -12795,7 +12795,7 @@ async function emberCliUpdateAction({
     return;
   }
 
-  await spawn('npx', [
+  let updateArgs = [
     'ember-cli-update',
     '-p',
     packageName,
@@ -12803,7 +12803,9 @@ async function emberCliUpdateAction({
     blueprintName,
     '--to',
     to
-  ]);
+  ];
+
+  await spawn('npx', updateArgs);
 
   let status = (await spawn('git', [
     'status',
@@ -12893,7 +12895,7 @@ async function emberCliUpdateAction({
     await spawn('git', [
       'commit',
       '-m',
-      `ember-cli-update -b ${packageName} --to ${to}`
+      updateArgs.join(' ')
     ]);
   }
 
