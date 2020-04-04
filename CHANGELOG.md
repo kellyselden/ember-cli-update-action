@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 1.6.1 (2020-04-04)
+
+
+### Bug Fixes
+
+* fix regex ([264c6e4](https://github.com/kellyselden/ember-cli-update-action/commit/264c6e4205277f0adb5530fe8b0f017a72955341))
+
 ## 1.6.0 (2020-04-04)
 
 

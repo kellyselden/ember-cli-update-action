@@ -12773,7 +12773,7 @@ async function emberCliUpdateAction({
 
     let regex = new RegExp(`^package name: ember-cli\nblueprint name: (.+)\ncurrent version: ${escapeSemVer(from)}\nlatest version: ${escapeSemVer(to)}`);
 
-    let matches = regex.match(stats);
+    let matches = stats.match(regex);
     if (matches) {
       isMatch = !!matches;
       blueprintName = matches[1];
