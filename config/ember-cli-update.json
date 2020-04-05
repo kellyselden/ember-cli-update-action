@@ -19,7 +19,8 @@
           "name": "@kellyselden/node-template",
           "options": [
             "--repo-slug=kellyselden/ember-cli-update-action",
-            "--github-actions"
+            "--github-actions",
+            "--renovate"
           ]
         }
       ]
