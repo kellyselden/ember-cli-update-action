@@ -52,11 +52,7 @@ Supports [Renovate](https://renovatebot.com), [Dependabot](https://dependabot.co
     with:
       install_command: foo bar
       autofix_command: npm run lint -- --fix
-
       ignore_to: true
-    # or
-    env:
-      EMBER_CLI_UPDATE_ACTION_IGNORE_TO: true
 ```
 
 or without GitHub Actions (Travis CI)

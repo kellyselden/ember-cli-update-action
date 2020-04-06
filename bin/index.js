@@ -2,6 +2,7 @@
 'use strict';
 
 const emberCliUpdateAction = require('../src');
+const yn = require('yn');
 
 const { argv } = require('yargs')
   .options({
@@ -58,6 +59,17 @@ const request = promisify(require('request'));
 
     argv.body = response.body.body;
   }
+
+  console.log('process.env.EMBER_CLI_UPDATE_ACTION_IGNORE_TO', process.env.EMBER_CLI_UPDATE_ACTION_IGNORE_TO);
+  // eslint-disable-next-line quotes
+  console.log(`'EMBER_CLI_UPDATE_ACTION_IGNORE_TO' in process.env`, process.env.EMBER_CLI_UPDATE_ACTION_IGNORE_TO);
+  // eslint-disable-next-line quotes
+  console.log(`argv.ignoreTo`, argv.ignoreTo);
+  if ('EMBER_CLI_UPDATE_ACTION_IGNORE_TO' in process.env) {
+    argv.ignoreTo = yn(process.env.EMBER_CLI_UPDATE_ACTION_IGNORE_TO);
+  }
+  // eslint-disable-next-line quotes
+  console.log(`argv.ignoreTo`, argv.ignoreTo);
 
   await emberCliUpdateAction(argv);
 })();
