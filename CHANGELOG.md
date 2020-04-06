@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 1.6.6 (2020-04-06)
+
+
+### Bug Fixes
+
+* format string bools earlier ([a649608](https://github.com/kellyselden/ember-cli-update-action/commit/a6496083e4bf1a465456d2345413a74153c6546b))
+
 ### 1.6.5 (2020-04-05)
 
 ### 1.6.4 (2020-04-05)
