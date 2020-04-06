@@ -3,6 +3,7 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const emberCliUpdateAction = require('.');
+const yn = require('yn');
 
 (async() => {
   try {
@@ -19,7 +20,7 @@ const emberCliUpdateAction = require('.');
     let gitEmail = core.getInput('git_email');
     let gitName = core.getInput('git_name');
 
-    let amend = core.getInput('amend');
+    let amend = yn(core.getInput('amend'));
 
     await emberCliUpdateAction({
       body,
