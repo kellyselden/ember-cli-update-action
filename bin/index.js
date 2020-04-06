@@ -25,6 +25,9 @@ const { argv } = require('yargs')
     },
     'amend': {
       type: 'boolean'
+    },
+    'ignore-to': {
+      type: 'boolean'
     }
   });
 
