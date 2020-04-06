@@ -38,6 +38,9 @@ async function emberCliUpdateAction({
   amend,
   ignoreTo
 }) {
+  let { name, version } = require('../package');
+  console.log({ name, version });
+
   console.log({ body });
 
   let matches;
