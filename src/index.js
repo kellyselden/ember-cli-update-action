@@ -1,7 +1,6 @@
 'use strict';
 
 const execa = require('execa');
-const yn = require('yn');
 const fs = require('fs-extra');
 
 function spawn(bin, args = [], options) {
@@ -188,8 +187,6 @@ async function emberCliUpdateAction({
   ]);
 
   console.log({ amend });
-
-  amend = yn(amend);
 
   if (amend) {
     await spawn('git', [
