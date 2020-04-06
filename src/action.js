@@ -23,11 +23,19 @@ const yn = require('yn');
     let amend = yn(core.getInput('amend'));
 
     let ignoreTo;
+    console.log('process.env.EMBER_CLI_UPDATE_ACTION_IGNORE_TO', process.env.EMBER_CLI_UPDATE_ACTION_IGNORE_TO);
+    // eslint-disable-next-line quotes
+    console.log(`'EMBER_CLI_UPDATE_ACTION_IGNORE_TO' in process.env`, process.env.EMBER_CLI_UPDATE_ACTION_IGNORE_TO);
+    // eslint-disable-next-line quotes
+    console.log(`core.getInput('ignore_to')`, core.getInput('ignore_to'));
     if ('EMBER_CLI_UPDATE_ACTION_IGNORE_TO' in process.env) {
       ignoreTo = process.env.EMBER_CLI_UPDATE_ACTION_IGNORE_TO;
     } else {
       ignoreTo = core.getInput('ignore_to');
     }
+    console.log({ ignoreTo });
+    // eslint-disable-next-line quotes
+    console.log(`yn(ignoreTo)`, yn(ignoreTo));
     ignoreTo = yn(ignoreTo);
 
     await emberCliUpdateAction({
