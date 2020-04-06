@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 1.7.4 (2020-04-06)
+
+
+### Bug Fixes
+
+* add ignore-to to bin ([867c8fb](https://github.com/kellyselden/ember-cli-update-action/commit/867c8fba99c98459237e16c5c4d4e3d4ad086045))
+
 ### 1.7.3 (2020-04-06)
 
 
