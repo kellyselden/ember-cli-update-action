@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 1.7.3 (2020-04-06)
+
+
+### Bug Fixes
+
+* add version logging ([dd53a29](https://github.com/kellyselden/ember-cli-update-action/commit/dd53a290f15ea054c8dcff41a7a7d017fedddc0e))
+
 ### 1.7.2 (2020-04-06)
 
 ### 1.7.1 (2020-04-06)
