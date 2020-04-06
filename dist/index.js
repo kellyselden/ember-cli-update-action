@@ -13084,6 +13084,8 @@ async function emberCliUpdateAction({
 
   let escapeSemVer = str => str.replace(/\./, '\\.');
 
+  console.log({ ignoreTo });
+
   let fromRegex = escapeSemVer(from);
   let toRegex = ignoreTo ? '.+' : escapeSemVer(to);
 
