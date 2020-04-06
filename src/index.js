@@ -35,7 +35,8 @@ async function emberCliUpdateAction({
   autofixCommand,
   gitEmail,
   gitName,
-  amend
+  amend,
+  ignoreTo
 }) {
   console.log({ body });
 
@@ -65,6 +66,13 @@ async function emberCliUpdateAction({
 
   console.log({ packageName, from, to });
 
+  let escapeSemVer = str => str.replace(/\./, '\\.');
+
+  let fromRegex = escapeSemVer(from);
+  let toRegex = ignoreTo ? '.+' : escapeSemVer(to);
+
+  console.log({ fromRegex, toRegex });
+
   let isMatch;
   let blueprintName;
 
@@ -74,9 +82,7 @@ async function emberCliUpdateAction({
       'stats'
     ])).stdout;
 
-    let escapeSemVer = str => str.replace(/\./, '\\.');
-
-    let regex = new RegExp(`^package name: ember-cli\nblueprint name: (.+)\ncurrent version: ${escapeSemVer(from)}\nlatest version: ${escapeSemVer(to)}`);
+    let regex = new RegExp(`^package name: ember-cli\nblueprint name: (.+)\ncurrent version: ${fromRegex}\nlatest version: ${toRegex}`);
 
     let matches = stats.match(regex);
     if (matches) {
@@ -91,8 +97,12 @@ async function emberCliUpdateAction({
       packageName
     ])).stdout;
 
-    isMatch = stats === `${packageName}, current: ${from}, latest: ${to}`;
-    blueprintName = packageName;
+    let regex = new RegExp(`, current: ${fromRegex}, latest: ${toRegex}$`);
+
+    if (stats.startsWith(`${packageName}, `) && regex.test(stats)) {
+      isMatch = true;
+      blueprintName = packageName;
+    }
   }
 
   if (!isMatch) {
