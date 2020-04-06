@@ -22,13 +22,22 @@ const yn = require('yn');
 
     let amend = yn(core.getInput('amend'));
 
+    let ignoreTo;
+    if ('EMBER_CLI_UPDATE_ACTION_IGNORE_TO' in process.env) {
+      ignoreTo = process.env.EMBER_CLI_UPDATE_ACTION_IGNORE_TO;
+    } else {
+      ignoreTo = core.getInput('ignore_to');
+    }
+    ignoreTo = yn(ignoreTo);
+
     await emberCliUpdateAction({
       body,
       installCommand,
       autofixCommand,
       gitEmail,
       gitName,
-      amend
+      amend,
+      ignoreTo
     });
   } catch (err) {
     core.setFailed(err.message);
