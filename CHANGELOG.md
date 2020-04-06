@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.7.0 (2020-04-06)
+
+
+### Features
+
+* add ignoreTo option ([e74e8b2](https://github.com/kellyselden/ember-cli-update-action/commit/e74e8b2db8d74a6c1e51126d3f369001d9a46787))
+
 ### 1.6.6 (2020-04-06)
 
 

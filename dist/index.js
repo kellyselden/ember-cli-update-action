@@ -13051,7 +13051,8 @@ async function emberCliUpdateAction({
   autofixCommand,
   gitEmail,
   gitName,
-  amend
+  amend,
+  ignoreTo
 }) {
   console.log({ body });
 
@@ -13081,6 +13082,13 @@ async function emberCliUpdateAction({
 
   console.log({ packageName, from, to });
 
+  let escapeSemVer = str => str.replace(/\./, '\\.');
+
+  let fromRegex = escapeSemVer(from);
+  let toRegex = ignoreTo ? '.+' : escapeSemVer(to);
+
+  console.log({ fromRegex, toRegex });
+
   let isMatch;
   let blueprintName;
 
@@ -13090,9 +13098,7 @@ async function emberCliUpdateAction({
       'stats'
     ])).stdout;
 
-    let escapeSemVer = str => str.replace(/\./, '\\.');
-
-    let regex = new RegExp(`^package name: ember-cli\nblueprint name: (.+)\ncurrent version: ${escapeSemVer(from)}\nlatest version: ${escapeSemVer(to)}`);
+    let regex = new RegExp(`^package name: ember-cli\nblueprint name: (.+)\ncurrent version: ${fromRegex}\nlatest version: ${toRegex}`);
 
     let matches = stats.match(regex);
     if (matches) {
@@ -13107,8 +13113,12 @@ async function emberCliUpdateAction({
       packageName
     ])).stdout;
 
-    isMatch = stats === `${packageName}, current: ${from}, latest: ${to}`;
-    blueprintName = packageName;
+    let regex = new RegExp(`, current: ${fromRegex}, latest: ${toRegex}$`);
+
+    if (stats.startsWith(`${packageName}, `) && regex.test(stats)) {
+      isMatch = true;
+      blueprintName = packageName;
+    }
   }
 
   if (!isMatch) {
@@ -30242,13 +30252,22 @@ const yn = __webpack_require__(300);
 
     let amend = yn(core.getInput('amend'));
 
+    let ignoreTo;
+    if ('EMBER_CLI_UPDATE_ACTION_IGNORE_TO' in process.env) {
+      ignoreTo = process.env.EMBER_CLI_UPDATE_ACTION_IGNORE_TO;
+    } else {
+      ignoreTo = core.getInput('ignore_to');
+    }
+    ignoreTo = yn(ignoreTo);
+
     await emberCliUpdateAction({
       body,
       installCommand,
       autofixCommand,
       gitEmail,
       gitName,
-      amend
+      amend,
+      ignoreTo
     });
   } catch (err) {
     core.setFailed(err.message);
