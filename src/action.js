@@ -7,6 +7,9 @@ const yn = require('yn');
 
 (async() => {
   try {
+    let { name, version } = require('../package');
+    console.log({ name, version });
+
     // Get the JSON webhook payload for the event that triggered the workflow
     // let payload = JSON.stringify(github.context.payload, undefined, 2);
     // console.log(`The event payload: ${payload}`);
