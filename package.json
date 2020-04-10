@@ -6,9 +6,14 @@
   "bin": {
     "ember-cli-update-action": "bin/index.js"
   },
+  "files": [
+    "bin",
+    "src"
+  ],
   "scripts": {
     "lint:git": "commitlint",
-    "lint:js": "eslint . --ext js,json",
+    "lint": "eslint . --ext js,json",
+    "test": "mocha --recursive",
     "release": "standard-version --commit-all"
   },
   "standard-version": {
@@ -43,12 +48,16 @@
     "@crowdstrike/commitlint": "^1.0.4",
     "@kellyselden/node-template": "0.11.3",
     "@zeit/ncc": "0.22.1",
+    "chai": "^4.2.0",
     "eslint": "^6.8.0",
     "eslint-config-sane": "0.8.5",
     "eslint-config-sane-node": "0.3.0",
     "eslint-plugin-json-files": "0.8.0",
+    "eslint-plugin-mocha": "^6.2.2",
     "eslint-plugin-node": "^11.0.0",
     "eslint-plugin-prefer-let": "^1.0.1",
+    "mocha": "^7.0.0",
+    "mocha-helpers": "^4.2.1",
     "renovate-config-standard": "^2.0.0",
     "standard-node-template": "0.0.1",
     "standard-version": "^7.1.0"

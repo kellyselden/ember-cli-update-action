@@ -29,6 +29,10 @@ async function exec(command, options) {
   return ps;
 }
 
+const renovateRegex = /^\| \[([^ ]+)\][^ ]*.*\[`[~^]*(.+)` -> `[~^]*(.+)`\]/m;
+const dependabotRegex = /^Bumps \[(.+)\].* from (.+) to (.+)\.$/m;
+const greenkeeperRegex = /^## The .+ \[(.+)\].* was updated from `(.+)` to `(.+)`\.$/m;
+
 async function emberCliUpdateAction({
   body,
   installCommand,
@@ -47,16 +51,16 @@ async function emberCliUpdateAction({
 
   if (body) {
     // renovate style
-    matches = body.match(/^\| \[([^ ]+)\][^ ]*.*\[`[~^]*(.+)` -> `[~^]*(.+)`\]/m);
+    matches = body.match(renovateRegex);
 
     if (!matches) {
       // dependabot style
-      matches = body.match(/^Bumps \[(.+)\].* from (.+) to (.+)\.$/m);
+      matches = body.match(dependabotRegex);
     }
 
     if (!matches) {
       // greenkeeper style
-      matches = body.match(/^## The .+ \[(.+)\].* was updated from `(.+)` to `(.+)`\.$/m);
+      matches = body.match(greenkeeperRegex);
     }
   }
 
@@ -234,3 +238,6 @@ async function emberCliUpdateAction({
 }
 
 module.exports = emberCliUpdateAction;
+module.exports.renovateRegex = renovateRegex;
+module.exports.dependabotRegex = dependabotRegex;
+module.exports.greenkeeperRegex = greenkeeperRegex;
