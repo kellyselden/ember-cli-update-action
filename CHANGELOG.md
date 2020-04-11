@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 1.7.9 (2020-04-11)
+
+
+### Bug Fixes
+
+* add regex tests ([c1a3ddf](https://github.com/kellyselden/ember-cli-update-action/commit/c1a3ddfecdbc16a5e1ab872e22bd78c580671201))
+
 ### 1.7.8 (2020-04-10)
 
 ### 1.7.7 (2020-04-06)
