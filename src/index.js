@@ -73,7 +73,7 @@ async function emberCliUpdateAction({
 
   console.log({ packageName, from, to });
 
-  let escapeSemVer = str => str.replace(/\./, '\\.');
+  let escapeSemVer = str => str.replace(/\./g, '\\.');
 
   console.log({ ignoreTo });
 
