@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 1.9.1 (2020-04-12)
+
+
+### Bug Fixes
+
+* fix pnpm command ([ee3fa70](https://github.com/kellyselden/ember-cli-update-action/commit/ee3fa703471b29154d05ea276224421d909e70cb))
+
 ## 1.9.0 (2020-04-12)
 
 
