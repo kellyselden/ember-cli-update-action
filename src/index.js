@@ -190,7 +190,9 @@ async function emberCliUpdateAction({
         console.log({ hasPnpmLock });
 
         if (hasPnpmLock) {
-          await spawn('pnpm install');
+          await spawn('pnpm', [
+            'install'
+          ]);
         }
       }
     }
