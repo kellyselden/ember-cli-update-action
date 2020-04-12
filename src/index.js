@@ -33,6 +33,60 @@ const renovateRegex = /^\| \[([^ ]+)\][^ ]*.*\[`[~^]*(.+)` -> `[~^]*(.+)`\]/m;
 const dependabotRegex = /^Bumps \[(.+)\].* from (.+) to (.+)\.$/m;
 const greenkeeperRegex = /^## The .+ \[(.+)\].* was updated from `(.+)` to `(.+)`\.$/m;
 
+async function getStats(packageName) {
+  return (await spawn('npx', [
+    'ember-cli-update',
+    'stats',
+    ...packageName ? [
+      '-b',
+      packageName
+    ] : []
+  ])).stdout;
+}
+
+async function getMatch({
+  packageName,
+  from,
+  to,
+  ignoreTo
+}) {
+  let escapeSemVer = str => str.replace(/\./g, '\\.');
+
+  console.log({ ignoreTo });
+
+  let fromRegex = escapeSemVer(from);
+  let toRegex = ignoreTo ? '.+' : escapeSemVer(to);
+
+  console.log({ fromRegex, toRegex });
+
+  let stats;
+  let regex;
+
+  if (packageName === 'ember-cli') {
+    stats = await module.exports.getStats();
+
+    regex = new RegExp(`^package name: ember-cli\nblueprint name: (.+)\ncurrent version: ${fromRegex}\nlatest version: ${toRegex}`);
+  } else {
+    stats = await module.exports.getStats(packageName);
+
+    regex = new RegExp(`^package name: .+\nblueprint name: (.+)\ncurrent version: ${fromRegex}\nlatest version: ${toRegex}`);
+  }
+
+  console.log({ regex });
+
+  let blueprintName;
+
+  let matches = stats.match(regex);
+  if (matches) {
+    blueprintName = matches[1];
+  }
+
+  return {
+    isMatch: !!matches,
+    blueprintName
+  };
+}
+
 async function emberCliUpdateAction({
   body,
   installCommand,
@@ -73,46 +127,15 @@ async function emberCliUpdateAction({
 
   console.log({ packageName, from, to });
 
-  let escapeSemVer = str => str.replace(/\./g, '\\.');
-
-  console.log({ ignoreTo });
-
-  let fromRegex = escapeSemVer(from);
-  let toRegex = ignoreTo ? '.+' : escapeSemVer(to);
-
-  console.log({ fromRegex, toRegex });
-
-  let isMatch;
-  let blueprintName;
-
-  if (packageName === 'ember-cli') {
-    let stats = (await spawn('npx', [
-      'ember-cli-update',
-      'stats'
-    ])).stdout;
-
-    let regex = new RegExp(`^package name: ember-cli\nblueprint name: (.+)\ncurrent version: ${fromRegex}\nlatest version: ${toRegex}`);
-
-    let matches = stats.match(regex);
-    if (matches) {
-      isMatch = !!matches;
-      blueprintName = matches[1];
-    }
-  } else {
-    let stats = (await spawn('npx', [
-      'ember-cli-update',
-      'stats',
-      '-b',
-      packageName
-    ])).stdout;
-
-    let regex = new RegExp(`, current: ${fromRegex}, latest: ${toRegex}$`);
-
-    if (stats.startsWith(`${packageName}, `) && regex.test(stats)) {
-      isMatch = true;
-      blueprintName = packageName;
-    }
-  }
+  let {
+    isMatch,
+    blueprintName
+  } = await getMatch({
+    packageName,
+    from,
+    to,
+    ignoreTo
+  });
 
   if (!isMatch) {
     console.log('not a blueprint match');
@@ -241,3 +264,5 @@ module.exports = emberCliUpdateAction;
 module.exports.renovateRegex = renovateRegex;
 module.exports.dependabotRegex = dependabotRegex;
 module.exports.greenkeeperRegex = greenkeeperRegex;
+module.exports.getStats = getStats;
+module.exports.getMatch = getMatch;
