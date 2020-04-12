@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.10.0 (2020-04-12)
+
+
+### Features
+
+* use multiline commit ([4dadfcd](https://github.com/kellyselden/ember-cli-update-action/commit/4dadfcd6b061ad061ad6921309a5b0c44cf31dc5))
+
 ### 1.9.2 (2020-04-12)
 
 
