@@ -10,7 +10,7 @@ const {
   greenkeeperRegex
 } = require('../../src');
 
-const fixturesDir = path.resolve(__dirname, 'fixtures');
+const fixturesDir = path.resolve(__dirname, '../fixtures');
 
 function match(fixture, regex) {
   let md = fs.readFileSync(path.join(fixturesDir, fixture), 'utf8');
