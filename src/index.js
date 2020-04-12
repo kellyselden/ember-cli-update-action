@@ -191,7 +191,8 @@ async function emberCliUpdateAction({
 
         if (hasPnpmLock) {
           await spawn('pnpm', [
-            'install'
+            'install',
+            '--frozen-lockfile=false'
           ]);
         }
       }
