@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.8.0 (2020-04-12)
+
+
+### Features
+
+* add `commitPrefix` ([105a7de](https://github.com/kellyselden/ember-cli-update-action/commit/105a7de84a69b3d7eb1b152a4d6250582e9189de))
+
 ### 1.7.14 (2020-04-12)
 
 
