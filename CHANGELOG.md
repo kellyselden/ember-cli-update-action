@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 1.9.2 (2020-04-12)
+
+
+### Bug Fixes
+
+* `--frozen-lockfile=false` ([432e4a1](https://github.com/kellyselden/ember-cli-update-action/commit/432e4a1ed7c3400c1790e489891870ed79142522))
+
 ### 1.9.1 (2020-04-12)
 
 
