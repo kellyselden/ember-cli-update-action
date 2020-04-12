@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 1.7.14 (2020-04-12)
+
+
+### Bug Fixes
+
+* add `getMatch` test ([2179a79](https://github.com/kellyselden/ember-cli-update-action/commit/2179a7975ddf044d8ac2c218d81444bfadb478a9))
+
 ### 1.7.13 (2020-04-12)
 
 ### 1.7.12 (2020-04-12)

@@ -13049,6 +13049,60 @@ const renovateRegex = /^\| \[([^ ]+)\][^ ]*.*\[`[~^]*(.+)` -> `[~^]*(.+)`\]/m;
 const dependabotRegex = /^Bumps \[(.+)\].* from (.+) to (.+)\.$/m;
 const greenkeeperRegex = /^## The .+ \[(.+)\].* was updated from `(.+)` to `(.+)`\.$/m;
 
+async function getStats(packageName) {
+  return (await spawn('npx', [
+    'ember-cli-update',
+    'stats',
+    ...packageName ? [
+      '-b',
+      packageName
+    ] : []
+  ])).stdout;
+}
+
+async function getMatch({
+  packageName,
+  from,
+  to,
+  ignoreTo
+}) {
+  let escapeSemVer = str => str.replace(/\./g, '\\.');
+
+  console.log({ ignoreTo });
+
+  let fromRegex = escapeSemVer(from);
+  let toRegex = ignoreTo ? '.+' : escapeSemVer(to);
+
+  console.log({ fromRegex, toRegex });
+
+  let stats;
+  let regex;
+
+  if (packageName === 'ember-cli') {
+    stats = await module.exports.getStats();
+
+    regex = new RegExp(`^package name: ember-cli\nblueprint name: (.+)\ncurrent version: ${fromRegex}\nlatest version: ${toRegex}`);
+  } else {
+    stats = await module.exports.getStats(packageName);
+
+    regex = new RegExp(`^package name: .+\nblueprint name: (.+)\ncurrent version: ${fromRegex}\nlatest version: ${toRegex}`);
+  }
+
+  console.log({ regex });
+
+  let blueprintName;
+
+  let matches = stats.match(regex);
+  if (matches) {
+    blueprintName = matches[1];
+  }
+
+  return {
+    isMatch: !!matches,
+    blueprintName
+  };
+}
+
 async function emberCliUpdateAction({
   body,
   installCommand,
@@ -13089,46 +13143,15 @@ async function emberCliUpdateAction({
 
   console.log({ packageName, from, to });
 
-  let escapeSemVer = str => str.replace(/\./g, '\\.');
-
-  console.log({ ignoreTo });
-
-  let fromRegex = escapeSemVer(from);
-  let toRegex = ignoreTo ? '.+' : escapeSemVer(to);
-
-  console.log({ fromRegex, toRegex });
-
-  let isMatch;
-  let blueprintName;
-
-  if (packageName === 'ember-cli') {
-    let stats = (await spawn('npx', [
-      'ember-cli-update',
-      'stats'
-    ])).stdout;
-
-    let regex = new RegExp(`^package name: ember-cli\nblueprint name: (.+)\ncurrent version: ${fromRegex}\nlatest version: ${toRegex}`);
-
-    let matches = stats.match(regex);
-    if (matches) {
-      isMatch = !!matches;
-      blueprintName = matches[1];
-    }
-  } else {
-    let stats = (await spawn('npx', [
-      'ember-cli-update',
-      'stats',
-      '-b',
-      packageName
-    ])).stdout;
-
-    let regex = new RegExp(`, current: ${fromRegex}, latest: ${toRegex}$`);
-
-    if (stats.startsWith(`${packageName}, `) && regex.test(stats)) {
-      isMatch = true;
-      blueprintName = packageName;
-    }
-  }
+  let {
+    isMatch,
+    blueprintName
+  } = await getMatch({
+    packageName,
+    from,
+    to,
+    ignoreTo
+  });
 
   if (!isMatch) {
     console.log('not a blueprint match');
@@ -13257,6 +13280,8 @@ module.exports = emberCliUpdateAction;
 module.exports.renovateRegex = renovateRegex;
 module.exports.dependabotRegex = dependabotRegex;
 module.exports.greenkeeperRegex = greenkeeperRegex;
+module.exports.getStats = getStats;
+module.exports.getMatch = getMatch;
 
 
 /***/ }),
@@ -13486,7 +13511,7 @@ module.exports = {
 /***/ 731:
 /***/ (function(module) {
 
-module.exports = {"private":false,"name":"ember-cli-update-action","version":"1.7.12","description":"Run ember-cli-update updates on CI","bin":{"ember-cli-update-action":"bin/index.js"},"files":["bin","src"],"scripts":{"lint:git":"commitlint","lint":"eslint . --ext js,json","test":"mocha --recursive","release":"standard-version --commit-all"},"standard-version":{"scripts":{"prerelease":"ncc build src/action.js -o dist && git add -A dist","posttag":"git push --follow-tags --atomic"}},"repository":{"type":"git","url":"git+https://github.com/kellyselden/ember-cli-update-action.git"},"author":"Kelly Selden","license":"MIT","bugs":{"url":"https://github.com/kellyselden/ember-cli-update-action/issues"},"homepage":"https://github.com/kellyselden/ember-cli-update-action#readme","dependencies":{"@actions/core":"^1.2.1","@actions/github":"^2.0.1","execa":"^3.4.0","fs-extra":"^8.1.0","request":"^2.88.0","yargs":"^15.1.0","yn":"^3.1.1"},"engines":{"node":">=8.10"},"devDependencies":{"@crowdstrike/commitlint":"^1.0.4","@kellyselden/node-template":"0.11.3","@zeit/ncc":"0.22.1","chai":"^4.2.0","eslint":"^6.8.0","eslint-config-sane":"0.8.5","eslint-config-sane-node":"0.3.0","eslint-plugin-json-files":"0.8.0","eslint-plugin-mocha":"^6.2.2","eslint-plugin-node":"^11.0.0","eslint-plugin-prefer-let":"^1.0.1","mocha":"^7.0.0","mocha-helpers":"^4.2.1","renovate-config-standard":"^2.0.0","standard-node-template":"0.0.1","standard-version":"^7.1.0"}};
+module.exports = {"private":false,"name":"ember-cli-update-action","version":"1.7.13","description":"Run ember-cli-update updates on CI","bin":{"ember-cli-update-action":"bin/index.js"},"files":["bin","src"],"scripts":{"lint:git":"commitlint","lint":"eslint . --ext js,json","test":"mocha --recursive","release":"standard-version --commit-all"},"standard-version":{"scripts":{"prerelease":"ncc build src/action.js -o dist && git add -A dist","posttag":"git push --follow-tags --atomic"}},"repository":{"type":"git","url":"git+https://github.com/kellyselden/ember-cli-update-action.git"},"author":"Kelly Selden","license":"MIT","bugs":{"url":"https://github.com/kellyselden/ember-cli-update-action/issues"},"homepage":"https://github.com/kellyselden/ember-cli-update-action#readme","dependencies":{"@actions/core":"^1.2.1","@actions/github":"^2.0.1","execa":"^3.4.0","fs-extra":"^8.1.0","request":"^2.88.0","yargs":"^15.1.0","yn":"^3.1.1"},"engines":{"node":">=8.10"},"devDependencies":{"@crowdstrike/commitlint":"^1.0.4","@kellyselden/node-template":"0.11.3","@zeit/ncc":"0.22.1","chai":"^4.2.0","eslint":"^6.8.0","eslint-config-sane":"0.8.5","eslint-config-sane-node":"0.3.0","eslint-plugin-json-files":"0.8.0","eslint-plugin-mocha":"^6.2.2","eslint-plugin-node":"^11.0.0","eslint-plugin-prefer-let":"^1.0.1","mocha":"^7.0.0","mocha-helpers":"^4.2.1","renovate-config-standard":"^2.0.0","sinon":"^8.1.1","standard-node-template":"0.0.1","standard-version":"^7.1.0"}};
 
 /***/ }),
 
