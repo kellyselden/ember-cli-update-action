@@ -19,7 +19,7 @@ function match(fixture, regex) {
 }
 
 describe(function() {
-  it('renovate', async function() {
+  it('renovate', function() {
     let matches = match('renovate.md', renovateRegex);
 
     expect(matches.slice(1)).to.deep.equal([
@@ -29,7 +29,7 @@ describe(function() {
     ]);
   });
 
-  it('dependabot', async function() {
+  it('dependabot', function() {
     let matches = match('dependabot.md', dependabotRegex);
 
     expect(matches.slice(1)).to.deep.equal([
@@ -39,7 +39,7 @@ describe(function() {
     ]);
   });
 
-  it('greenkeeper', async function() {
+  it('greenkeeper', function() {
     let matches = match('greenkeeper.md', greenkeeperRegex);
 
     expect(matches.slice(1)).to.deep.equal([
