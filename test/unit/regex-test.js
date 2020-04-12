@@ -1,14 +1,14 @@
 'use strict';
 
-const { describe } = require('./helpers/mocha');
-const { expect } = require('./helpers/chai');
+const { describe } = require('../helpers/mocha');
+const { expect } = require('../helpers/chai');
 const fs = require('fs');
 const path = require('path');
 const {
   renovateRegex,
   dependabotRegex,
   greenkeeperRegex
-} = require('../src');
+} = require('../../src');
 
 const fixturesDir = path.resolve(__dirname, 'fixtures');
 
