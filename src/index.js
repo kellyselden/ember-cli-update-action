@@ -252,7 +252,9 @@ async function emberCliUpdateAction({
     await spawn('git', [
       'commit',
       '-m',
-      commitPrefix + updateArgs.join(' ')
+      `${commitPrefix}${name}
+
+${updateArgs.join(' ')}`
     ]);
   }
 
