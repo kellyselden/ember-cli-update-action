@@ -184,6 +184,14 @@ async function emberCliUpdateAction({
 
       if (hasYarnLock) {
         await spawn('yarn');
+      } else {
+        let hasPnpmLock = await fs.pathExists('pnpm-lock.yaml');
+
+        console.log({ hasPnpmLock });
+
+        if (hasPnpmLock) {
+          await spawn('pnpm install');
+        }
       }
     }
   }
