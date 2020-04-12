@@ -53,6 +53,7 @@ Supports [Renovate](https://renovatebot.com), [Dependabot](https://dependabot.co
       install_command: foo bar
       autofix_command: npm run lint -- --fix
       ignore_to: true
+      commit_prefix: "chore: "
 ```
 
 or without GitHub Actions (Travis CI)

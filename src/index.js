@@ -94,7 +94,8 @@ async function emberCliUpdateAction({
   gitEmail,
   gitName,
   amend,
-  ignoreTo
+  ignoreTo,
+  commitPrefix = ''
 }) {
   let { name, version } = require('../package');
   console.log({ name, version });
@@ -240,7 +241,7 @@ async function emberCliUpdateAction({
     await spawn('git', [
       'commit',
       '-m',
-      updateArgs.join(' ')
+      commitPrefix + updateArgs.join(' ')
     ]);
   }
 

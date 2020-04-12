@@ -29,6 +29,10 @@ const { argv } = require('yargs')
     },
     'ignore-to': {
       type: 'boolean'
+    },
+    'commit-prefix': {
+      type: 'string',
+      default: ''
     }
   });
 

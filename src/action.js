@@ -24,6 +24,8 @@ const yn = require('yn');
 
     let ignoreTo = yn(core.getInput('ignore_to'));
 
+    let commitPrefix = core.getInput('commit_prefix');
+
     await emberCliUpdateAction({
       body,
       installCommand,
@@ -31,7 +33,8 @@ const yn = require('yn');
       gitEmail,
       gitName,
       amend,
-      ignoreTo
+      ignoreTo,
+      commitPrefix
     });
   } catch (err) {
     core.setFailed(err.message);
