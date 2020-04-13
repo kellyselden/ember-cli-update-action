@@ -69,7 +69,7 @@ async function getMatch({
   } else {
     stats = await module.exports.getStats(packageName);
 
-    regex = new RegExp(`^package name: .+\nblueprint name: (.+)\ncurrent version: ${fromRegex}\nlatest version: ${toRegex}`);
+    regex = new RegExp(`^package name: .+\n(?:package location: .+\n)?blueprint name: (.+)\ncurrent version: ${fromRegex}\nlatest version: ${toRegex}`);
   }
 
   console.log({ regex });

@@ -92,4 +92,25 @@ latest version: 7.8.9
     expect(isMatch).to.be.true;
     expect(blueprintName).to.equal('my-test-blueprint');
   });
+
+  it('local blueprint', async function() {
+    sinon.stub(index, 'getStats').withArgs('my-test-package').resolves(`package name: my-test-package
+package location: .
+blueprint name: my-test-blueprint
+current version: 1.2.3
+latest version: 4.5.6
+`);
+
+    let {
+      isMatch,
+      blueprintName
+    } = await getMatch({
+      packageName: 'my-test-package',
+      from: '1.2.3',
+      to: '4.5.6'
+    });
+
+    expect(isMatch).to.be.true;
+    expect(blueprintName).to.equal('my-test-blueprint');
+  });
 });
