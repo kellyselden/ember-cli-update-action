@@ -551,13 +551,21 @@ const windowsRelease = release => {
 
 	const ver = (version || [])[0];
 
-	// Server 2008, 2012 and 2016 versions are ambiguous with desktop versions and must be detected at runtime.
+	// Server 2008, 2012, 2016, and 2019 versions are ambiguous with desktop versions and must be detected at runtime.
 	// If `release` is omitted or we're on a Windows system, and the version number is an ambiguous version
 	// then use `wmic` to get the OS caption: https://msdn.microsoft.com/en-us/library/aa394531(v=vs.85).aspx
-	// If the resulting caption contains the year 2008, 2012 or 2016, it is a server version, so return a server OS name.
+	// If `wmic` is obsoloete (later versions of Windows 10), use PowerShell instead.
+	// If the resulting caption contains the year 2008, 2012, 2016 or 2019, it is a server version, so return a server OS name.
 	if ((!release || release === os.release()) && ['6.1', '6.2', '6.3', '10.0'].includes(ver)) {
-		const stdout = execa.sync('wmic', ['os', 'get', 'Caption']).stdout || '';
-		const year = (stdout.match(/2008|2012|2016/) || [])[0];
+		let stdout;
+		try {
+			stdout = execa.sync('powershell', ['(Get-CimInstance -ClassName Win32_OperatingSystem).caption']).stdout || '';
+		} catch (_) {
+			stdout = execa.sync('wmic', ['os', 'get', 'Caption']).stdout || '';
+		}
+
+		const year = (stdout.match(/2008|2012|2016|2019/) || [])[0];
+
 		if (year) {
 			return `Server ${year}`;
 		}
@@ -6727,7 +6735,7 @@ function withDefaults(oldDefaults, newDefaults) {
   });
 }
 
-const VERSION = "6.0.0";
+const VERSION = "6.0.1";
 
 const userAgent = `octokit-endpoint.js/${VERSION} ${universalUserAgent.getUserAgent()}`; // DEFAULTS has all properties set that EndpointOptions has, except url.
 // So we use RequestParameters and add method as additional required property.
@@ -6974,14 +6982,28 @@ class Command {
         return cmdStr;
     }
 }
+/**
+ * Sanitizes an input into a string so it can be passed into issueCommand safely
+ * @param input input to sanitize into a string
+ */
+function toCommandValue(input) {
+    if (input === null || input === undefined) {
+        return '';
+    }
+    else if (typeof input === 'string' || input instanceof String) {
+        return input;
+    }
+    return JSON.stringify(input);
+}
+exports.toCommandValue = toCommandValue;
 function escapeData(s) {
-    return (s || '')
+    return toCommandValue(s)
         .replace(/%/g, '%25')
         .replace(/\r/g, '%0D')
         .replace(/\n/g, '%0A');
 }
 function escapeProperty(s) {
-    return (s || '')
+    return toCommandValue(s)
         .replace(/%/g, '%25')
         .replace(/\r/g, '%0D')
         .replace(/\n/g, '%0A')
@@ -8990,11 +9012,13 @@ var ExitCode;
 /**
  * Sets env variable for this action and future actions in the job
  * @param name the name of the variable to set
- * @param val the value of the variable
+ * @param val the value of the variable. Non-string values will be converted to a string via JSON.stringify
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function exportVariable(name, val) {
-    process.env[name] = val;
-    command_1.issueCommand('set-env', { name }, val);
+    const convertedVal = command_1.toCommandValue(val);
+    process.env[name] = convertedVal;
+    command_1.issueCommand('set-env', { name }, convertedVal);
 }
 exports.exportVariable = exportVariable;
 /**
@@ -9033,12 +9057,22 @@ exports.getInput = getInput;
  * Sets the value of an output.
  *
  * @param     name     name of the output to set
- * @param     value    value to store
+ * @param     value    value to store. Non-string values will be converted to a string via JSON.stringify
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function setOutput(name, value) {
     command_1.issueCommand('set-output', { name }, value);
 }
 exports.setOutput = setOutput;
+/**
+ * Enables or disables the echoing of commands into stdout for the rest of the step.
+ * Echoing is disabled by default if ACTIONS_STEP_DEBUG is not set.
+ *
+ */
+function setCommandEcho(enabled) {
+    command_1.issue('echo', enabled ? 'on' : 'off');
+}
+exports.setCommandEcho = setCommandEcho;
 //-----------------------------------------------------------------------
 // Results
 //-----------------------------------------------------------------------
@@ -9072,18 +9106,18 @@ function debug(message) {
 exports.debug = debug;
 /**
  * Adds an error issue
- * @param message error issue message
+ * @param message error issue message. Errors will be converted to string via toString()
  */
 function error(message) {
-    command_1.issue('error', message);
+    command_1.issue('error', message instanceof Error ? message.toString() : message);
 }
 exports.error = error;
 /**
  * Adds an warning issue
- * @param message warning issue message
+ * @param message warning issue message. Errors will be converted to string via toString()
  */
 function warning(message) {
-    command_1.issue('warning', message);
+    command_1.issue('warning', message instanceof Error ? message.toString() : message);
 }
 exports.warning = warning;
 /**
@@ -9141,8 +9175,9 @@ exports.group = group;
  * Saves state for current action, the state can only be retrieved by this action's post job execution.
  *
  * @param     name     name of the state to store
- * @param     value    value to store
+ * @param     value    value to store. Non-string values will be converted to a string via JSON.stringify
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function saveState(name, value) {
     command_1.issueCommand('save-state', { name }, value);
 }
@@ -10817,7 +10852,7 @@ function resolveCommandAttempt(parsed, withoutPathExt) {
     const cwd = process.cwd();
     const hasCustomCwd = parsed.options.cwd != null;
     // Worker threads do not have process.chdir()
-    const shouldSwitchCwd = hasCustomCwd && process.chdir !== undefined;
+    const shouldSwitchCwd = hasCustomCwd && process.chdir !== undefined && !process.chdir.disabled;
 
     // If a custom `cwd` was specified, we need to change the process cwd
     // because `which` will do stat calls but does not support a custom cwd
@@ -11777,6 +11812,14 @@ if (typeof Symbol === 'function' && typeof Symbol.for === 'function') {
 
 function noop () {}
 
+function publishQueue(context, queue) {
+  Object.defineProperty(context, gracefulQueue, {
+    get: function() {
+      return queue
+    }
+  })
+}
+
 var debug = noop
 if (util.debuglog)
   debug = util.debuglog('gfs4')
@@ -11788,14 +11831,10 @@ else if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || ''))
   }
 
 // Once time initialization
-if (!global[gracefulQueue]) {
+if (!fs[gracefulQueue]) {
   // This queue can be shared by multiple loaded instances
-  var queue = []
-  Object.defineProperty(global, gracefulQueue, {
-    get: function() {
-      return queue
-    }
-  })
+  var queue = global[gracefulQueue] || []
+  publishQueue(fs, queue)
 
   // Patch fs.close/closeSync to shared queue version, because we need
   // to retry() whenever a close happens *anywhere* in the program.
@@ -11835,10 +11874,14 @@ if (!global[gracefulQueue]) {
 
   if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || '')) {
     process.on('exit', function() {
-      debug(global[gracefulQueue])
-      __webpack_require__(357).equal(global[gracefulQueue].length, 0)
+      debug(fs[gracefulQueue])
+      __webpack_require__(357).equal(fs[gracefulQueue].length, 0)
     })
   }
+}
+
+if (!global[gracefulQueue]) {
+  publishQueue(global, fs[gracefulQueue]);
 }
 
 module.exports = patch(clone(fs))
@@ -12090,11 +12133,11 @@ function patch (fs) {
 
 function enqueue (elem) {
   debug('ENQUEUE', elem[0].name, elem[1])
-  global[gracefulQueue].push(elem)
+  fs[gracefulQueue].push(elem)
 }
 
 function retry () {
-  var elem = global[gracefulQueue].shift()
+  var elem = fs[gracefulQueue].shift()
   if (elem) {
     debug('RETRY', elem[0].name, elem[1])
     elem[0].apply(null, elem[1])
@@ -13562,7 +13605,7 @@ module.exports = {
 /***/ 731:
 /***/ (function(module) {
 
-module.exports = {"private":false,"name":"ember-cli-update-action","version":"1.10.6","description":"Run ember-cli-update updates on CI","bin":{"ember-cli-update-action":"bin/index.js"},"files":["bin","src"],"scripts":{"lint:git":"commitlint","lint":"eslint . --ext js,json","test":"mocha --recursive","release":"standard-version --commit-all"},"standard-version":{"scripts":{"prerelease":"ncc build src/action.js -o dist && git add -A dist","posttag":"git push --follow-tags --atomic"}},"repository":{"type":"git","url":"git+https://github.com/kellyselden/ember-cli-update-action.git"},"author":"Kelly Selden","license":"MIT","bugs":{"url":"https://github.com/kellyselden/ember-cli-update-action/issues"},"homepage":"https://github.com/kellyselden/ember-cli-update-action#readme","dependencies":{"@actions/core":"^1.2.1","@actions/github":"^2.0.1","execa":"^3.4.0","fs-extra":"^8.1.0","request":"^2.88.0","yargs":"^15.1.0","yn":"^3.1.1"},"engines":{"node":">=8.10"},"devDependencies":{"@crowdstrike/commitlint":"^1.0.4","@kellyselden/node-template":"0.12.2","@zeit/ncc":"0.22.2","chai":"^4.2.0","eslint":"^6.8.0","eslint-config-sane":"0.8.5","eslint-config-sane-node":"0.3.0","eslint-plugin-json-files":"0.8.1","eslint-plugin-mocha":"^6.2.2","eslint-plugin-node":"^11.0.0","eslint-plugin-prefer-let":"^1.0.1","mocha":"^7.0.0","mocha-helpers":"^4.2.1","renovate-config-standard":"^2.0.0","sinon":"^8.1.1","standard-node-template":"0.0.1","standard-version":"^7.1.0"}};
+module.exports = {"private":false,"name":"ember-cli-update-action","version":"1.10.7","description":"Run ember-cli-update updates on CI","bin":{"ember-cli-update-action":"bin/index.js"},"files":["bin","src"],"scripts":{"lint:git":"commitlint","lint":"eslint . --ext js,json","test":"mocha --recursive","release":"standard-version --commit-all"},"standard-version":{"scripts":{"prerelease":"ncc build src/action.js -o dist && git add -A dist","posttag":"git push --follow-tags --atomic"}},"repository":{"type":"git","url":"git+https://github.com/kellyselden/ember-cli-update-action.git"},"author":"Kelly Selden","license":"MIT","bugs":{"url":"https://github.com/kellyselden/ember-cli-update-action/issues"},"homepage":"https://github.com/kellyselden/ember-cli-update-action#readme","dependencies":{"@actions/core":"^1.2.1","@actions/github":"^2.0.1","execa":"^3.4.0","fs-extra":"^8.1.0","request":"^2.88.0","yargs":"^15.1.0","yn":"^3.1.1"},"engines":{"node":">=8.10"},"devDependencies":{"@crowdstrike/commitlint":"^1.0.4","@kellyselden/node-template":"0.12.2","@zeit/ncc":"0.22.2","chai":"^4.2.0","eslint":"^6.8.0","eslint-config-sane":"0.8.5","eslint-config-sane-node":"0.3.0","eslint-plugin-json-files":"0.8.1","eslint-plugin-mocha":"^6.2.2","eslint-plugin-node":"^11.0.0","eslint-plugin-prefer-let":"^1.0.1","mocha":"^7.0.0","mocha-helpers":"^4.2.1","renovate-config-standard":"^2.0.0","sinon":"^8.1.1","standard-node-template":"0.0.1","standard-version":"^7.1.0"}};
 
 /***/ }),
 
@@ -13720,7 +13763,7 @@ var isPlainObject = _interopDefault(__webpack_require__(696));
 var nodeFetch = _interopDefault(__webpack_require__(454));
 var requestError = __webpack_require__(463);
 
-const VERSION = "5.3.4";
+const VERSION = "5.4.2";
 
 function getBufferResponse(response) {
   return response.arrayBuffer();
