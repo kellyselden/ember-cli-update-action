@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 1.10.12 (2020-07-02)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @actions/github to v4 ([e469f45](https://github.com/kellyselden/ember-cli-update-action/commit/e469f453565f1b453c1a2ea442153dc0e55a9025))
+
 ### 1.10.11 (2020-07-02)
 
 ### 1.10.10 (2020-06-01)
