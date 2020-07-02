@@ -552,9 +552,9 @@ const windowsRelease = release => {
 	if ((!release || release === os.release()) && ['6.1', '6.2', '6.3', '10.0'].includes(ver)) {
 		let stdout;
 		try {
-			stdout = execa.sync('powershell', ['(Get-CimInstance -ClassName Win32_OperatingSystem).caption']).stdout || '';
-		} catch (_) {
 			stdout = execa.sync('wmic', ['os', 'get', 'Caption']).stdout || '';
+		} catch (_) {
+			stdout = execa.sync('powershell', ['(Get-CimInstance -ClassName Win32_OperatingSystem).caption']).stdout || '';
 		}
 
 		const year = (stdout.match(/2008|2012|2016|2019/) || [])[0];
@@ -1157,28 +1157,32 @@ module.exports = copySync
 const os = __webpack_require__(87);
 
 const nameMap = new Map([
-	[19, 'Catalina'],
-	[18, 'Mojave'],
-	[17, 'High Sierra'],
-	[16, 'Sierra'],
-	[15, 'El Capitan'],
-	[14, 'Yosemite'],
-	[13, 'Mavericks'],
-	[12, 'Mountain Lion'],
-	[11, 'Lion'],
-	[10, 'Snow Leopard'],
-	[9, 'Leopard'],
-	[8, 'Tiger'],
-	[7, 'Panther'],
-	[6, 'Jaguar'],
-	[5, 'Puma']
+	[20, ['Big Sur', '11']],
+	[19, ['Catalina', '10.15']],
+	[18, ['Mojave', '10.14']],
+	[17, ['High Sierra', '10.13']],
+	[16, ['Sierra', '10.12']],
+	[15, ['El Capitan', '10.11']],
+	[14, ['Yosemite', '10.10']],
+	[13, ['Mavericks', '10.9']],
+	[12, ['Mountain Lion', '10.8']],
+	[11, ['Lion', '10.7']],
+	[10, ['Snow Leopard', '10.6']],
+	[9, ['Leopard', '10.5']],
+	[8, ['Tiger', '10.4']],
+	[7, ['Panther', '10.3']],
+	[6, ['Jaguar', '10.2']],
+	[5, ['Puma', '10.1']]
 ]);
 
 const macosRelease = release => {
 	release = Number((release || os.release()).split('.')[0]);
+
+	const [name, version] = nameMap.get(release);
+
 	return {
-		name: nameMap.get(release),
-		version: '10.' + (release - 4)
+		name,
+		version
 	};
 };
 
@@ -3086,7 +3090,7 @@ module.exports = require("https");
 /***/ 215:
 /***/ (function(module) {
 
-module.exports = {"name":"@octokit/rest","version":"16.43.1","publishConfig":{"access":"public"},"description":"GitHub REST API client for Node.js","keywords":["octokit","github","rest","api-client"],"author":"Gregor Martynus (https://github.com/gr2m)","contributors":[{"name":"Mike de Boer","email":"info@mikedeboer.nl"},{"name":"Fabian Jakobs","email":"fabian@c9.io"},{"name":"Joe Gallo","email":"joe@brassafrax.com"},{"name":"Gregor Martynus","url":"https://github.com/gr2m"}],"repository":"https://github.com/octokit/rest.js","dependencies":{"@octokit/auth-token":"^2.4.0","@octokit/plugin-paginate-rest":"^1.1.1","@octokit/plugin-request-log":"^1.0.0","@octokit/plugin-rest-endpoint-methods":"2.4.0","@octokit/request":"^5.2.0","@octokit/request-error":"^1.0.2","atob-lite":"^2.0.0","before-after-hook":"^2.0.0","btoa-lite":"^1.0.0","deprecation":"^2.0.0","lodash.get":"^4.4.2","lodash.set":"^4.3.2","lodash.uniq":"^4.5.0","octokit-pagination-methods":"^1.1.0","once":"^1.4.0","universal-user-agent":"^4.0.0"},"devDependencies":{"@gimenete/type-writer":"^0.1.3","@octokit/auth":"^1.1.1","@octokit/fixtures-server":"^5.0.6","@octokit/graphql":"^4.2.0","@types/node":"^13.1.0","bundlesize":"^0.18.0","chai":"^4.1.2","compression-webpack-plugin":"^3.1.0","cypress":"^3.0.0","glob":"^7.1.2","http-proxy-agent":"^4.0.0","lodash.camelcase":"^4.3.0","lodash.merge":"^4.6.1","lodash.upperfirst":"^4.3.1","lolex":"^5.1.2","mkdirp":"^1.0.0","mocha":"^7.0.1","mustache":"^4.0.0","nock":"^11.3.3","npm-run-all":"^4.1.2","nyc":"^15.0.0","prettier":"^1.14.2","proxy":"^1.0.0","semantic-release":"^17.0.0","sinon":"^8.0.0","sinon-chai":"^3.0.0","sort-keys":"^4.0.0","string-to-arraybuffer":"^1.0.0","string-to-jsdoc-comment":"^1.0.0","typescript":"^3.3.1","webpack":"^4.0.0","webpack-bundle-analyzer":"^3.0.0","webpack-cli":"^3.0.0"},"types":"index.d.ts","scripts":{"coverage":"nyc report --reporter=html && open coverage/index.html","lint":"prettier --check '{lib,plugins,scripts,test}/**/*.{js,json,ts}' 'docs/*.{js,json}' 'docs/src/**/*' index.js README.md package.json","lint:fix":"prettier --write '{lib,plugins,scripts,test}/**/*.{js,json,ts}' 'docs/*.{js,json}' 'docs/src/**/*' index.js README.md package.json","pretest":"npm run -s lint","test":"nyc mocha test/mocha-node-setup.js \"test/*/**/*-test.js\"","test:browser":"cypress run --browser chrome","build":"npm-run-all build:*","build:ts":"npm run -s update-endpoints:typescript","prebuild:browser":"mkdirp dist/","build:browser":"npm-run-all build:browser:*","build:browser:development":"webpack --mode development --entry . --output-library=Octokit --output=./dist/octokit-rest.js --profile --json > dist/bundle-stats.json","build:browser:production":"webpack --mode production --entry . --plugin=compression-webpack-plugin --output-library=Octokit --output-path=./dist --output-filename=octokit-rest.min.js --devtool source-map","generate-bundle-report":"webpack-bundle-analyzer dist/bundle-stats.json --mode=static --no-open --report dist/bundle-report.html","update-endpoints":"npm-run-all update-endpoints:*","update-endpoints:fetch-json":"node scripts/update-endpoints/fetch-json","update-endpoints:typescript":"node scripts/update-endpoints/typescript","prevalidate:ts":"npm run -s build:ts","validate:ts":"tsc --target es6 --noImplicitAny index.d.ts","postvalidate:ts":"tsc --noEmit --target es6 test/typescript-validate.ts","start-fixtures-server":"octokit-fixtures-server"},"license":"MIT","files":["index.js","index.d.ts","lib","plugins"],"nyc":{"ignore":["test"]},"release":{"publish":["@semantic-release/npm",{"path":"@semantic-release/github","assets":["dist/*","!dist/*.map.gz"]}]},"bundlesize":[{"path":"./dist/octokit-rest.min.js.gz","maxSize":"33 kB"}],"_resolved":"https://registry.npmjs.org/@octokit/rest/-/rest-16.43.1.tgz","_integrity":"sha512-gfFKwRT/wFxq5qlNjnW2dh+qh74XgTQ2B179UX5K1HYCluioWj8Ndbgqw2PVqa1NnVJkGHp2ovMpVn/DImlmkw==","_from":"@octokit/rest@16.43.1"};
+module.exports = {"name":"@octokit/rest","version":"16.43.2","publishConfig":{"access":"public"},"description":"GitHub REST API client for Node.js","keywords":["octokit","github","rest","api-client"],"author":"Gregor Martynus (https://github.com/gr2m)","contributors":[{"name":"Mike de Boer","email":"info@mikedeboer.nl"},{"name":"Fabian Jakobs","email":"fabian@c9.io"},{"name":"Joe Gallo","email":"joe@brassafrax.com"},{"name":"Gregor Martynus","url":"https://github.com/gr2m"}],"repository":"https://github.com/octokit/rest.js","dependencies":{"@octokit/auth-token":"^2.4.0","@octokit/plugin-paginate-rest":"^1.1.1","@octokit/plugin-request-log":"^1.0.0","@octokit/plugin-rest-endpoint-methods":"2.4.0","@octokit/request":"^5.2.0","@octokit/request-error":"^1.0.2","atob-lite":"^2.0.0","before-after-hook":"^2.0.0","btoa-lite":"^1.0.0","deprecation":"^2.0.0","lodash.get":"^4.4.2","lodash.set":"^4.3.2","lodash.uniq":"^4.5.0","octokit-pagination-methods":"^1.1.0","once":"^1.4.0","universal-user-agent":"^4.0.0"},"devDependencies":{"@gimenete/type-writer":"^0.1.3","@octokit/auth":"^1.1.1","@octokit/fixtures-server":"^5.0.6","@octokit/graphql":"^4.2.0","@types/node":"^13.1.0","bundlesize":"^0.18.0","chai":"^4.1.2","compression-webpack-plugin":"^3.1.0","cypress":"^4.0.0","glob":"^7.1.2","http-proxy-agent":"^4.0.0","lodash.camelcase":"^4.3.0","lodash.merge":"^4.6.1","lodash.upperfirst":"^4.3.1","lolex":"^6.0.0","mkdirp":"^1.0.0","mocha":"^7.0.1","mustache":"^4.0.0","nock":"^11.3.3","npm-run-all":"^4.1.2","nyc":"^15.0.0","prettier":"^1.14.2","proxy":"^1.0.0","semantic-release":"^17.0.0","sinon":"^8.0.0","sinon-chai":"^3.0.0","sort-keys":"^4.0.0","string-to-arraybuffer":"^1.0.0","string-to-jsdoc-comment":"^1.0.0","typescript":"^3.3.1","webpack":"^4.0.0","webpack-bundle-analyzer":"^3.0.0","webpack-cli":"^3.0.0"},"types":"index.d.ts","scripts":{"coverage":"nyc report --reporter=html && open coverage/index.html","lint":"prettier --check '{lib,plugins,scripts,test}/**/*.{js,json,ts}' 'docs/*.{js,json}' 'docs/src/**/*' index.js README.md package.json","lint:fix":"prettier --write '{lib,plugins,scripts,test}/**/*.{js,json,ts}' 'docs/*.{js,json}' 'docs/src/**/*' index.js README.md package.json","pretest":"npm run -s lint","test":"nyc mocha test/mocha-node-setup.js \"test/*/**/*-test.js\"","test:browser":"cypress run --browser chrome","build":"npm-run-all build:*","build:ts":"npm run -s update-endpoints:typescript","prebuild:browser":"mkdirp dist/","build:browser":"npm-run-all build:browser:*","build:browser:development":"webpack --mode development --entry . --output-library=Octokit --output=./dist/octokit-rest.js --profile --json > dist/bundle-stats.json","build:browser:production":"webpack --mode production --entry . --plugin=compression-webpack-plugin --output-library=Octokit --output-path=./dist --output-filename=octokit-rest.min.js --devtool source-map","generate-bundle-report":"webpack-bundle-analyzer dist/bundle-stats.json --mode=static --no-open --report dist/bundle-report.html","update-endpoints":"npm-run-all update-endpoints:*","update-endpoints:fetch-json":"node scripts/update-endpoints/fetch-json","update-endpoints:typescript":"node scripts/update-endpoints/typescript","prevalidate:ts":"npm run -s build:ts","validate:ts":"tsc --target es6 --noImplicitAny index.d.ts","postvalidate:ts":"tsc --noEmit --target es6 test/typescript-validate.ts","start-fixtures-server":"octokit-fixtures-server"},"license":"MIT","files":["index.js","index.d.ts","lib","plugins"],"nyc":{"ignore":["test"]},"release":{"publish":["@semantic-release/npm",{"path":"@semantic-release/github","assets":["dist/*","!dist/*.map.gz"]}]},"bundlesize":[{"path":"./dist/octokit-rest.min.js.gz","maxSize":"33 kB"}],"_resolved":"https://registry.npmjs.org/@octokit/rest/-/rest-16.43.2.tgz","_integrity":"sha512-ngDBevLbBTFfrHZeiS7SAMAZ6ssuVmXuya+F/7RaVvlysgGa1JKJkKWY+jV6TCJYcW0OALfJ7nTIGXcBXzycfQ==","_from":"@octokit/rest@16.43.2"};
 
 /***/ }),
 
@@ -6705,7 +6709,7 @@ function withDefaults(oldDefaults, newDefaults) {
   });
 }
 
-const VERSION = "6.0.2";
+const VERSION = "6.0.3";
 
 const userAgent = `octokit-endpoint.js/${VERSION} ${universalUserAgent.getUserAgent()}`; // DEFAULTS has all properties set that EndpointOptions has, except url.
 // So we use RequestParameters and add method as additional required property.
@@ -13593,7 +13597,7 @@ module.exports = {
 /***/ 731:
 /***/ (function(module) {
 
-module.exports = {"private":false,"name":"ember-cli-update-action","version":"1.10.9","description":"Run ember-cli-update updates on CI","bin":{"ember-cli-update-action":"bin/index.js"},"files":["bin","src"],"scripts":{"lint:git":"commitlint","lint":"eslint . --ext js,json","test":"mocha --recursive","release":"standard-version --commit-all"},"standard-version":{"scripts":{"prerelease":"ncc build src/action.js -o dist && git add -A dist","posttag":"git push --follow-tags --atomic"}},"repository":{"type":"git","url":"git+https://github.com/kellyselden/ember-cli-update-action.git"},"author":"Kelly Selden","license":"MIT","bugs":{"url":"https://github.com/kellyselden/ember-cli-update-action/issues"},"homepage":"https://github.com/kellyselden/ember-cli-update-action#readme","dependencies":{"@actions/core":"^1.2.1","@actions/github":"^2.0.1","execa":"^3.4.0","fs-extra":"^8.1.0","request":"^2.88.0","yargs":"^15.1.0","yn":"^3.1.1"},"engines":{"node":">=8.10"},"devDependencies":{"@crowdstrike/commitlint":"^1.0.4","@kellyselden/node-template":"0.12.2","@zeit/ncc":"0.22.3","chai":"^4.2.0","eslint":"^6.8.0","eslint-config-sane":"0.8.5","eslint-config-sane-node":"0.3.0","eslint-plugin-json-files":"0.8.1","eslint-plugin-mocha":"^6.2.2","eslint-plugin-node":"^11.0.0","eslint-plugin-prefer-let":"^1.0.1","mocha":"^7.0.0","mocha-helpers":"^4.2.1","renovate-config-standard":"^2.0.0","sinon":"^8.1.1","standard-node-template":"0.0.1","standard-version":"^7.1.0"}};
+module.exports = {"private":false,"name":"ember-cli-update-action","version":"1.10.10","description":"Run ember-cli-update updates on CI","bin":{"ember-cli-update-action":"bin/index.js"},"files":["bin","src"],"scripts":{"lint:git":"commitlint","lint":"eslint . --ext js,json","test":"mocha --recursive","release":"standard-version --commit-all"},"standard-version":{"scripts":{"prerelease":"ncc build src/action.js -o dist && git add -A dist","posttag":"git push --follow-tags --atomic"}},"repository":{"type":"git","url":"git+https://github.com/kellyselden/ember-cli-update-action.git"},"author":"Kelly Selden","license":"MIT","bugs":{"url":"https://github.com/kellyselden/ember-cli-update-action/issues"},"homepage":"https://github.com/kellyselden/ember-cli-update-action#readme","dependencies":{"@actions/core":"^1.2.1","@actions/github":"^2.0.1","execa":"^3.4.0","fs-extra":"^8.1.0","request":"^2.88.0","yargs":"^15.1.0","yn":"^3.1.1"},"engines":{"node":">=8.10"},"devDependencies":{"@crowdstrike/commitlint":"^1.0.4","@kellyselden/node-template":"0.12.2","@zeit/ncc":"0.22.3","chai":"^4.2.0","eslint":"^6.8.0","eslint-config-sane":"0.8.5","eslint-config-sane-node":"0.3.0","eslint-plugin-json-files":"0.8.1","eslint-plugin-mocha":"^6.2.2","eslint-plugin-node":"^11.0.0","eslint-plugin-prefer-let":"^1.0.1","mocha":"^7.0.0","mocha-helpers":"^4.2.1","renovate-config-standard":"^2.0.0","sinon":"^8.1.1","standard-node-template":"0.0.1","standard-version":"^7.1.0"}};
 
 /***/ }),
 
@@ -13751,7 +13755,7 @@ var isPlainObject = _interopDefault(__webpack_require__(696));
 var nodeFetch = _interopDefault(__webpack_require__(454));
 var requestError = __webpack_require__(463);
 
-const VERSION = "5.4.4";
+const VERSION = "5.4.5";
 
 function getBufferResponse(response) {
   return response.arrayBuffer();
@@ -30134,7 +30138,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 var request = __webpack_require__(753);
 var universalUserAgent = __webpack_require__(796);
 
-const VERSION = "4.5.0";
+const VERSION = "4.5.1";
 
 class GraphqlError extends Error {
   constructor(request, response) {
