@@ -35,7 +35,7 @@
   "dependencies": {
     "@actions/core": "^1.2.1",
     "@actions/github": "^4.0.0",
-    "execa": "^3.4.0",
+    "execa": "^4.0.0",
     "fs-extra": "^8.1.0",
     "request": "^2.88.0",
     "yargs": "^15.1.0",
