@@ -2156,38 +2156,34 @@ exports.paginateRest = paginateRest;
 
 "use strict";
 
-const lenient = __webpack_require__(476);
+const lenientFunction = __webpack_require__(476);
 
-const yn = (input, options) => {
-	input = String(input).trim();
+const yn = (value, {
+	lenient = false,
+	default: default_
+} = {}) => {
+	value = String(value).trim();
 
-	options = Object.assign({
-		lenient: false,
-		default: null
-	}, options);
-
-	if (options.default !== null && typeof options.default !== 'boolean') {
-		throw new TypeError(`Expected the \`default\` option to be of type \`boolean\`, got \`${typeof options.default}\``);
+	if (default_ !== undefined && typeof default_ !== 'boolean') {
+		throw new TypeError(`Expected the \`default\` option to be of type \`boolean\`, got \`${typeof default_}\``);
 	}
 
-	if (/^(?:y|yes|true|1)$/i.test(input)) {
+	if (/^(?:y|yes|true|1|on)$/i.test(value)) {
 		return true;
 	}
 
-	if (/^(?:n|no|false|0)$/i.test(input)) {
+	if (/^(?:n|no|false|0|off)$/i.test(value)) {
 		return false;
 	}
 
-	if (options.lenient === true) {
-		return lenient(input, options);
+	if (lenient === true) {
+		return lenientFunction(value, default_);
 	}
 
-	return options.default;
+	return default_;
 };
 
 module.exports = yn;
-// TODO: Remove this for the next major release
-module.exports.default = yn;
 
 
 /***/ }),
@@ -5836,7 +5832,7 @@ function getNoMatchScore(value) {
 	return score;
 }
 
-module.exports = (input, options) => {
+module.exports = (input, default_) => {
 	if (getYesMatchScore(input) >= YES_MATCH_SCORE_THRESHOLD) {
 		return true;
 	}
@@ -5845,7 +5841,7 @@ module.exports = (input, options) => {
 		return false;
 	}
 
-	return options.default;
+	return default_;
 };
 
 
@@ -9098,7 +9094,7 @@ module.exports = {
 /***/ 731:
 /***/ (function(module) {
 
-module.exports = {"private":false,"name":"ember-cli-update-action","version":"1.10.19","description":"Run ember-cli-update updates on CI","bin":{"ember-cli-update-action":"bin/index.js"},"files":["bin","src"],"scripts":{"lint:git":"commitlint","lint":"eslint . --ext js,json","test":"mocha --recursive","release":"standard-version --commit-all"},"standard-version":{"scripts":{"prerelease":"ncc build src/action.js -o dist && git add -A dist","posttag":"git push --follow-tags --atomic"}},"repository":{"type":"git","url":"git+https://github.com/kellyselden/ember-cli-update-action.git"},"author":"Kelly Selden","license":"MIT","bugs":{"url":"https://github.com/kellyselden/ember-cli-update-action/issues"},"homepage":"https://github.com/kellyselden/ember-cli-update-action#readme","dependencies":{"@actions/core":"^1.2.1","@actions/github":"^4.0.0","execa":"^4.0.0","fs-extra":"^9.0.0","request":"^2.88.0","yargs":"^16.0.0","yn":"^3.1.1"},"engines":{"node":">=10.12"},"devDependencies":{"@crowdstrike/commitlint":"^1.0.4","@kellyselden/node-template":"1.1.0","@zeit/ncc":"0.22.3","chai":"^4.2.0","eslint":"^7.8.1","eslint-config-sane":"0.8.5","eslint-config-sane-node":"0.3.0","eslint-plugin-json-files":"0.8.1","eslint-plugin-mocha":"^8.0.0","eslint-plugin-node":"^11.1.0","eslint-plugin-prefer-let":"^1.0.2","mocha":"^8.1.3","mocha-helpers":"^5.0.0","renovate-config-standard":"^2.0.0","sinon":"^9.0.0","standard-node-template":"1.0.0","standard-version":"^7.1.0"}};
+module.exports = {"private":false,"name":"ember-cli-update-action","version":"1.10.20","description":"Run ember-cli-update updates on CI","bin":{"ember-cli-update-action":"bin/index.js"},"files":["bin","src"],"scripts":{"lint:git":"commitlint","lint":"eslint . --ext js,json","test":"mocha --recursive","release":"standard-version --commit-all"},"standard-version":{"scripts":{"prerelease":"ncc build src/action.js -o dist && git add -A dist","posttag":"git push --follow-tags --atomic"}},"repository":{"type":"git","url":"git+https://github.com/kellyselden/ember-cli-update-action.git"},"author":"Kelly Selden","license":"MIT","bugs":{"url":"https://github.com/kellyselden/ember-cli-update-action/issues"},"homepage":"https://github.com/kellyselden/ember-cli-update-action#readme","dependencies":{"@actions/core":"^1.2.1","@actions/github":"^4.0.0","execa":"^4.0.0","fs-extra":"^9.0.0","request":"^2.88.0","yargs":"^16.0.0","yn":"^4.0.0"},"engines":{"node":">=10.12"},"devDependencies":{"@crowdstrike/commitlint":"^1.0.4","@kellyselden/node-template":"1.1.0","@zeit/ncc":"0.22.3","chai":"^4.2.0","eslint":"^7.8.1","eslint-config-sane":"0.8.5","eslint-config-sane-node":"0.3.0","eslint-plugin-json-files":"0.8.1","eslint-plugin-mocha":"^8.0.0","eslint-plugin-node":"^11.1.0","eslint-plugin-prefer-let":"^1.0.2","mocha":"^8.1.3","mocha-helpers":"^5.0.0","renovate-config-standard":"^2.0.0","sinon":"^9.0.0","standard-node-template":"1.0.0","standard-version":"^7.1.0"}};
 
 /***/ }),
 

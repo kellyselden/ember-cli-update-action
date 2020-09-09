@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 1.10.21 (2020-09-09)
+
+
+### Bug Fixes
+
+* **deps:** update dependency yn to v4 ([c207560](https://github.com/kellyselden/ember-cli-update-action/commit/c20756051d75c2c8770c0d3e7da91a7b87cc125a))
+
 ### 1.10.20 (2020-09-09)
 
 
