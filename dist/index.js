@@ -6547,15 +6547,19 @@ const makeError = ({
 	const errorCode = error && error.code;
 
 	const prefix = getErrorPrefix({timedOut, timeout, errorCode, signal, signalDescription, exitCode, isCanceled});
-	const message = `Command ${prefix}: ${command}`;
+	const execaMessage = `Command ${prefix}: ${command}`;
+	const isError = Object.prototype.toString.call(error) === '[object Error]';
+	const shortMessage = isError ? `${execaMessage}\n${error.message}` : execaMessage;
+	const message = [shortMessage, stderr, stdout].filter(Boolean).join('\n');
 
-	if (error instanceof Error) {
+	if (isError) {
 		error.originalMessage = error.message;
-		error.message = `${message}\n${error.message}`;
+		error.message = message;
 	} else {
 		error = new Error(message);
 	}
 
+	error.shortMessage = shortMessage;
 	error.command = command;
 	error.exitCode = exitCode;
 	error.signal = signal;
@@ -7410,7 +7414,6 @@ standard:"other"}];exports.SIGNALS=SIGNALS;
 
 const os = __webpack_require__(87);
 const onExit = __webpack_require__(497);
-const pFinally = __webpack_require__(697);
 
 const DEFAULT_FORCE_KILL_TIMEOUT = 1000 * 5;
 
@@ -7427,9 +7430,17 @@ const setKillTimeout = (kill, signal, options, killResult) => {
 	}
 
 	const timeout = getForceKillAfterTimeout(options);
-	setTimeout(() => {
+	const t = setTimeout(() => {
 		kill('SIGKILL');
-	}, timeout).unref();
+	}, timeout);
+
+	// Guarded because there's no `.unref()` when `execa` is used in the renderer
+	// process in Electron. This cannot be tested since we don't run tests in
+	// Electron.
+	// istanbul ignore else
+	if (t.unref) {
+		t.unref();
+	}
 };
 
 const shouldForceKill = (signal, {forceKillAfterTimeout}, killResult) => {
@@ -7446,7 +7457,7 @@ const getForceKillAfterTimeout = ({forceKillAfterTimeout = true}) => {
 		return DEFAULT_FORCE_KILL_TIMEOUT;
 	}
 
-	if (!Number.isInteger(forceKillAfterTimeout) || forceKillAfterTimeout < 0) {
+	if (!Number.isFinite(forceKillAfterTimeout) || forceKillAfterTimeout < 0) {
 		throw new TypeError(`Expected the \`forceKillAfterTimeout\` option to be a non-negative integer, got \`${forceKillAfterTimeout}\` (${typeof forceKillAfterTimeout})`);
 	}
 
@@ -7473,7 +7484,7 @@ const setupTimeout = (spawned, {timeout, killSignal = 'SIGTERM'}, spawnedPromise
 		return spawnedPromise;
 	}
 
-	if (!Number.isInteger(timeout) || timeout < 0) {
+	if (!Number.isFinite(timeout) || timeout < 0) {
 		throw new TypeError(`Expected the \`timeout\` option to be a non-negative integer, got \`${timeout}\` (${typeof timeout})`);
 	}
 
@@ -7484,7 +7495,7 @@ const setupTimeout = (spawned, {timeout, killSignal = 'SIGTERM'}, spawnedPromise
 		}, timeout);
 	});
 
-	const safeSpawnedPromise = pFinally(spawnedPromise, () => {
+	const safeSpawnedPromise = spawnedPromise.finally(() => {
 		clearTimeout(timeoutId);
 	});
 
@@ -7492,7 +7503,7 @@ const setupTimeout = (spawned, {timeout, killSignal = 'SIGTERM'}, spawnedPromise
 };
 
 // `cleanup` option handling
-const setExitHandler = (spawned, {cleanup, detached}, timedPromise) => {
+const setExitHandler = async (spawned, {cleanup, detached}, timedPromise) => {
 	if (!cleanup || detached) {
 		return timedPromise;
 	}
@@ -7501,8 +7512,9 @@ const setExitHandler = (spawned, {cleanup, detached}, timedPromise) => {
 		spawned.kill();
 	});
 
-	// TODO: Use native "finally" syntax when targeting Node.js 10
-	return pFinally(timedPromise, removeExitHandler);
+	return timedPromise.finally(() => {
+		removeExitHandler();
+	});
 };
 
 module.exports = {
@@ -9085,31 +9097,6 @@ module.exports = isPlainObject;
 
 /***/ }),
 
-/***/ 697:
-/***/ (function(module) {
-
-"use strict";
-
-
-module.exports = async (
-	promise,
-	onFinally = (() => {})
-) => {
-	let value;
-	try {
-		value = await promise;
-	} catch (error) {
-		await onFinally();
-		throw error;
-	}
-
-	await onFinally();
-	return value;
-};
-
-
-/***/ }),
-
 /***/ 723:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
@@ -9187,7 +9174,7 @@ module.exports = {
 /***/ 731:
 /***/ (function(module) {
 
-module.exports = {"private":false,"name":"ember-cli-update-action","version":"1.10.17","description":"Run ember-cli-update updates on CI","bin":{"ember-cli-update-action":"bin/index.js"},"files":["bin","src"],"scripts":{"lint:git":"commitlint","lint":"eslint . --ext js,json","test":"mocha --recursive","release":"standard-version --commit-all"},"standard-version":{"scripts":{"prerelease":"ncc build src/action.js -o dist && git add -A dist","posttag":"git push --follow-tags --atomic"}},"repository":{"type":"git","url":"git+https://github.com/kellyselden/ember-cli-update-action.git"},"author":"Kelly Selden","license":"MIT","bugs":{"url":"https://github.com/kellyselden/ember-cli-update-action/issues"},"homepage":"https://github.com/kellyselden/ember-cli-update-action#readme","dependencies":{"@actions/core":"^1.2.1","@actions/github":"^4.0.0","execa":"^3.4.0","fs-extra":"^8.1.0","request":"^2.88.0","yargs":"^15.1.0","yn":"^3.1.1"},"engines":{"node":">=10.12"},"devDependencies":{"@crowdstrike/commitlint":"^1.0.4","@kellyselden/node-template":"1.1.0","@zeit/ncc":"0.22.3","chai":"^4.2.0","eslint":"^7.8.1","eslint-config-sane":"0.8.5","eslint-config-sane-node":"0.3.0","eslint-plugin-json-files":"0.8.1","eslint-plugin-mocha":"^8.0.0","eslint-plugin-node":"^11.1.0","eslint-plugin-prefer-let":"^1.0.2","mocha":"^8.1.3","mocha-helpers":"^5.0.0","renovate-config-standard":"^2.0.0","sinon":"^9.0.0","standard-node-template":"1.0.0","standard-version":"^7.1.0"}};
+module.exports = {"private":false,"name":"ember-cli-update-action","version":"1.10.18","description":"Run ember-cli-update updates on CI","bin":{"ember-cli-update-action":"bin/index.js"},"files":["bin","src"],"scripts":{"lint:git":"commitlint","lint":"eslint . --ext js,json","test":"mocha --recursive","release":"standard-version --commit-all"},"standard-version":{"scripts":{"prerelease":"ncc build src/action.js -o dist && git add -A dist","posttag":"git push --follow-tags --atomic"}},"repository":{"type":"git","url":"git+https://github.com/kellyselden/ember-cli-update-action.git"},"author":"Kelly Selden","license":"MIT","bugs":{"url":"https://github.com/kellyselden/ember-cli-update-action/issues"},"homepage":"https://github.com/kellyselden/ember-cli-update-action#readme","dependencies":{"@actions/core":"^1.2.1","@actions/github":"^4.0.0","execa":"^4.0.0","fs-extra":"^8.1.0","request":"^2.88.0","yargs":"^15.1.0","yn":"^3.1.1"},"engines":{"node":">=10.12"},"devDependencies":{"@crowdstrike/commitlint":"^1.0.4","@kellyselden/node-template":"1.1.0","@zeit/ncc":"0.22.3","chai":"^4.2.0","eslint":"^7.8.1","eslint-config-sane":"0.8.5","eslint-config-sane-node":"0.3.0","eslint-plugin-json-files":"0.8.1","eslint-plugin-mocha":"^8.0.0","eslint-plugin-node":"^11.1.0","eslint-plugin-prefer-let":"^1.0.2","mocha":"^8.1.3","mocha-helpers":"^5.0.0","renovate-config-standard":"^2.0.0","sinon":"^9.0.0","standard-node-template":"1.0.0","standard-version":"^7.1.0"}};
 
 /***/ }),
 
@@ -9560,28 +9547,22 @@ module.exports = function (/*streams...*/) {
 
 "use strict";
 
-const mergePromiseProperty = (spawned, promise, property) => {
-	// Starting the main `promise` is deferred to avoid consuming streams
-	const value = typeof promise === 'function' ?
-		(...args) => promise()[property](...args) :
-		promise[property].bind(promise);
 
-	Object.defineProperty(spawned, property, {
-		value,
-		writable: true,
-		enumerable: false,
-		configurable: true
-	});
-};
+const nativePromisePrototype = (async () => {})().constructor.prototype;
+const descriptors = ['then', 'catch', 'finally'].map(property => [
+	property,
+	Reflect.getOwnPropertyDescriptor(nativePromisePrototype, property)
+]);
 
 // The return value is a mixin of `childProcess` and `Promise`
 const mergePromise = (spawned, promise) => {
-	mergePromiseProperty(spawned, promise, 'then');
-	mergePromiseProperty(spawned, promise, 'catch');
+	for (const [property, descriptor] of descriptors) {
+		// Starting the main `promise` is deferred to avoid consuming streams
+		const value = typeof promise === 'function' ?
+			(...args) => Reflect.apply(descriptor.value, promise(), args) :
+			descriptor.value.bind(promise);
 
-	// TODO: Remove the `if`-guard when targeting Node.js 10
-	if (Promise.prototype.finally) {
-		mergePromiseProperty(spawned, promise, 'finally');
+		Reflect.defineProperty(spawned, property, {...descriptor, value});
 	}
 
 	return spawned;
@@ -11929,7 +11910,7 @@ const getEnv = ({env: envOption, extendEnv, preferLocal, localDir, execPath}) =>
 	return env;
 };
 
-const handleArgs = (file, args, options = {}) => {
+const handleArguments = (file, args, options = {}) => {
 	const parsed = crossSpawn._parse(file, args, options);
 	file = parsed.command;
 	args = parsed.args;
@@ -11977,7 +11958,7 @@ const handleOutput = (options, value, error) => {
 };
 
 const execa = (file, args, options) => {
-	const parsed = handleArgs(file, args, options);
+	const parsed = handleArguments(file, args, options);
 	const command = joinCommand(file, args);
 
 	let spawned;
@@ -12064,7 +12045,7 @@ const execa = (file, args, options) => {
 module.exports = execa;
 
 module.exports.sync = (file, args, options) => {
-	const parsed = handleArgs(file, args, options);
+	const parsed = handleArguments(file, args, options);
 	const command = joinCommand(file, args);
 
 	validateInputSync(parsed.options);
