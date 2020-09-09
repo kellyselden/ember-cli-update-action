@@ -338,6 +338,155 @@ function onceStrict (fn) {
 
 /***/ }),
 
+/***/ 54:
+/***/ (function(module, __unusedexports, __webpack_require__) {
+
+"use strict";
+// Adapted from https://github.com/sindresorhus/make-dir
+// Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+const fs = __webpack_require__(869)
+const path = __webpack_require__(622)
+const atLeastNode = __webpack_require__(159)
+
+const useNativeRecursiveOption = atLeastNode('10.12.0')
+
+// https://github.com/nodejs/node/issues/8987
+// https://github.com/libuv/libuv/pull/1088
+const checkPath = pth => {
+  if (process.platform === 'win32') {
+    const pathHasInvalidWinCharacters = /[<>:"|?*]/.test(pth.replace(path.parse(pth).root, ''))
+
+    if (pathHasInvalidWinCharacters) {
+      const error = new Error(`Path contains invalid characters: ${pth}`)
+      error.code = 'EINVAL'
+      throw error
+    }
+  }
+}
+
+const processOptions = options => {
+  const defaults = { mode: 0o777 }
+  if (typeof options === 'number') options = { mode: options }
+  return { ...defaults, ...options }
+}
+
+const permissionError = pth => {
+  // This replicates the exception of `fs.mkdir` with native the
+  // `recusive` option when run on an invalid drive under Windows.
+  const error = new Error(`operation not permitted, mkdir '${pth}'`)
+  error.code = 'EPERM'
+  error.errno = -4048
+  error.path = pth
+  error.syscall = 'mkdir'
+  return error
+}
+
+module.exports.makeDir = async (input, options) => {
+  checkPath(input)
+  options = processOptions(options)
+
+  if (useNativeRecursiveOption) {
+    const pth = path.resolve(input)
+
+    return fs.mkdir(pth, {
+      mode: options.mode,
+      recursive: true
+    })
+  }
+
+  const make = async pth => {
+    try {
+      await fs.mkdir(pth, options.mode)
+    } catch (error) {
+      if (error.code === 'EPERM') {
+        throw error
+      }
+
+      if (error.code === 'ENOENT') {
+        if (path.dirname(pth) === pth) {
+          throw permissionError(pth)
+        }
+
+        if (error.message.includes('null bytes')) {
+          throw error
+        }
+
+        await make(path.dirname(pth))
+        return make(pth)
+      }
+
+      try {
+        const stats = await fs.stat(pth)
+        if (!stats.isDirectory()) {
+          // This error is never exposed to the user
+          // it is caught below, and the original error is thrown
+          throw new Error('The path is not a directory')
+        }
+      } catch {
+        throw error
+      }
+    }
+  }
+
+  return make(path.resolve(input))
+}
+
+module.exports.makeDirSync = (input, options) => {
+  checkPath(input)
+  options = processOptions(options)
+
+  if (useNativeRecursiveOption) {
+    const pth = path.resolve(input)
+
+    return fs.mkdirSync(pth, {
+      mode: options.mode,
+      recursive: true
+    })
+  }
+
+  const make = pth => {
+    try {
+      fs.mkdirSync(pth, options.mode)
+    } catch (error) {
+      if (error.code === 'EPERM') {
+        throw error
+      }
+
+      if (error.code === 'ENOENT') {
+        if (path.dirname(pth) === pth) {
+          throw permissionError(pth)
+        }
+
+        if (error.message.includes('null bytes')) {
+          throw error
+        }
+
+        make(path.dirname(pth))
+        return make(pth)
+      }
+
+      try {
+        if (!fs.statSync(pth).isDirectory()) {
+          // This error is never exposed to the user
+          // it is caught below, and the original error is thrown
+          throw new Error('The path is not a directory')
+        }
+      } catch {
+        throw error
+      }
+    }
+  }
+
+  return make(path.resolve(input))
+}
+
+
+/***/ }),
+
 /***/ 87:
 /***/ (function(module) {
 
@@ -533,8 +682,8 @@ module.exports = moveSync
 
 const fs = __webpack_require__(598)
 const path = __webpack_require__(622)
-const mkdirpSync = __webpack_require__(727).mkdirsSync
-const utimesSync = __webpack_require__(916).utimesMillisSync
+const mkdirsSync = __webpack_require__(727).mkdirsSync
+const utimesMillisSync = __webpack_require__(916).utimesMillisSync
 const stat = __webpack_require__(425)
 
 function copySync (src, dest, opts) {
@@ -560,7 +709,7 @@ function copySync (src, dest, opts) {
 function handleFilterAndCopy (destStat, src, dest, opts) {
   if (opts.filter && !opts.filter(src, dest)) return
   const destParent = path.dirname(dest)
-  if (!fs.existsSync(destParent)) mkdirpSync(destParent)
+  if (!fs.existsSync(destParent)) mkdirsSync(destParent)
   return startCopy(destStat, src, dest, opts)
 }
 
@@ -595,49 +744,51 @@ function mayCopyFile (srcStat, src, dest, opts) {
 }
 
 function copyFile (srcStat, src, dest, opts) {
-  if (typeof fs.copyFileSync === 'function') {
-    fs.copyFileSync(src, dest)
-    fs.chmodSync(dest, srcStat.mode)
-    if (opts.preserveTimestamps) {
-      return utimesSync(dest, srcStat.atime, srcStat.mtime)
-    }
-    return
-  }
-  return copyFileFallback(srcStat, src, dest, opts)
+  fs.copyFileSync(src, dest)
+  if (opts.preserveTimestamps) handleTimestamps(srcStat.mode, src, dest)
+  return setDestMode(dest, srcStat.mode)
 }
 
-function copyFileFallback (srcStat, src, dest, opts) {
-  const BUF_LENGTH = 64 * 1024
-  const _buff = __webpack_require__(577)(BUF_LENGTH)
+function handleTimestamps (srcMode, src, dest) {
+  // Make sure the file is writable before setting the timestamp
+  // otherwise open fails with EPERM when invoked with 'r+'
+  // (through utimes call)
+  if (fileIsNotWritable(srcMode)) makeFileWritable(dest, srcMode)
+  return setDestTimestamps(src, dest)
+}
 
-  const fdr = fs.openSync(src, 'r')
-  const fdw = fs.openSync(dest, 'w', srcStat.mode)
-  let pos = 0
+function fileIsNotWritable (srcMode) {
+  return (srcMode & 0o200) === 0
+}
 
-  while (pos < srcStat.size) {
-    const bytesRead = fs.readSync(fdr, _buff, 0, BUF_LENGTH, pos)
-    fs.writeSync(fdw, _buff, 0, bytesRead)
-    pos += bytesRead
-  }
+function makeFileWritable (dest, srcMode) {
+  return setDestMode(dest, srcMode | 0o200)
+}
 
-  if (opts.preserveTimestamps) fs.futimesSync(fdw, srcStat.atime, srcStat.mtime)
+function setDestMode (dest, srcMode) {
+  return fs.chmodSync(dest, srcMode)
+}
 
-  fs.closeSync(fdr)
-  fs.closeSync(fdw)
+function setDestTimestamps (src, dest) {
+  // The initial srcStat.atime cannot be trusted
+  // because it is modified by the read(2) system call
+  // (See https://nodejs.org/api/fs.html#fs_stat_time_values)
+  const updatedSrcStat = fs.statSync(src)
+  return utimesMillisSync(dest, updatedSrcStat.atime, updatedSrcStat.mtime)
 }
 
 function onDir (srcStat, destStat, src, dest, opts) {
-  if (!destStat) return mkDirAndCopy(srcStat, src, dest, opts)
+  if (!destStat) return mkDirAndCopy(srcStat.mode, src, dest, opts)
   if (destStat && !destStat.isDirectory()) {
     throw new Error(`Cannot overwrite non-directory '${dest}' with directory '${src}'.`)
   }
   return copyDir(src, dest, opts)
 }
 
-function mkDirAndCopy (srcStat, src, dest, opts) {
+function mkDirAndCopy (srcMode, src, dest, opts) {
   fs.mkdirSync(dest)
   copyDir(src, dest, opts)
-  return fs.chmodSync(dest, srcStat.mode)
+  return setDestMode(dest, srcMode)
 }
 
 function copyDir (src, dest, opts) {
@@ -1101,26 +1252,24 @@ module.exports.MaxBufferError = MaxBufferError;
 
 
 exports.fromCallback = function (fn) {
-  return Object.defineProperty(function () {
-    if (typeof arguments[arguments.length - 1] === 'function') fn.apply(this, arguments)
+  return Object.defineProperty(function (...args) {
+    if (typeof args[args.length - 1] === 'function') fn.apply(this, args)
     else {
       return new Promise((resolve, reject) => {
-        arguments[arguments.length] = (err, res) => {
-          if (err) return reject(err)
-          resolve(res)
-        }
-        arguments.length++
-        fn.apply(this, arguments)
+        fn.apply(
+          this,
+          args.concat([(err, res) => err ? reject(err) : resolve(res)])
+        )
       })
     }
   }, 'name', { value: fn.name })
 }
 
 exports.fromPromise = function (fn) {
-  return Object.defineProperty(function () {
-    const cb = arguments[arguments.length - 1]
-    if (typeof cb !== 'function') return fn.apply(this, arguments)
-    else fn.apply(this, arguments).then(r => cb(null, r), cb)
+  return Object.defineProperty(function (...args) {
+    const cb = args[args.length - 1]
+    if (typeof cb !== 'function') return fn.apply(this, args)
+    else fn.apply(this, args.slice(0, -1)).then(r => cb(null, r), cb)
   }, 'name', { value: fn.name })
 }
 
@@ -1137,7 +1286,6 @@ const u = __webpack_require__(147).fromCallback
 const path = __webpack_require__(622)
 const fs = __webpack_require__(598)
 const mkdir = __webpack_require__(727)
-const pathExists = __webpack_require__(322).pathExists
 
 function createFile (file, callback) {
   function makeFile () {
@@ -1150,13 +1298,26 @@ function createFile (file, callback) {
   fs.stat(file, (err, stats) => { // eslint-disable-line handle-callback-err
     if (!err && stats.isFile()) return callback()
     const dir = path.dirname(file)
-    pathExists(dir, (err, dirExists) => {
-      if (err) return callback(err)
-      if (dirExists) return makeFile()
-      mkdir.mkdirs(dir, err => {
-        if (err) return callback(err)
-        makeFile()
-      })
+    fs.stat(dir, (err, stats) => {
+      if (err) {
+        // if the directory doesn't exist, make it
+        if (err.code === 'ENOENT') {
+          return mkdir.mkdirs(dir, err => {
+            if (err) return callback(err)
+            makeFile()
+          })
+        }
+        return callback(err)
+      }
+
+      if (stats.isDirectory()) makeFile()
+      else {
+        // parent is not a directory
+        // This is just to cause an internal ENOTDIR error to be thrown
+        fs.readdir(dir, err => {
+          if (err) return callback(err)
+        })
+      }
     })
   })
 }
@@ -1165,12 +1326,20 @@ function createFileSync (file) {
   let stats
   try {
     stats = fs.statSync(file)
-  } catch (e) {}
+  } catch {}
   if (stats && stats.isFile()) return
 
   const dir = path.dirname(file)
-  if (!fs.existsSync(dir)) {
-    mkdir.mkdirsSync(dir)
+  try {
+    if (!fs.statSync(dir).isDirectory()) {
+      // parent is not a directory
+      // This is just to cause an internal ENOTDIR error to be thrown
+      fs.readdirSync(dir)
+    }
+  } catch (err) {
+    // If the stat call above failed because the directory doesn't exist, create it
+    if (err && err.code === 'ENOENT') mkdir.mkdirsSync(dir)
+    else throw err
   }
 
   fs.writeFileSync(file, '')
@@ -1179,6 +1348,18 @@ function createFileSync (file) {
 module.exports = {
   createFile: u(createFile),
   createFileSync
+}
+
+
+/***/ }),
+
+/***/ 159:
+/***/ (function(module) {
+
+module.exports = r => {
+  const n = process.versions.node.split('.').map(x => parseInt(x, 10))
+  r = r.split('.').map(x => parseInt(x, 10))
+  return n[0] > r[0] || (n[0] === r[0] && (n[1] > r[1] || (n[1] === r[1] && n[2] >= r[2])))
 }
 
 
@@ -1250,7 +1431,7 @@ module.exports.node = opts => {
 "use strict";
 
 
-const u = __webpack_require__(147).fromCallback
+const u = __webpack_require__(147).fromPromise
 const jsonFile = __webpack_require__(792)
 
 jsonFile.outputJson = u(__webpack_require__(695))
@@ -1329,23 +1510,22 @@ module.exports = require("https");
 "use strict";
 
 
-module.exports = Object.assign(
-  {},
+module.exports = {
   // Export promiseified graceful-fs:
-  __webpack_require__(869),
+  ...__webpack_require__(869),
   // Export extra methods:
-  __webpack_require__(43),
-  __webpack_require__(774),
-  __webpack_require__(615),
-  __webpack_require__(472),
-  __webpack_require__(171),
-  __webpack_require__(727),
-  __webpack_require__(959),
-  __webpack_require__(353),
-  __webpack_require__(517),
-  __webpack_require__(322),
-  __webpack_require__(368)
-)
+  ...__webpack_require__(43),
+  ...__webpack_require__(774),
+  ...__webpack_require__(615),
+  ...__webpack_require__(472),
+  ...__webpack_require__(171),
+  ...__webpack_require__(727),
+  ...__webpack_require__(959),
+  ...__webpack_require__(353),
+  ...__webpack_require__(517),
+  ...__webpack_require__(322),
+  ...__webpack_require__(368)
+}
 
 // Export fs.promises as a getter property so that we don't trigger
 // ExperimentalWarning before fs.promises is actually accessed.
@@ -1826,77 +2006,6 @@ function register (state, name, method, options) {
 
 /***/ }),
 
-/***/ 289:
-/***/ (function(module, __unusedexports, __webpack_require__) {
-
-"use strict";
-
-
-const fs = __webpack_require__(598)
-const path = __webpack_require__(622)
-const invalidWin32Path = __webpack_require__(313).invalidWin32Path
-
-const o777 = parseInt('0777', 8)
-
-function mkdirs (p, opts, callback, made) {
-  if (typeof opts === 'function') {
-    callback = opts
-    opts = {}
-  } else if (!opts || typeof opts !== 'object') {
-    opts = { mode: opts }
-  }
-
-  if (process.platform === 'win32' && invalidWin32Path(p)) {
-    const errInval = new Error(p + ' contains invalid WIN32 path characters.')
-    errInval.code = 'EINVAL'
-    return callback(errInval)
-  }
-
-  let mode = opts.mode
-  const xfs = opts.fs || fs
-
-  if (mode === undefined) {
-    mode = o777 & (~process.umask())
-  }
-  if (!made) made = null
-
-  callback = callback || function () {}
-  p = path.resolve(p)
-
-  xfs.mkdir(p, mode, er => {
-    if (!er) {
-      made = made || p
-      return callback(null, made)
-    }
-    switch (er.code) {
-      case 'ENOENT':
-        if (path.dirname(p) === p) return callback(er)
-        mkdirs(path.dirname(p), opts, (er, made) => {
-          if (er) callback(er, made)
-          else mkdirs(p, opts, callback, made)
-        })
-        break
-
-      // In the case of any other error, just see if there's a dir
-      // there already.  If so, then hooray!  If not, then something
-      // is borked.
-      default:
-        xfs.stat(p, (er2, stat) => {
-          // if the stat fails, then that's super weird.
-          // let the original error be the failure reason.
-          if (er2 || !stat.isDirectory()) callback(er, made)
-          else callback(null, made)
-        })
-        break
-    }
-  })
-}
-
-module.exports = mkdirs
-
-
-/***/ }),
-
 /***/ 293:
 /***/ (function(module) {
 
@@ -2083,68 +2192,6 @@ module.exports.default = yn;
 
 /***/ }),
 
-/***/ 307:
-/***/ (function(module, __unusedexports, __webpack_require__) {
-
-"use strict";
-
-
-const fs = __webpack_require__(598)
-const path = __webpack_require__(622)
-const invalidWin32Path = __webpack_require__(313).invalidWin32Path
-
-const o777 = parseInt('0777', 8)
-
-function mkdirsSync (p, opts, made) {
-  if (!opts || typeof opts !== 'object') {
-    opts = { mode: opts }
-  }
-
-  let mode = opts.mode
-  const xfs = opts.fs || fs
-
-  if (process.platform === 'win32' && invalidWin32Path(p)) {
-    const errInval = new Error(p + ' contains invalid WIN32 path characters.')
-    errInval.code = 'EINVAL'
-    throw errInval
-  }
-
-  if (mode === undefined) {
-    mode = o777 & (~process.umask())
-  }
-  if (!made) made = null
-
-  p = path.resolve(p)
-
-  try {
-    xfs.mkdirSync(p, mode)
-    made = made || p
-  } catch (err0) {
-    if (err0.code === 'ENOENT') {
-      if (path.dirname(p) === p) throw err0
-      made = mkdirsSync(path.dirname(p), opts, made)
-      mkdirsSync(p, opts, made)
-    } else {
-      // In the case of any other error, just see if there's a dir there
-      // already. If so, then hooray!  If not, then something is borked.
-      let stat
-      try {
-        stat = xfs.statSync(p)
-      } catch (err1) {
-        throw err0
-      }
-      if (!stat.isDirectory()) throw err0
-    }
-  }
-
-  return made
-}
-
-module.exports = mkdirsSync
-
-
-/***/ }),
-
 /***/ 311:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -2223,39 +2270,6 @@ const signalsByNumber=getSignalsByNumber();exports.signalsByNumber=signalsByNumb
 
 /***/ }),
 
-/***/ 313:
-/***/ (function(module, __unusedexports, __webpack_require__) {
-
-"use strict";
-
-
-const path = __webpack_require__(622)
-
-// get drive on windows
-function getRootPath (p) {
-  p = path.normalize(path.resolve(p)).split(path.sep)
-  if (p.length > 0) return p[0]
-  return null
-}
-
-// http://stackoverflow.com/a/62888/10333 contains more accurate
-// TODO: expand to include the rest
-const INVALID_PATH_CHARS = /[<>:"|?*]/
-
-function invalidWin32Path (p) {
-  const rp = getRootPath(p)
-  p = p.replace(rp, '')
-  return INVALID_PATH_CHARS.test(p)
-}
-
-module.exports = {
-  getRootPath,
-  invalidWin32Path
-}
-
-
-/***/ }),
-
 /***/ 322:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
@@ -2323,6 +2337,28 @@ const u = __webpack_require__(147).fromCallback
 module.exports = {
   move: u(__webpack_require__(500))
 }
+
+
+/***/ }),
+
+/***/ 356:
+/***/ (function(module) {
+
+function stringify (obj, options = {}) {
+  const EOL = options.EOL || '\n'
+
+  const str = JSON.stringify(obj, options ? options.replacer : null, options.spaces)
+
+  return str.replace(/\n/g, EOL) + EOL
+}
+
+function stripBom (content) {
+  // we do this because JSON.parse would convert it to a utf8 string if encoding wasn't specified
+  if (Buffer.isBuffer(content)) content = content.toString('utf8')
+  return content.replace(/^\uFEFF/, '')
+}
+
+module.exports = { stringify, stripBom }
 
 
 /***/ }),
@@ -2783,71 +2819,30 @@ module.exports = __webpack_require__(141);
 "use strict";
 
 
-const fs = __webpack_require__(598)
+const fs = __webpack_require__(869)
 const path = __webpack_require__(622)
+const util = __webpack_require__(669)
+const atLeastNode = __webpack_require__(159)
 
-const NODE_VERSION_MAJOR_WITH_BIGINT = 10
-const NODE_VERSION_MINOR_WITH_BIGINT = 5
-const NODE_VERSION_PATCH_WITH_BIGINT = 0
-const nodeVersion = process.versions.node.split('.')
-const nodeVersionMajor = Number.parseInt(nodeVersion[0], 10)
-const nodeVersionMinor = Number.parseInt(nodeVersion[1], 10)
-const nodeVersionPatch = Number.parseInt(nodeVersion[2], 10)
+const nodeSupportsBigInt = atLeastNode('10.5.0')
+const stat = (file) => nodeSupportsBigInt ? fs.stat(file, { bigint: true }) : fs.stat(file)
+const statSync = (file) => nodeSupportsBigInt ? fs.statSync(file, { bigint: true }) : fs.statSync(file)
 
-function nodeSupportsBigInt () {
-  if (nodeVersionMajor > NODE_VERSION_MAJOR_WITH_BIGINT) {
-    return true
-  } else if (nodeVersionMajor === NODE_VERSION_MAJOR_WITH_BIGINT) {
-    if (nodeVersionMinor > NODE_VERSION_MINOR_WITH_BIGINT) {
-      return true
-    } else if (nodeVersionMinor === NODE_VERSION_MINOR_WITH_BIGINT) {
-      if (nodeVersionPatch >= NODE_VERSION_PATCH_WITH_BIGINT) {
-        return true
-      }
-    }
-  }
-  return false
-}
-
-function getStats (src, dest, cb) {
-  if (nodeSupportsBigInt()) {
-    fs.stat(src, { bigint: true }, (err, srcStat) => {
-      if (err) return cb(err)
-      fs.stat(dest, { bigint: true }, (err, destStat) => {
-        if (err) {
-          if (err.code === 'ENOENT') return cb(null, { srcStat, destStat: null })
-          return cb(err)
-        }
-        return cb(null, { srcStat, destStat })
-      })
+function getStats (src, dest) {
+  return Promise.all([
+    stat(src),
+    stat(dest).catch(err => {
+      if (err.code === 'ENOENT') return null
+      throw err
     })
-  } else {
-    fs.stat(src, (err, srcStat) => {
-      if (err) return cb(err)
-      fs.stat(dest, (err, destStat) => {
-        if (err) {
-          if (err.code === 'ENOENT') return cb(null, { srcStat, destStat: null })
-          return cb(err)
-        }
-        return cb(null, { srcStat, destStat })
-      })
-    })
-  }
+  ]).then(([srcStat, destStat]) => ({ srcStat, destStat }))
 }
 
 function getStatsSync (src, dest) {
-  let srcStat, destStat
-  if (nodeSupportsBigInt()) {
-    srcStat = fs.statSync(src, { bigint: true })
-  } else {
-    srcStat = fs.statSync(src)
-  }
+  let destStat
+  const srcStat = statSync(src)
   try {
-    if (nodeSupportsBigInt()) {
-      destStat = fs.statSync(dest, { bigint: true })
-    } else {
-      destStat = fs.statSync(dest)
-    }
+    destStat = statSync(dest)
   } catch (err) {
     if (err.code === 'ENOENT') return { srcStat, destStat: null }
     throw err
@@ -2856,10 +2851,10 @@ function getStatsSync (src, dest) {
 }
 
 function checkPaths (src, dest, funcName, cb) {
-  getStats(src, dest, (err, stats) => {
+  util.callbackify(getStats)(src, dest, (err, stats) => {
     if (err) return cb(err)
     const { srcStat, destStat } = stats
-    if (destStat && destStat.ino && destStat.dev && destStat.ino === srcStat.ino && destStat.dev === srcStat.dev) {
+    if (destStat && areIdentical(srcStat, destStat)) {
       return cb(new Error('Source and destination must not be the same.'))
     }
     if (srcStat.isDirectory() && isSrcSubdir(src, dest)) {
@@ -2871,7 +2866,7 @@ function checkPaths (src, dest, funcName, cb) {
 
 function checkPathsSync (src, dest, funcName) {
   const { srcStat, destStat } = getStatsSync(src, dest)
-  if (destStat && destStat.ino && destStat.dev && destStat.ino === srcStat.ino && destStat.dev === srcStat.dev) {
+  if (destStat && areIdentical(srcStat, destStat)) {
     throw new Error('Source and destination must not be the same.')
   }
   if (srcStat.isDirectory() && isSrcSubdir(src, dest)) {
@@ -2888,29 +2883,18 @@ function checkParentPaths (src, srcStat, dest, funcName, cb) {
   const srcParent = path.resolve(path.dirname(src))
   const destParent = path.resolve(path.dirname(dest))
   if (destParent === srcParent || destParent === path.parse(destParent).root) return cb()
-  if (nodeSupportsBigInt()) {
-    fs.stat(destParent, { bigint: true }, (err, destStat) => {
-      if (err) {
-        if (err.code === 'ENOENT') return cb()
-        return cb(err)
-      }
-      if (destStat.ino && destStat.dev && destStat.ino === srcStat.ino && destStat.dev === srcStat.dev) {
-        return cb(new Error(errMsg(src, dest, funcName)))
-      }
-      return checkParentPaths(src, srcStat, destParent, funcName, cb)
-    })
-  } else {
-    fs.stat(destParent, (err, destStat) => {
-      if (err) {
-        if (err.code === 'ENOENT') return cb()
-        return cb(err)
-      }
-      if (destStat.ino && destStat.dev && destStat.ino === srcStat.ino && destStat.dev === srcStat.dev) {
-        return cb(new Error(errMsg(src, dest, funcName)))
-      }
-      return checkParentPaths(src, srcStat, destParent, funcName, cb)
-    })
+  const callback = (err, destStat) => {
+    if (err) {
+      if (err.code === 'ENOENT') return cb()
+      return cb(err)
+    }
+    if (areIdentical(srcStat, destStat)) {
+      return cb(new Error(errMsg(src, dest, funcName)))
+    }
+    return checkParentPaths(src, srcStat, destParent, funcName, cb)
   }
+  if (nodeSupportsBigInt) fs.stat(destParent, { bigint: true }, callback)
+  else fs.stat(destParent, callback)
 }
 
 function checkParentPathsSync (src, srcStat, dest, funcName) {
@@ -2919,19 +2903,38 @@ function checkParentPathsSync (src, srcStat, dest, funcName) {
   if (destParent === srcParent || destParent === path.parse(destParent).root) return
   let destStat
   try {
-    if (nodeSupportsBigInt()) {
-      destStat = fs.statSync(destParent, { bigint: true })
-    } else {
-      destStat = fs.statSync(destParent)
-    }
+    destStat = statSync(destParent)
   } catch (err) {
     if (err.code === 'ENOENT') return
     throw err
   }
-  if (destStat.ino && destStat.dev && destStat.ino === srcStat.ino && destStat.dev === srcStat.dev) {
+  if (areIdentical(srcStat, destStat)) {
     throw new Error(errMsg(src, dest, funcName))
   }
   return checkParentPathsSync(src, srcStat, destParent, funcName)
+}
+
+function areIdentical (srcStat, destStat) {
+  if (destStat.ino && destStat.dev && destStat.ino === srcStat.ino && destStat.dev === srcStat.dev) {
+    if (nodeSupportsBigInt || destStat.ino < Number.MAX_SAFE_INTEGER) {
+      // definitive answer
+      return true
+    }
+    // Use additional heuristics if we can't use 'bigint'.
+    // Different 'ino' could be represented the same if they are >= Number.MAX_SAFE_INTEGER
+    // See issue 657
+    if (destStat.size === srcStat.size &&
+        destStat.mode === srcStat.mode &&
+        destStat.nlink === srcStat.nlink &&
+        destStat.atimeMs === srcStat.atimeMs &&
+        destStat.mtimeMs === srcStat.mtimeMs &&
+        destStat.ctimeMs === srcStat.ctimeMs &&
+        destStat.birthtimeMs === srcStat.birthtimeMs) {
+      // heuristic answer
+      return true
+    }
+  }
+  return false
 }
 
 // return true if dest is a subdir of src, otherwise false.
@@ -5544,9 +5547,6 @@ function fixWinEPERM (p, options, er, cb) {
   assert(p)
   assert(options)
   assert(typeof cb === 'function')
-  if (er) {
-    assert(er instanceof Error)
-  }
 
   options.chmod(p, 0o666, er2 => {
     if (er2) {
@@ -5570,9 +5570,6 @@ function fixWinEPERMSync (p, options, er) {
 
   assert(p)
   assert(options)
-  if (er) {
-    assert(er instanceof Error)
-  }
 
   try {
     options.chmodSync(p, 0o666)
@@ -5604,9 +5601,6 @@ function fixWinEPERMSync (p, options, er) {
 function rmdir (p, options, originalEr, cb) {
   assert(p)
   assert(options)
-  if (originalEr) {
-    assert(originalEr instanceof Error)
-  }
   assert(typeof cb === 'function')
 
   // try to rmdir first, and only readdir on ENOTEMPTY or EEXIST (SunOS)
@@ -5699,9 +5693,6 @@ function rimrafSync (p, options) {
 function rmdirSync (p, options, originalEr) {
   assert(p)
   assert(options)
-  if (originalEr) {
-    assert(originalEr instanceof Error)
-  }
 
   try {
     options.rmdirSync(p)
@@ -5733,7 +5724,7 @@ function rmkidsSync (p, options) {
       try {
         const ret = options.rmdirSync(p, options)
         return ret
-      } catch (er) { }
+      } catch {}
     } while (Date.now() - startTime < 500) // give up after 500ms
   } else {
     const ret = options.rmdirSync(p, options)
@@ -7626,26 +7617,6 @@ module.exports = parse;
 
 /***/ }),
 
-/***/ 577:
-/***/ (function(module) {
-
-"use strict";
-
-/* eslint-disable node/no-deprecated-api */
-module.exports = function (size) {
-  if (typeof Buffer.allocUnsafe === 'function') {
-    try {
-      return Buffer.allocUnsafe(size)
-    } catch (e) {
-      return new Buffer(size)
-    }
-  }
-  return new Buffer(size)
-}
-
-
-/***/ }),
-
 /***/ 588:
 /***/ (function(module) {
 
@@ -7678,9 +7649,9 @@ module.exports = input => {
 
 const fs = __webpack_require__(598)
 const path = __webpack_require__(622)
-const mkdirp = __webpack_require__(727).mkdirs
+const mkdirs = __webpack_require__(727).mkdirs
 const pathExists = __webpack_require__(322).pathExists
-const utimes = __webpack_require__(916).utimesMillis
+const utimesMillis = __webpack_require__(916).utimesMillis
 const stat = __webpack_require__(425)
 
 function copy (src, dest, opts, cb) {
@@ -7719,7 +7690,7 @@ function checkParentDir (destStat, src, dest, opts, cb) {
   pathExists(destParent, (err, dirExists) => {
     if (err) return cb(err)
     if (dirExists) return startCopy(destStat, src, dest, opts, cb)
-    mkdirp(destParent, err => {
+    mkdirs(destParent, err => {
       if (err) return cb(err)
       return startCopy(destStat, src, dest, opts, cb)
     })
@@ -7768,49 +7739,69 @@ function mayCopyFile (srcStat, src, dest, opts, cb) {
 }
 
 function copyFile (srcStat, src, dest, opts, cb) {
-  if (typeof fs.copyFile === 'function') {
-    return fs.copyFile(src, dest, err => {
-      if (err) return cb(err)
-      return setDestModeAndTimestamps(srcStat, dest, opts, cb)
-    })
-  }
-  return copyFileFallback(srcStat, src, dest, opts, cb)
-}
-
-function copyFileFallback (srcStat, src, dest, opts, cb) {
-  const rs = fs.createReadStream(src)
-  rs.on('error', err => cb(err)).once('open', () => {
-    const ws = fs.createWriteStream(dest, { mode: srcStat.mode })
-    ws.on('error', err => cb(err))
-      .on('open', () => rs.pipe(ws))
-      .once('close', () => setDestModeAndTimestamps(srcStat, dest, opts, cb))
+  fs.copyFile(src, dest, err => {
+    if (err) return cb(err)
+    if (opts.preserveTimestamps) return handleTimestampsAndMode(srcStat.mode, src, dest, cb)
+    return setDestMode(dest, srcStat.mode, cb)
   })
 }
 
-function setDestModeAndTimestamps (srcStat, dest, opts, cb) {
-  fs.chmod(dest, srcStat.mode, err => {
+function handleTimestampsAndMode (srcMode, src, dest, cb) {
+  // Make sure the file is writable before setting the timestamp
+  // otherwise open fails with EPERM when invoked with 'r+'
+  // (through utimes call)
+  if (fileIsNotWritable(srcMode)) {
+    return makeFileWritable(dest, srcMode, err => {
+      if (err) return cb(err)
+      return setDestTimestampsAndMode(srcMode, src, dest, cb)
+    })
+  }
+  return setDestTimestampsAndMode(srcMode, src, dest, cb)
+}
+
+function fileIsNotWritable (srcMode) {
+  return (srcMode & 0o200) === 0
+}
+
+function makeFileWritable (dest, srcMode, cb) {
+  return setDestMode(dest, srcMode | 0o200, cb)
+}
+
+function setDestTimestampsAndMode (srcMode, src, dest, cb) {
+  setDestTimestamps(src, dest, err => {
     if (err) return cb(err)
-    if (opts.preserveTimestamps) {
-      return utimes(dest, srcStat.atime, srcStat.mtime, cb)
-    }
-    return cb()
+    return setDestMode(dest, srcMode, cb)
+  })
+}
+
+function setDestMode (dest, srcMode, cb) {
+  return fs.chmod(dest, srcMode, cb)
+}
+
+function setDestTimestamps (src, dest, cb) {
+  // The initial srcStat.atime cannot be trusted
+  // because it is modified by the read(2) system call
+  // (See https://nodejs.org/api/fs.html#fs_stat_time_values)
+  fs.stat(src, (err, updatedSrcStat) => {
+    if (err) return cb(err)
+    return utimesMillis(dest, updatedSrcStat.atime, updatedSrcStat.mtime, cb)
   })
 }
 
 function onDir (srcStat, destStat, src, dest, opts, cb) {
-  if (!destStat) return mkDirAndCopy(srcStat, src, dest, opts, cb)
+  if (!destStat) return mkDirAndCopy(srcStat.mode, src, dest, opts, cb)
   if (destStat && !destStat.isDirectory()) {
     return cb(new Error(`Cannot overwrite non-directory '${dest}' with directory '${src}'.`))
   }
   return copyDir(src, dest, opts, cb)
 }
 
-function mkDirAndCopy (srcStat, src, dest, opts, cb) {
+function mkDirAndCopy (srcMode, src, dest, opts, cb) {
   fs.mkdir(dest, err => {
     if (err) return cb(err)
     copyDir(src, dest, opts, err => {
       if (err) return cb(err)
-      return fs.chmod(dest, srcStat.mode, cb)
+      return setDestMode(dest, srcMode, cb)
     })
   })
 }
@@ -8328,7 +8319,7 @@ function emptyDirSync (dir) {
   let items
   try {
     items = fs.readdirSync(dir)
-  } catch (err) {
+  } catch {
     return mkdir.mkdirsSync(dir)
   }
 
@@ -8423,19 +8414,13 @@ module.exports = require("path");
 "use strict";
 
 
-const fs = __webpack_require__(598)
-const path = __webpack_require__(622)
-const mkdir = __webpack_require__(727)
-const jsonFile = __webpack_require__(792)
+const { stringify } = __webpack_require__(356)
+const { outputFileSync } = __webpack_require__(517)
 
 function outputJsonSync (file, data, options) {
-  const dir = path.dirname(file)
+  const str = stringify(data, options)
 
-  if (!fs.existsSync(dir)) {
-    mkdir.mkdirsSync(dir)
-  }
-
-  jsonFile.writeJsonSync(file, data, options)
+  outputFileSync(file, str, options)
 }
 
 module.exports = outputJsonSync
@@ -8555,72 +8540,61 @@ if (process.platform === 'linux') {
 /***/ 666:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
-var _fs
+let _fs
 try {
   _fs = __webpack_require__(598)
 } catch (_) {
   _fs = __webpack_require__(747)
 }
+const universalify = __webpack_require__(147)
+const { stringify, stripBom } = __webpack_require__(356)
 
-function readFile (file, options, callback) {
-  if (callback == null) {
-    callback = options
-    options = {}
-  }
-
+async function _readFile (file, options = {}) {
   if (typeof options === 'string') {
-    options = {encoding: options}
+    options = { encoding: options }
   }
 
-  options = options || {}
-  var fs = options.fs || _fs
+  const fs = options.fs || _fs
 
-  var shouldThrow = true
-  if ('throws' in options) {
-    shouldThrow = options.throws
-  }
+  const shouldThrow = 'throws' in options ? options.throws : true
 
-  fs.readFile(file, options, function (err, data) {
-    if (err) return callback(err)
+  let data = await universalify.fromCallback(fs.readFile)(file, options)
 
-    data = stripBom(data)
+  data = stripBom(data)
 
-    var obj
-    try {
-      obj = JSON.parse(data, options ? options.reviver : null)
-    } catch (err2) {
-      if (shouldThrow) {
-        err2.message = file + ': ' + err2.message
-        return callback(err2)
-      } else {
-        return callback(null, null)
-      }
+  let obj
+  try {
+    obj = JSON.parse(data, options ? options.reviver : null)
+  } catch (err) {
+    if (shouldThrow) {
+      err.message = `${file}: ${err.message}`
+      throw err
+    } else {
+      return null
     }
+  }
 
-    callback(null, obj)
-  })
+  return obj
 }
 
-function readFileSync (file, options) {
-  options = options || {}
+const readFile = universalify.fromPromise(_readFile)
+
+function readFileSync (file, options = {}) {
   if (typeof options === 'string') {
-    options = {encoding: options}
+    options = { encoding: options }
   }
 
-  var fs = options.fs || _fs
+  const fs = options.fs || _fs
 
-  var shouldThrow = true
-  if ('throws' in options) {
-    shouldThrow = options.throws
-  }
+  const shouldThrow = 'throws' in options ? options.throws : true
 
   try {
-    var content = fs.readFileSync(file, options)
+    let content = fs.readFileSync(file, options)
     content = stripBom(content)
     return JSON.parse(content, options.reviver)
   } catch (err) {
     if (shouldThrow) {
-      err.message = file + ': ' + err.message
+      err.message = `${file}: ${err.message}`
       throw err
     } else {
       return null
@@ -8628,64 +8602,29 @@ function readFileSync (file, options) {
   }
 }
 
-function stringify (obj, options) {
-  var spaces
-  var EOL = '\n'
-  if (typeof options === 'object' && options !== null) {
-    if (options.spaces) {
-      spaces = options.spaces
-    }
-    if (options.EOL) {
-      EOL = options.EOL
-    }
-  }
+async function _writeFile (file, obj, options = {}) {
+  const fs = options.fs || _fs
 
-  var str = JSON.stringify(obj, options ? options.replacer : null, spaces)
+  const str = stringify(obj, options)
 
-  return str.replace(/\n/g, EOL) + EOL
+  await universalify.fromCallback(fs.writeFile)(file, str, options)
 }
 
-function writeFile (file, obj, options, callback) {
-  if (callback == null) {
-    callback = options
-    options = {}
-  }
-  options = options || {}
-  var fs = options.fs || _fs
+const writeFile = universalify.fromPromise(_writeFile)
 
-  var str = ''
-  try {
-    str = stringify(obj, options)
-  } catch (err) {
-    // Need to return whether a callback was passed or not
-    if (callback) callback(err, null)
-    return
-  }
+function writeFileSync (file, obj, options = {}) {
+  const fs = options.fs || _fs
 
-  fs.writeFile(file, str, options, callback)
-}
-
-function writeFileSync (file, obj, options) {
-  options = options || {}
-  var fs = options.fs || _fs
-
-  var str = stringify(obj, options)
+  const str = stringify(obj, options)
   // not sure if fs.writeFileSync returns anything, but just in case
   return fs.writeFileSync(file, str, options)
 }
 
-function stripBom (content) {
-  // we do this because JSON.parse would convert it to a utf8 string if encoding wasn't specified
-  if (Buffer.isBuffer(content)) content = content.toString('utf8')
-  content = content.replace(/^\uFEFF/, '')
-  return content
-}
-
-var jsonfile = {
-  readFile: readFile,
-  readFileSync: readFileSync,
-  writeFile: writeFile,
-  writeFileSync: writeFileSync
+const jsonfile = {
+  readFile,
+  readFileSync,
+  writeFile,
+  writeFileSync
 }
 
 module.exports = jsonfile
@@ -9024,28 +8963,13 @@ exports.Deprecation = Deprecation;
 "use strict";
 
 
-const path = __webpack_require__(622)
-const mkdir = __webpack_require__(727)
-const pathExists = __webpack_require__(322).pathExists
-const jsonFile = __webpack_require__(792)
+const { stringify } = __webpack_require__(356)
+const { outputFile } = __webpack_require__(517)
 
-function outputJson (file, data, options, callback) {
-  if (typeof options === 'function') {
-    callback = options
-    options = {}
-  }
+async function outputJson (file, data, options = {}) {
+  const str = stringify(data, options)
 
-  const dir = path.dirname(file)
-
-  pathExists(dir, (err, itDoes) => {
-    if (err) return callback(err)
-    if (itDoes) return jsonFile.writeJson(file, data, options, callback)
-
-    mkdir.mkdirs(dir, err => {
-      if (err) return callback(err)
-      jsonFile.writeJson(file, data, options, callback)
-    })
-  })
+  await outputFile(file, str, options)
 }
 
 module.exports = outputJson
@@ -9154,18 +9078,18 @@ module.exports.callCount = function_ => {
 
 "use strict";
 
-const u = __webpack_require__(147).fromCallback
-const mkdirs = u(__webpack_require__(289))
-const mkdirsSync = __webpack_require__(307)
+const u = __webpack_require__(147).fromPromise
+const { makeDir: _makeDir, makeDirSync } = __webpack_require__(54)
+const makeDir = u(_makeDir)
 
 module.exports = {
-  mkdirs,
-  mkdirsSync,
+  mkdirs: makeDir,
+  mkdirsSync: makeDirSync,
   // alias
-  mkdirp: mkdirs,
-  mkdirpSync: mkdirsSync,
-  ensureDir: mkdirs,
-  ensureDirSync: mkdirsSync
+  mkdirp: makeDir,
+  mkdirpSync: makeDirSync,
+  ensureDir: makeDir,
+  ensureDirSync: makeDirSync
 }
 
 
@@ -9174,7 +9098,7 @@ module.exports = {
 /***/ 731:
 /***/ (function(module) {
 
-module.exports = {"private":false,"name":"ember-cli-update-action","version":"1.10.18","description":"Run ember-cli-update updates on CI","bin":{"ember-cli-update-action":"bin/index.js"},"files":["bin","src"],"scripts":{"lint:git":"commitlint","lint":"eslint . --ext js,json","test":"mocha --recursive","release":"standard-version --commit-all"},"standard-version":{"scripts":{"prerelease":"ncc build src/action.js -o dist && git add -A dist","posttag":"git push --follow-tags --atomic"}},"repository":{"type":"git","url":"git+https://github.com/kellyselden/ember-cli-update-action.git"},"author":"Kelly Selden","license":"MIT","bugs":{"url":"https://github.com/kellyselden/ember-cli-update-action/issues"},"homepage":"https://github.com/kellyselden/ember-cli-update-action#readme","dependencies":{"@actions/core":"^1.2.1","@actions/github":"^4.0.0","execa":"^4.0.0","fs-extra":"^8.1.0","request":"^2.88.0","yargs":"^15.1.0","yn":"^3.1.1"},"engines":{"node":">=10.12"},"devDependencies":{"@crowdstrike/commitlint":"^1.0.4","@kellyselden/node-template":"1.1.0","@zeit/ncc":"0.22.3","chai":"^4.2.0","eslint":"^7.8.1","eslint-config-sane":"0.8.5","eslint-config-sane-node":"0.3.0","eslint-plugin-json-files":"0.8.1","eslint-plugin-mocha":"^8.0.0","eslint-plugin-node":"^11.1.0","eslint-plugin-prefer-let":"^1.0.2","mocha":"^8.1.3","mocha-helpers":"^5.0.0","renovate-config-standard":"^2.0.0","sinon":"^9.0.0","standard-node-template":"1.0.0","standard-version":"^7.1.0"}};
+module.exports = {"private":false,"name":"ember-cli-update-action","version":"1.10.19","description":"Run ember-cli-update updates on CI","bin":{"ember-cli-update-action":"bin/index.js"},"files":["bin","src"],"scripts":{"lint:git":"commitlint","lint":"eslint . --ext js,json","test":"mocha --recursive","release":"standard-version --commit-all"},"standard-version":{"scripts":{"prerelease":"ncc build src/action.js -o dist && git add -A dist","posttag":"git push --follow-tags --atomic"}},"repository":{"type":"git","url":"git+https://github.com/kellyselden/ember-cli-update-action.git"},"author":"Kelly Selden","license":"MIT","bugs":{"url":"https://github.com/kellyselden/ember-cli-update-action/issues"},"homepage":"https://github.com/kellyselden/ember-cli-update-action#readme","dependencies":{"@actions/core":"^1.2.1","@actions/github":"^4.0.0","execa":"^4.0.0","fs-extra":"^9.0.0","request":"^2.88.0","yargs":"^16.0.0","yn":"^3.1.1"},"engines":{"node":">=10.12"},"devDependencies":{"@crowdstrike/commitlint":"^1.0.4","@kellyselden/node-template":"1.1.0","@zeit/ncc":"0.22.3","chai":"^4.2.0","eslint":"^7.8.1","eslint-config-sane":"0.8.5","eslint-config-sane-node":"0.3.0","eslint-plugin-json-files":"0.8.1","eslint-plugin-mocha":"^8.0.0","eslint-plugin-node":"^11.1.0","eslint-plugin-prefer-let":"^1.0.2","mocha":"^8.1.3","mocha-helpers":"^5.0.0","renovate-config-standard":"^2.0.0","sinon":"^9.0.0","standard-node-template":"1.0.0","standard-version":"^7.1.0"}};
 
 /***/ }),
 
@@ -9602,14 +9526,13 @@ module.exports = {
 "use strict";
 
 
-const u = __webpack_require__(147).fromCallback
 const jsonFile = __webpack_require__(666)
 
 module.exports = {
   // jsonfile exports
-  readJson: u(jsonFile.readFile),
+  readJson: jsonFile.readFile,
   readJsonSync: jsonFile.readFileSync,
-  writeJson: u(jsonFile.writeFile),
+  writeJson: jsonFile.writeFile,
   writeJsonSync: jsonFile.writeFileSync
 }
 
@@ -11238,15 +11161,16 @@ const api = [
   'fsync',
   'ftruncate',
   'futimes',
-  'lchown',
   'lchmod',
+  'lchown',
   'link',
   'lstat',
   'mkdir',
   'mkdtemp',
   'open',
-  'readFile',
+  'opendir',
   'readdir',
+  'readFile',
   'readlink',
   'realpath',
   'rename',
@@ -11259,8 +11183,7 @@ const api = [
   'writeFile'
 ].filter(key => {
   // Some commands are not available on some systems. Ex:
-  // fs.copyFile was added in Node.js v8.5.0
-  // fs.mkdtemp was added in Node.js v5.10.0
+  // fs.opendir was added in Node.js v12.12.0
   // fs.lchown is not available on at least some Linux
   return typeof fs[key] === 'function'
 })
@@ -11291,7 +11214,7 @@ exports.exists = function (filename, callback) {
   })
 }
 
-// fs.read() & fs.write need special treatment due to multiple callback args
+// fs.read(), fs.write(), & fs.writev() need special treatment due to multiple callback args
 
 exports.read = function (fd, buffer, offset, length, position, callback) {
   if (typeof callback === 'function') {
@@ -11321,6 +11244,25 @@ exports.write = function (fd, buffer, ...args) {
       resolve({ bytesWritten, buffer })
     })
   })
+}
+
+// fs.writev only available in Node v12.9.0+
+if (typeof fs.writev === 'function') {
+  // Function signature is
+  // s.writev(fd, buffers[, position], callback)
+  // We need to handle the optional arg, so we use ...args
+  exports.writev = function (fd, buffers, ...args) {
+    if (typeof args[args.length - 1] === 'function') {
+      return fs.writev(fd, buffers, ...args)
+    }
+
+    return new Promise((resolve, reject) => {
+      fs.writev(fd, buffers, ...args, (err, bytesWritten, buffers) => {
+        if (err) return reject(err)
+        resolve({ bytesWritten, buffers })
+      })
+    })
+  }
 }
 
 // fs.realpath.native only available in Node v9.2+
@@ -11577,56 +11519,6 @@ module.exports = {
 
 
 const fs = __webpack_require__(598)
-const os = __webpack_require__(87)
-const path = __webpack_require__(622)
-
-// HFS, ext{2,3}, FAT do not, Node.js v0.10 does not
-function hasMillisResSync () {
-  let tmpfile = path.join('millis-test-sync' + Date.now().toString() + Math.random().toString().slice(2))
-  tmpfile = path.join(os.tmpdir(), tmpfile)
-
-  // 550 millis past UNIX epoch
-  const d = new Date(1435410243862)
-  fs.writeFileSync(tmpfile, 'https://github.com/jprichardson/node-fs-extra/pull/141')
-  const fd = fs.openSync(tmpfile, 'r+')
-  fs.futimesSync(fd, d, d)
-  fs.closeSync(fd)
-  return fs.statSync(tmpfile).mtime > 1435410243000
-}
-
-function hasMillisRes (callback) {
-  let tmpfile = path.join('millis-test' + Date.now().toString() + Math.random().toString().slice(2))
-  tmpfile = path.join(os.tmpdir(), tmpfile)
-
-  // 550 millis past UNIX epoch
-  const d = new Date(1435410243862)
-  fs.writeFile(tmpfile, 'https://github.com/jprichardson/node-fs-extra/pull/141', err => {
-    if (err) return callback(err)
-    fs.open(tmpfile, 'r+', (err, fd) => {
-      if (err) return callback(err)
-      fs.futimes(fd, d, d, err => {
-        if (err) return callback(err)
-        fs.close(fd, err => {
-          if (err) return callback(err)
-          fs.stat(tmpfile, (err, stats) => {
-            if (err) return callback(err)
-            callback(null, stats.mtime > 1435410243000)
-          })
-        })
-      })
-    })
-  })
-}
-
-function timeRemoveMillis (timestamp) {
-  if (typeof timestamp === 'number') {
-    return Math.floor(timestamp / 1000) * 1000
-  } else if (timestamp instanceof Date) {
-    return new Date(Math.floor(timestamp.getTime() / 1000) * 1000)
-  } else {
-    throw new Error('fs-extra: timeRemoveMillis() unknown parameter type')
-  }
-}
 
 function utimesMillis (path, atime, mtime, callback) {
   // if (!HAS_MILLIS_RES) return fs.utimes(path, atime, mtime, callback)
@@ -11647,9 +11539,6 @@ function utimesMillisSync (path, atime, mtime) {
 }
 
 module.exports = {
-  hasMillisRes,
-  hasMillisResSync,
-  timeRemoveMillis,
   utimesMillis,
   utimesMillisSync
 }
@@ -11747,8 +11636,8 @@ function symlinkPaths (srcpath, dstpath, callback) {
         return callback(err)
       }
       return callback(null, {
-        'toCwd': srcpath,
-        'toDst': srcpath
+        toCwd: srcpath,
+        toDst: srcpath
       })
     })
   } else {
@@ -11758,8 +11647,8 @@ function symlinkPaths (srcpath, dstpath, callback) {
       if (err) return callback(err)
       if (exists) {
         return callback(null, {
-          'toCwd': relativeToDst,
-          'toDst': srcpath
+          toCwd: relativeToDst,
+          toDst: srcpath
         })
       } else {
         return fs.lstat(srcpath, (err) => {
@@ -11768,8 +11657,8 @@ function symlinkPaths (srcpath, dstpath, callback) {
             return callback(err)
           }
           return callback(null, {
-            'toCwd': srcpath,
-            'toDst': path.relative(dstdir, srcpath)
+            toCwd: srcpath,
+            toDst: path.relative(dstdir, srcpath)
           })
         })
       }
@@ -11783,8 +11672,8 @@ function symlinkPathsSync (srcpath, dstpath) {
     exists = fs.existsSync(srcpath)
     if (!exists) throw new Error('absolute srcpath does not exist')
     return {
-      'toCwd': srcpath,
-      'toDst': srcpath
+      toCwd: srcpath,
+      toDst: srcpath
     }
   } else {
     const dstdir = path.dirname(dstpath)
@@ -11792,15 +11681,15 @@ function symlinkPathsSync (srcpath, dstpath) {
     exists = fs.existsSync(relativeToDst)
     if (exists) {
       return {
-        'toCwd': relativeToDst,
-        'toDst': srcpath
+        toCwd: relativeToDst,
+        toDst: srcpath
       }
     } else {
       exists = fs.existsSync(srcpath)
       if (!exists) throw new Error('relative srcpath does not exist')
       return {
-        'toCwd': srcpath,
-        'toDst': path.relative(dstdir, srcpath)
+        toCwd: srcpath,
+        toDst: path.relative(dstdir, srcpath)
       }
     }
   }
@@ -12242,7 +12131,7 @@ function symlinkTypeSync (srcpath, type) {
   if (type) return type
   try {
     stats = fs.lstatSync(srcpath)
-  } catch (e) {
+  } catch {
     return 'file'
   }
   return (stats && stats.isDirectory()) ? 'dir' : 'file'

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 1.10.20 (2020-09-09)
+
+
+### Bug Fixes
+
+* **deps:** update dependency yargs to v16 ([998bebf](https://github.com/kellyselden/ember-cli-update-action/commit/998bebf0d03d4054a58c1ad11f4f775c8862c029))
+
 ### 1.10.19 (2020-09-09)
 
 
