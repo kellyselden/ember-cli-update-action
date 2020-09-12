@@ -3826,6 +3826,12 @@ function convertBody(buffer, headers) {
 	// html4
 	if (!res && str) {
 		res = /<meta[\s]+?http-equiv=(['"])content-type\1[\s]+?content=(['"])(.+?)\2/i.exec(str);
+		if (!res) {
+			res = /<meta[\s]+?content=(['"])(.+?)\1[\s]+?http-equiv=(['"])content-type\3/i.exec(str);
+			if (res) {
+				res.pop(); // drop last quote
+			}
+		}
 
 		if (res) {
 			res = /charset=(.*)/i.exec(res.pop());
@@ -4833,7 +4839,7 @@ function fetch(url, opts) {
 				// HTTP fetch step 5.5
 				switch (request.redirect) {
 					case 'error':
-						reject(new FetchError(`redirect mode is set to error: ${request.url}`, 'no-redirect'));
+						reject(new FetchError(`uri requested responds with a redirect, redirect mode is set to error: ${request.url}`, 'no-redirect'));
 						finalize();
 						return;
 					case 'manual':
@@ -4872,7 +4878,8 @@ function fetch(url, opts) {
 							method: request.method,
 							body: request.body,
 							signal: request.signal,
-							timeout: request.timeout
+							timeout: request.timeout,
+							size: request.size
 						};
 
 						// HTTP-redirect fetch step 9
@@ -9094,7 +9101,7 @@ module.exports = {
 /***/ 731:
 /***/ (function(module) {
 
-module.exports = {"private":false,"name":"ember-cli-update-action","version":"2.0.0","description":"Run ember-cli-update updates on CI","bin":{"ember-cli-update-action":"bin/index.js"},"files":["bin","src"],"scripts":{"lint:git":"commitlint","lint":"eslint . --ext js,json","test":"mocha --recursive","release":"standard-version --commit-all"},"standard-version":{"scripts":{"prerelease":"ncc build src/action.js -o dist && git add -A dist","posttag":"git push --follow-tags --atomic"}},"repository":{"type":"git","url":"git+https://github.com/kellyselden/ember-cli-update-action.git"},"author":"Kelly Selden","license":"MIT","bugs":{"url":"https://github.com/kellyselden/ember-cli-update-action/issues"},"homepage":"https://github.com/kellyselden/ember-cli-update-action#readme","dependencies":{"@actions/core":"^1.2.1","@actions/github":"^4.0.0","execa":"^4.0.0","fs-extra":"^9.0.0","request":"^2.88.0","yargs":"^16.0.0","yn":"^4.0.0"},"engines":{"node":">=10.12"},"devDependencies":{"@crowdstrike/commitlint":"^1.0.4","@kellyselden/node-template":"1.1.0","@zeit/ncc":"0.22.3","chai":"^4.2.0","eslint":"^7.8.1","eslint-config-sane":"0.8.5","eslint-config-sane-node":"0.3.0","eslint-plugin-json-files":"0.8.1","eslint-plugin-mocha":"^8.0.0","eslint-plugin-node":"^11.1.0","eslint-plugin-prefer-let":"^1.0.2","mocha":"^8.1.3","mocha-helpers":"^5.0.0","renovate-config-standard":"^2.0.0","sinon":"^9.0.0","standard-node-template":"1.0.0","standard-version":"^9.0.0"}};
+module.exports = {"private":false,"name":"ember-cli-update-action","version":"2.0.1","description":"Run ember-cli-update updates on CI","bin":{"ember-cli-update-action":"bin/index.js"},"files":["bin","src"],"scripts":{"lint:git":"commitlint","lint":"eslint . --ext js,json","test":"mocha --recursive","release":"standard-version --commit-all"},"standard-version":{"scripts":{"prerelease":"ncc build src/action.js -o dist && git add -A dist","posttag":"git push --follow-tags --atomic"}},"repository":{"type":"git","url":"git+https://github.com/kellyselden/ember-cli-update-action.git"},"author":"Kelly Selden","license":"MIT","bugs":{"url":"https://github.com/kellyselden/ember-cli-update-action/issues"},"homepage":"https://github.com/kellyselden/ember-cli-update-action#readme","dependencies":{"@actions/core":"^1.2.1","@actions/github":"^4.0.0","execa":"^4.0.0","fs-extra":"^9.0.0","request":"^2.88.0","yargs":"^16.0.0","yn":"^4.0.0"},"engines":{"node":">=10.12"},"devDependencies":{"@crowdstrike/commitlint":"^1.0.4","@kellyselden/node-template":"1.1.0","@zeit/ncc":"0.22.3","chai":"^4.2.0","eslint":"^7.8.1","eslint-config-sane":"0.8.5","eslint-config-sane-node":"0.3.0","eslint-plugin-json-files":"0.8.1","eslint-plugin-mocha":"^8.0.0","eslint-plugin-node":"^11.1.0","eslint-plugin-prefer-let":"^1.0.2","mocha":"^8.1.3","mocha-helpers":"^5.0.0","renovate-config-standard":"^2.0.0","sinon":"^9.0.0","standard-node-template":"1.0.0","standard-version":"^9.0.0"}};
 
 /***/ }),
 
