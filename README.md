@@ -1,7 +1,7 @@
 # ember-cli-update-action
 
 ![](https://github.com/kellyselden/ember-cli-update-action/workflows/CI/badge.svg)
-![](https://github.com/kellyselden/ember-cli-update-action/workflows/Release/badge.svg)
+![](https://github.com/kellyselden/ember-cli-update-action/workflows/Publish/badge.svg)
 
 Run [ember-cli-update](https://github.com/ember-cli/ember-cli-update) updates on CI
 
