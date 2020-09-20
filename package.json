@@ -32,6 +32,9 @@
     "url": "https://github.com/kellyselden/ember-cli-update-action/issues"
   },
   "homepage": "https://github.com/kellyselden/ember-cli-update-action#readme",
+  "engines": {
+    "node": ">=10.12"
+  },
   "dependencies": {
     "@actions/core": "^1.2.1",
     "@actions/github": "^4.0.0",
@@ -40,9 +43,6 @@
     "request": "^2.88.0",
     "yargs": "^16.0.0",
     "yn": "^4.0.0"
-  },
-  "engines": {
-    "node": ">=10.12"
   },
   "devDependencies": {
     "@crowdstrike/commitlint": "^1.0.4",
