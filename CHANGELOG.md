@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 2.0.10 (2020-12-03)
+
+
+### Bug Fixes
+
+* **deps:** update dependency execa to v5 ([ee0b0c7](https://github.com/kellyselden/ember-cli-update-action/commit/ee0b0c7966961cd9b39941e689a2ce6bc2f37369))
+
 ### 2.0.9 (2020-10-19)
 
 ### 2.0.8 (2020-10-17)

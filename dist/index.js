@@ -49,107 +49,6 @@ module.exports =
 /************************************************************************/
 /******/ ({
 
-/***/ 9:
-/***/ (function(module, __unusedexports, __webpack_require__) {
-
-var once = __webpack_require__(49);
-
-var noop = function() {};
-
-var isRequest = function(stream) {
-	return stream.setHeader && typeof stream.abort === 'function';
-};
-
-var isChildProcess = function(stream) {
-	return stream.stdio && Array.isArray(stream.stdio) && stream.stdio.length === 3
-};
-
-var eos = function(stream, opts, callback) {
-	if (typeof opts === 'function') return eos(stream, null, opts);
-	if (!opts) opts = {};
-
-	callback = once(callback || noop);
-
-	var ws = stream._writableState;
-	var rs = stream._readableState;
-	var readable = opts.readable || (opts.readable !== false && stream.readable);
-	var writable = opts.writable || (opts.writable !== false && stream.writable);
-	var cancelled = false;
-
-	var onlegacyfinish = function() {
-		if (!stream.writable) onfinish();
-	};
-
-	var onfinish = function() {
-		writable = false;
-		if (!readable) callback.call(stream);
-	};
-
-	var onend = function() {
-		readable = false;
-		if (!writable) callback.call(stream);
-	};
-
-	var onexit = function(exitCode) {
-		callback.call(stream, exitCode ? new Error('exited with error code: ' + exitCode) : null);
-	};
-
-	var onerror = function(err) {
-		callback.call(stream, err);
-	};
-
-	var onclose = function() {
-		process.nextTick(onclosenexttick);
-	};
-
-	var onclosenexttick = function() {
-		if (cancelled) return;
-		if (readable && !(rs && (rs.ended && !rs.destroyed))) return callback.call(stream, new Error('premature close'));
-		if (writable && !(ws && (ws.ended && !ws.destroyed))) return callback.call(stream, new Error('premature close'));
-	};
-
-	var onrequest = function() {
-		stream.req.on('finish', onfinish);
-	};
-
-	if (isRequest(stream)) {
-		stream.on('complete', onfinish);
-		stream.on('abort', onclose);
-		if (stream.req) onrequest();
-		else stream.on('request', onrequest);
-	} else if (writable && !ws) { // legacy streams
-		stream.on('end', onlegacyfinish);
-		stream.on('close', onlegacyfinish);
-	}
-
-	if (isChildProcess(stream)) stream.on('exit', onexit);
-
-	stream.on('end', onend);
-	stream.on('finish', onfinish);
-	if (opts.error !== false) stream.on('error', onerror);
-	stream.on('close', onclose);
-
-	return function() {
-		cancelled = true;
-		stream.removeListener('complete', onfinish);
-		stream.removeListener('abort', onclose);
-		stream.removeListener('request', onrequest);
-		if (stream.req) stream.req.removeListener('finish', onfinish);
-		stream.removeListener('end', onlegacyfinish);
-		stream.removeListener('close', onlegacyfinish);
-		stream.removeListener('finish', onfinish);
-		stream.removeListener('exit', onexit);
-		stream.removeListener('end', onend);
-		stream.removeListener('error', onerror);
-		stream.removeListener('close', onclose);
-	};
-};
-
-module.exports = eos;
-
-
-/***/ }),
-
 /***/ 11:
 /***/ (function(module) {
 
@@ -1245,8 +1144,11 @@ exports.debug = debug; // for test
 "use strict";
 
 const {constants: BufferConstants} = __webpack_require__(293);
-const pump = __webpack_require__(453);
+const stream = __webpack_require__(794);
+const {promisify} = __webpack_require__(669);
 const bufferStream = __webpack_require__(966);
+
+const streamPipelinePromisified = promisify(stream.pipeline);
 
 class MaxBufferError extends Error {
 	constructor() {
@@ -1257,7 +1159,7 @@ class MaxBufferError extends Error {
 
 async function getStream(inputStream, options) {
 	if (!inputStream) {
-		return Promise.reject(new Error('Expected a stream'));
+		throw new Error('Expected a stream');
 	}
 
 	options = {
@@ -1266,8 +1168,8 @@ async function getStream(inputStream, options) {
 	};
 
 	const {maxBuffer} = options;
+	const stream = bufferStream(options);
 
-	let stream;
 	await new Promise((resolve, reject) => {
 		const rejectPromise = error => {
 			// Don't retrieve an oversized buffer.
@@ -1278,14 +1180,14 @@ async function getStream(inputStream, options) {
 			reject(error);
 		};
 
-		stream = pump(inputStream, bufferStream(options), error => {
-			if (error) {
+		(async () => {
+			try {
+				await streamPipelinePromisified(inputStream, stream);
+				resolve();
+			} catch (error) {
 				rejectPromise(error);
-				return;
 			}
-
-			resolve();
-		});
+		})();
 
 		stream.on('data', () => {
 			if (stream.getBufferedLength() > maxBuffer) {
@@ -1298,8 +1200,6 @@ async function getStream(inputStream, options) {
 }
 
 module.exports = getStream;
-// TODO: Remove this for the next major release
-module.exports.default = getStream;
 module.exports.buffer = (stream, options) => getStream(stream, {...options, encoding: 'buffer'});
 module.exports.array = (stream, options) => getStream(stream, {...options, array: true});
 module.exports.MaxBufferError = MaxBufferError;
@@ -1434,20 +1334,20 @@ module.exports = r => {
 
 const aliases = ['stdin', 'stdout', 'stderr'];
 
-const hasAlias = opts => aliases.some(alias => opts[alias] !== undefined);
+const hasAlias = options => aliases.some(alias => options[alias] !== undefined);
 
-const normalizeStdio = opts => {
-	if (!opts) {
+const normalizeStdio = options => {
+	if (!options) {
 		return;
 	}
 
-	const {stdio} = opts;
+	const {stdio} = options;
 
 	if (stdio === undefined) {
-		return aliases.map(alias => opts[alias]);
+		return aliases.map(alias => options[alias]);
 	}
 
-	if (hasAlias(opts)) {
+	if (hasAlias(options)) {
 		throw new Error(`It's not possible to provide \`stdio\` in combination with one of ${aliases.map(alias => `\`${alias}\``).join(', ')}`);
 	}
 
@@ -1466,8 +1366,8 @@ const normalizeStdio = opts => {
 module.exports = normalizeStdio;
 
 // `ipc` is pushed unless it is already present
-module.exports.node = opts => {
-	const stdio = normalizeStdio(opts);
+module.exports.node = options => {
+	const stdio = normalizeStdio(options);
 
 	if (stdio === 'ipc') {
 		return 'ipc';
@@ -3333,95 +3233,6 @@ module.exports = (string = '') => {
 
 	return argument ? `${binary} ${argument}` : binary;
 };
-
-
-/***/ }),
-
-/***/ 453:
-/***/ (function(module, __unusedexports, __webpack_require__) {
-
-var once = __webpack_require__(49)
-var eos = __webpack_require__(9)
-var fs = __webpack_require__(747) // we only need fs to get the ReadStream and WriteStream prototypes
-
-var noop = function () {}
-var ancient = /^v?\.0/.test(process.version)
-
-var isFn = function (fn) {
-  return typeof fn === 'function'
-}
-
-var isFS = function (stream) {
-  if (!ancient) return false // newer node version do not need to care about fs is a special way
-  if (!fs) return false // browser
-  return (stream instanceof (fs.ReadStream || noop) || stream instanceof (fs.WriteStream || noop)) && isFn(stream.close)
-}
-
-var isRequest = function (stream) {
-  return stream.setHeader && isFn(stream.abort)
-}
-
-var destroyer = function (stream, reading, writing, callback) {
-  callback = once(callback)
-
-  var closed = false
-  stream.on('close', function () {
-    closed = true
-  })
-
-  eos(stream, {readable: reading, writable: writing}, function (err) {
-    if (err) return callback(err)
-    closed = true
-    callback()
-  })
-
-  var destroyed = false
-  return function (err) {
-    if (closed) return
-    if (destroyed) return
-    destroyed = true
-
-    if (isFS(stream)) return stream.close(noop) // use close for fs streams to avoid fd leaks
-    if (isRequest(stream)) return stream.abort() // request.destroy just do .end - .abort is what we want
-
-    if (isFn(stream.destroy)) return stream.destroy()
-
-    callback(err || new Error('stream was destroyed'))
-  }
-}
-
-var call = function (fn) {
-  fn()
-}
-
-var pipe = function (from, to) {
-  return from.pipe(to)
-}
-
-var pump = function () {
-  var streams = Array.prototype.slice.call(arguments)
-  var callback = isFn(streams[streams.length - 1] || noop) && streams.pop() || noop
-
-  if (Array.isArray(streams[0])) streams = streams[0]
-  if (streams.length < 2) throw new Error('pump requires two streams per minimum')
-
-  var error
-  var destroys = streams.map(function (stream, i) {
-    var reading = i < streams.length - 1
-    var writing = i > 0
-    return destroyer(stream, reading, writing, function (err) {
-      if (!error) error = err
-      if (err) destroys.forEach(call)
-      if (reading) return
-      destroys.forEach(call)
-      callback(error)
-    })
-  })
-
-  return streams.reduce(pipe)
-}
-
-module.exports = pump
 
 
 /***/ }),
@@ -9166,7 +8977,7 @@ module.exports = {
 /***/ 731:
 /***/ (function(module) {
 
-module.exports = {"private":false,"name":"ember-cli-update-action","version":"2.0.8","description":"Run ember-cli-update updates on CI","bin":{"ember-cli-update-action":"bin/index.js"},"files":["bin","src"],"scripts":{"lint:git":"commitlint","lint":"eslint . --ext js,json","test":"mocha --recursive","release":"standard-version --commit-all"},"standard-version":{"scripts":{"prerelease":"ncc build src/action.js -o dist && git add -A dist","posttag":"git push --follow-tags --atomic"}},"repository":{"type":"git","url":"git+https://github.com/kellyselden/ember-cli-update-action.git"},"author":"Kelly Selden","license":"MIT","bugs":{"url":"https://github.com/kellyselden/ember-cli-update-action/issues"},"homepage":"https://github.com/kellyselden/ember-cli-update-action#readme","engines":{"node":">=10.12"},"dependencies":{"@actions/core":"^1.2.1","@actions/github":"^4.0.0","execa":"^4.0.0","fs-extra":"^9.0.0","request":"^2.88.0","yargs":"^16.0.0","yn":"^4.0.0"},"devDependencies":{"@crowdstrike/commitlint":"^1.0.4","@kellyselden/node-template":"1.3.0","@zeit/ncc":"0.22.3","chai":"^4.2.0","eslint":"^7.8.1","eslint-config-sane":"0.8.5","eslint-config-sane-node":"0.3.0","eslint-plugin-json-files":"0.8.1","eslint-plugin-mocha":"^8.0.0","eslint-plugin-node":"^11.1.0","eslint-plugin-prefer-let":"^1.0.2","mocha":"^8.1.3","mocha-helpers":"^5.0.0","renovate-config-standard":"^2.0.0","sinon":"^9.0.0","standard-node-template":"1.0.0","standard-version":"^9.0.0"}};
+module.exports = {"private":false,"name":"ember-cli-update-action","version":"2.0.9","description":"Run ember-cli-update updates on CI","bin":{"ember-cli-update-action":"bin/index.js"},"files":["bin","src"],"scripts":{"lint:git":"commitlint","lint":"eslint . --ext js,json","test":"mocha --recursive","release":"standard-version --commit-all"},"standard-version":{"scripts":{"prerelease":"ncc build src/action.js -o dist && git add -A dist","posttag":"git push --follow-tags --atomic"}},"repository":{"type":"git","url":"git+https://github.com/kellyselden/ember-cli-update-action.git"},"author":"Kelly Selden","license":"MIT","bugs":{"url":"https://github.com/kellyselden/ember-cli-update-action/issues"},"homepage":"https://github.com/kellyselden/ember-cli-update-action#readme","engines":{"node":">=10.12"},"dependencies":{"@actions/core":"^1.2.1","@actions/github":"^4.0.0","execa":"^5.0.0","fs-extra":"^9.0.0","request":"^2.88.0","yargs":"^16.0.0","yn":"^4.0.0"},"devDependencies":{"@crowdstrike/commitlint":"^1.0.4","@kellyselden/node-template":"1.3.0","@zeit/ncc":"0.22.3","chai":"^4.2.0","eslint":"^7.8.1","eslint-config-sane":"0.8.5","eslint-config-sane-node":"0.3.0","eslint-plugin-json-files":"0.8.1","eslint-plugin-mocha":"^8.0.0","eslint-plugin-node":"^11.1.0","eslint-plugin-prefer-let":"^1.0.2","mocha":"^8.1.3","mocha-helpers":"^5.0.0","renovate-config-standard":"^2.0.0","sinon":"^9.0.0","standard-node-template":"1.0.0","standard-version":"^9.0.0"}};
 
 /***/ }),
 
@@ -9256,27 +9067,21 @@ const joinCommand = (file, args = []) => {
 	return [file, ...args].join(' ');
 };
 
-// Allow spaces to be escaped by a backslash if not meant as a delimiter
-const handleEscaping = (tokens, token, index) => {
-	if (index === 0) {
-		return [token];
-	}
-
-	const previousToken = tokens[tokens.length - 1];
-
-	if (previousToken.endsWith('\\')) {
-		return [...tokens.slice(0, -1), `${previousToken.slice(0, -1)} ${token}`];
-	}
-
-	return [...tokens, token];
-};
-
 // Handle `execa.command()`
 const parseCommand = command => {
-	return command
-		.trim()
-		.split(SPACES_REGEXP)
-		.reduce(handleEscaping, []);
+	const tokens = [];
+	for (const token of command.trim().split(SPACES_REGEXP)) {
+		// Allow spaces to be escaped by a backslash if not meant as a delimiter
+		const previousToken = tokens[tokens.length - 1];
+		if (previousToken && previousToken.endsWith('\\')) {
+			// Merge previous token with current one
+			tokens[tokens.length - 1] = `${previousToken.slice(0, -1)} ${token}`;
+		} else {
+			tokens.push(token);
+		}
+	}
+
+	return tokens;
 };
 
 module.exports = {
@@ -11950,8 +11755,6 @@ const execa = (file, args, options) => {
 
 	const handlePromiseOnce = onetime(handlePromise);
 
-	crossSpawn._enoent.hookChildProcess(spawned, parsed.parsed);
-
 	handleInput(spawned, parsed.options.input);
 
 	spawned.all = makeAllStream(spawned, parsed.options);
@@ -12037,8 +11840,12 @@ module.exports.node = (scriptPath, args, options = {}) => {
 	}
 
 	const stdio = normalizeStdio.node(options);
+	const defaultExecArgv = process.execArgv.filter(arg => !arg.startsWith('--inspect'));
 
-	const {nodePath = process.execPath, nodeOptions = process.execArgv} = options;
+	const {
+		nodePath = process.execPath,
+		nodeOptions = defaultExecArgv
+	} = options;
 
 	return execa(
 		nodePath,
