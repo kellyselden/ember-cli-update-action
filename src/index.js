@@ -202,9 +202,7 @@ async function emberCliUpdateAction({
   console.log({ autofixCommand });
 
   if (autofixCommand) {
-    try {
-      await exec(autofixCommand);
-    } catch (err) {}
+    await exec(autofixCommand);
   }
 
   if (!gitEmail) {
