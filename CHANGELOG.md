@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 2.0.22 (2021-04-19)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @actions/core to ^1.2.6 ([418e8b0](https://github.com/kellyselden/ember-cli-update-action/commit/418e8b0de3a99d8817c0a422785bb21392074d08))
+
 ### 2.0.21 (2021-04-19)
 
 ### 2.0.20 (2021-03-30)
