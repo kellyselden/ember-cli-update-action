@@ -7,6 +7,8 @@ inputs:
     description: 'git name'
   amend:
     default: false
+  ignore_to:
+    default: false
   install_command:
     description: 'supply your own package install command'
   autofix_command:
