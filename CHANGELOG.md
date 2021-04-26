@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 2.0.25 (2021-04-26)
+
+
+### Bug Fixes
+
+* expose `ignore_to` in action ([fa969a6](https://github.com/kellyselden/ember-cli-update-action/commit/fa969a631db333962d8c99e53e93562adb1ba96d))
+
 ### 2.0.24 (2021-04-19)
 
 
