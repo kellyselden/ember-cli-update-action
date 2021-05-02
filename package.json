@@ -41,7 +41,7 @@
     "execa": "^5.0.0",
     "fs-extra": "^9.1.0",
     "request": "^2.88.0",
-    "yargs": "^16.2.0",
+    "yargs": "^17.0.0",
     "yn": "^4.0.0"
   },
   "devDependencies": {
