@@ -39,7 +39,7 @@
     "@actions/core": "^1.2.6",
     "@actions/github": "^4.0.0",
     "execa": "^5.0.0",
-    "fs-extra": "^9.1.0",
+    "fs-extra": "^10.0.0",
     "request": "^2.88.0",
     "yargs": "^16.2.0",
     "yn": "^4.0.0"
