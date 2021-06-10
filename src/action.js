@@ -24,7 +24,9 @@ const yn = require('yn');
 
     let ignoreTo = yn(core.getInput('ignore_to'));
 
-    let commitPrefix = core.getInput('commit_prefix');
+    let commitPrefix = core.getInput('commit_prefix', {
+      trimWhitespace: false
+    });
 
     await emberCliUpdateAction({
       body,
