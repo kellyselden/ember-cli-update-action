@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 3.0.9 (2021-06-11)
+
+
+### Bug Fixes
+
+* **deps:** update dependency fs-extra to v10 ([eda92c2](https://github.com/kellyselden/ember-cli-update-action/commit/eda92c2b98add4ffe6c69e109dc21552c949d460))
+
 ### 3.0.8 (2021-06-11)
 
 
