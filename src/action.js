@@ -3,9 +3,11 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const emberCliUpdateAction = require('.');
-const yn = require('yn');
 
 (async() => {
+  // eslint-disable-next-line prefer-let/prefer-let
+  const { default: yn } = await import('yn');
+
   try {
     // Get the JSON webhook payload for the event that triggered the workflow
     // let payload = JSON.stringify(github.context.payload, undefined, 2);
