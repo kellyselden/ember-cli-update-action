@@ -35,6 +35,8 @@ module.exports =
 /******/ 	}
 /******/
 /******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
 /******/ 	__webpack_require__.ab = __dirname + "/";
 /******/
 /******/ 	// the startup function
@@ -42,6 +44,8 @@ module.exports =
 /******/ 		// Load entry module and return exports
 /******/ 		return __webpack_require__(928);
 /******/ 	};
+/******/ 	// initialize runtime
+/******/ 	runtime(__webpack_require__);
 /******/
 /******/ 	// run startup
 /******/ 	return startup();
@@ -1999,43 +2003,6 @@ exports.isPaginatingEndpoint = isPaginatingEndpoint;
 exports.paginateRest = paginateRest;
 exports.paginatingEndpoints = paginatingEndpoints;
 //# sourceMappingURL=index.js.map
-
-
-/***/ }),
-
-/***/ 300:
-/***/ (function(module, __unusedexports, __webpack_require__) {
-
-"use strict";
-
-const lenientFunction = __webpack_require__(476);
-
-const yn = (value, {
-	lenient = false,
-	default: default_
-} = {}) => {
-	value = String(value).trim();
-
-	if (default_ !== undefined && typeof default_ !== 'boolean') {
-		throw new TypeError(`Expected the \`default\` option to be of type \`boolean\`, got \`${typeof default_}\``);
-	}
-
-	if (/^(?:y|yes|true|1|on)$/i.test(value)) {
-		return true;
-	}
-
-	if (/^(?:n|no|false|0|off)$/i.test(value)) {
-		return false;
-	}
-
-	if (lenient === true) {
-		return lenientFunction(value, default_);
-	}
-
-	return default_;
-};
-
-module.exports = yn;
 
 
 /***/ }),
@@ -5569,119 +5536,6 @@ rimraf.sync = rimrafSync
 
 /***/ }),
 
-/***/ 476:
-/***/ (function(module) {
-
-"use strict";
-
-
-const YES_MATCH_SCORE_THRESHOLD = 2;
-const NO_MATCH_SCORE_THRESHOLD = 1.25;
-
-const yMatch = new Map([
-	[5, 0.25],
-	[6, 0.25],
-	[7, 0.25],
-	['t', 0.75],
-	['y', 1],
-	['u', 0.75],
-	['g', 0.25],
-	['h', 0.25],
-	['j', 0.25]
-]);
-
-const eMatch = new Map([
-	[2, 0.25],
-	[3, 0.25],
-	[4, 0.25],
-	['w', 0.75],
-	['e', 1],
-	['r', 0.75],
-	['s', 0.25],
-	['d', 0.25],
-	['f', 0.25]
-]);
-
-const sMatch = new Map([
-	['q', 0.25],
-	['w', 0.25],
-	['e', 0.25],
-	['a', 0.75],
-	['s', 1],
-	['d', 0.75],
-	['z', 0.25],
-	['x', 0.25],
-	['c', 0.25]
-]);
-
-const nMatch = new Map([
-	['h', 0.25],
-	['j', 0.25],
-	['k', 0.25],
-	['b', 0.75],
-	['n', 1],
-	['m', 0.75]
-]);
-
-const oMatch = new Map([
-	[9, 0.25],
-	[0, 0.25],
-	['i', 0.75],
-	['o', 1],
-	['p', 0.75],
-	['k', 0.25],
-	['l', 0.25]
-]);
-
-function getYesMatchScore(value) {
-	const [y, e, s] = value;
-	let score = 0;
-
-	if (yMatch.has(y)) {
-		score += yMatch.get(y);
-	}
-
-	if (eMatch.has(e)) {
-		score += eMatch.get(e);
-	}
-
-	if (sMatch.has(s)) {
-		score += sMatch.get(s);
-	}
-
-	return score;
-}
-
-function getNoMatchScore(value) {
-	const [n, o] = value;
-	let score = 0;
-
-	if (nMatch.has(n)) {
-		score += nMatch.get(n);
-	}
-
-	if (oMatch.has(o)) {
-		score += oMatch.get(o);
-	}
-
-	return score;
-}
-
-module.exports = (input, default_) => {
-	if (getYesMatchScore(input) >= YES_MATCH_SCORE_THRESHOLD) {
-		return true;
-	}
-
-	if (getNoMatchScore(input) >= NO_MATCH_SCORE_THRESHOLD) {
-		return false;
-	}
-
-	return default_;
-};
-
-
-/***/ }),
-
 /***/ 477:
 /***/ (function(module) {
 
@@ -8940,7 +8794,7 @@ module.exports = {
 /***/ 731:
 /***/ (function(module) {
 
-module.exports = {"private":false,"name":"ember-cli-update-action","version":"3.0.12","description":"Run ember-cli-update updates on CI","bin":{"ember-cli-update-action":"bin/index.js"},"files":["bin","src"],"scripts":{"lint:git":"commitlint","lint":"eslint . --ext js,json","test":"mocha --recursive","release":"standard-version --commit-all"},"standard-version":{"scripts":{"prerelease":"ncc build src/action.js -o dist && git add -A dist","posttag":"git push --follow-tags --atomic"}},"repository":{"type":"git","url":"git+https://github.com/kellyselden/ember-cli-update-action.git"},"author":"Kelly Selden","license":"MIT","bugs":{"url":"https://github.com/kellyselden/ember-cli-update-action/issues"},"homepage":"https://github.com/kellyselden/ember-cli-update-action#readme","engines":{"node":">=12.13"},"dependencies":{"@actions/core":"^1.2.6","@actions/github":"^5.0.0","execa":"^5.0.0","fs-extra":"^10.0.0","request":"^2.88.0","yargs":"^17.0.0","yn":"^4.0.0"},"devDependencies":{"@crowdstrike/commitlint":"^4.0.0","@kellyselden/node-template":"2.1.0","@zeit/ncc":"0.22.3","chai":"^4.3.4","eslint":"^7.28.0","eslint-config-sane":"^1.0.0","eslint-config-sane-node":"^1.1.0","eslint-plugin-json-files":"^1.1.0","eslint-plugin-mocha":"^9.0.0","eslint-plugin-node":"^11.1.0","eslint-plugin-prefer-let":"^1.1.0","mocha":"^9.0.0","mocha-helpers":"^6.0.0","renovate-config-standard":"2.1.2","sinon":"^11.0.0","standard-node-template":"2.0.0","standard-version":"^9.0.0"}};
+module.exports = {"private":false,"name":"ember-cli-update-action","version":"3.0.13","description":"Run ember-cli-update updates on CI","bin":{"ember-cli-update-action":"bin/index.js"},"files":["bin","src"],"scripts":{"lint:git":"commitlint","lint":"eslint . --ext js,json","test":"mocha --recursive","release":"standard-version --commit-all"},"standard-version":{"scripts":{"prerelease":"ncc build src/action.js -o dist && git add -A dist","posttag":"git push --follow-tags --atomic"}},"repository":{"type":"git","url":"git+https://github.com/kellyselden/ember-cli-update-action.git"},"author":"Kelly Selden","license":"MIT","bugs":{"url":"https://github.com/kellyselden/ember-cli-update-action/issues"},"homepage":"https://github.com/kellyselden/ember-cli-update-action#readme","engines":{"node":">=12.13"},"dependencies":{"@actions/core":"^1.2.6","@actions/github":"^5.0.0","execa":"^5.0.0","fs-extra":"^10.0.0","request":"^2.88.0","yargs":"^17.0.0","yn":"^5.0.0"},"devDependencies":{"@crowdstrike/commitlint":"^4.0.0","@kellyselden/node-template":"2.1.0","@zeit/ncc":"0.22.3","chai":"^4.3.4","eslint":"^7.28.0","eslint-config-sane":"^1.0.0","eslint-config-sane-node":"^1.1.0","eslint-plugin-json-files":"^1.1.0","eslint-plugin-mocha":"^9.0.0","eslint-plugin-node":"^11.1.0","eslint-plugin-prefer-let":"^1.1.0","mocha":"^9.0.0","mocha-helpers":"^6.0.0","renovate-config-standard":"2.1.2","sinon":"^11.0.0","standard-node-template":"2.0.0","standard-version":"^9.0.0"}};
 
 /***/ }),
 
@@ -11460,9 +11314,11 @@ module.exports = {
 const core = __webpack_require__(470);
 const github = __webpack_require__(469);
 const emberCliUpdateAction = __webpack_require__(676);
-const yn = __webpack_require__(300);
 
 (async() => {
+  // eslint-disable-next-line prefer-let/prefer-let
+  const { default: yn } = await __webpack_require__.e(/* import() */ 116).then(__webpack_require__.bind(null, 116));
+
   try {
     // Get the JSON webhook payload for the event that triggered the workflow
     // let payload = JSON.stringify(github.context.payload, undefined, 2);
@@ -12053,4 +11909,88 @@ module.exports = {
 
 /***/ })
 
-/******/ });
+/******/ },
+/******/ function(__webpack_require__) { // webpackRuntimeModules
+/******/ 	"use strict";
+/******/ 
+/******/ 	/* webpack/runtime/ensure chunk */
+/******/ 	!function() {
+/******/ 		__webpack_require__.f = {};
+/******/ 		// This file contains only the entry chunk.
+/******/ 		// The chunk loading function for additional chunks
+/******/ 		__webpack_require__.e = function requireEnsure(chunkId) {
+/******/ 			return Promise.all(Object.keys(__webpack_require__.f).reduce(function(promises, key) {
+/******/ 				__webpack_require__.f[key](chunkId, promises);
+/******/ 				return promises;
+/******/ 			}, []));
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	!function() {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = function(exports) {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getter */
+/******/ 	!function() {
+/******/ 		// define getter function for harmony exports
+/******/ 		var hasOwnProperty = Object.prototype.hasOwnProperty;
+/******/ 		__webpack_require__.d = function(exports, name, getter) {
+/******/ 			if(!hasOwnProperty.call(exports, name)) {
+/******/ 				Object.defineProperty(exports, name, { enumerable: true, get: getter });
+/******/ 			}
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/get javascript chunk filename */
+/******/ 	!function() {
+/******/ 		// This function allow to reference async chunks
+/******/ 		__webpack_require__.u = function(chunkId) {
+/******/ 			// return url for filenames based on template
+/******/ 			return "" + chunkId + ".index.js";
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/require chunk loading */
+/******/ 	!function() {
+/******/ 		// object to store loaded chunks
+/******/ 		// "1" means "loaded", otherwise not loaded yet
+/******/ 		var installedChunks = {
+/******/ 			179: 1
+/******/ 		};
+/******/ 		
+/******/ 		// require() chunk loading for javascript
+/******/ 		__webpack_require__.f.require = function(chunkId, promises) {
+/******/ 		
+/******/ 			// "1" is the signal for "already loaded"
+/******/ 			if(!installedChunks[chunkId]) {
+/******/ 				if(true) { // all chunks have JS
+/******/ 					var chunk = require("./" + __webpack_require__.u(chunkId));
+/******/ 					var moreModules = chunk.modules, chunkIds = chunk.ids, runtime = chunk.runtime;
+/******/ 					for(var moduleId in moreModules) {
+/******/ 						if(Object.prototype.hasOwnProperty.call(moreModules, moduleId)) {
+/******/ 							__webpack_require__.m[moduleId] = moreModules[moduleId];
+/******/ 						}
+/******/ 					}
+/******/ 					if(runtime) runtime(__webpack_require__);
+/******/ 					for(var i = 0; i < chunkIds.length; i++)
+/******/ 						installedChunks[chunkIds[i]] = 1;
+/******/ 				} else installedChunks[chunkId] = 1;
+/******/ 		
+/******/ 				// no HMR
+/******/ 			}
+/******/ 		};
+/******/ 		
+/******/ 		// no HMR
+/******/ 		
+/******/ 		// no HMR manifest
+/******/ 	}();
+/******/ 	
+/******/ }
+);

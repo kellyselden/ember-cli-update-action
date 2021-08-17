@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 3.0.14 (2021-08-17)
+
+
+### Bug Fixes
+
+* update yn import ([5ff2898](https://github.com/kellyselden/ember-cli-update-action/commit/5ff28981ff905c3cdc6e24a343d238630b52b67d))
+
 ### 3.0.13 (2021-08-12)
 
 ### 3.0.12 (2021-07-04)
