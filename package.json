@@ -36,7 +36,7 @@
     "node": ">=12.13"
   },
   "dependencies": {
-    "@actions/core": "^1.2.6",
+    "@actions/core": "^1.9.1",
     "@actions/github": "^5.0.0",
     "execa": "^5.0.0",
     "fs-extra": "^10.0.0",
