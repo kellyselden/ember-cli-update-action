@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 4.0.0 (2022-08-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* bumps node to 14
+
+* ember-cli-update-action ([3055bbe](https://github.com/kellyselden/ember-cli-update-action/commit/3055bbeee95adba89cb8dba808d67a4c61d949f3))
+
 ### 3.0.31 (2022-08-18)
 
 ### 3.0.30 (2022-03-26)
