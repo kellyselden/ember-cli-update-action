@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 4.0.14 (2023-01-15)
+
+
+### Bug Fixes
+
+* try ignore-scripts=false ([af9d213](https://github.com/kellyselden/ember-cli-update-action/commit/af9d213a85860bd89c9edcb387b9726c866f027f))
+
 ### 4.0.13 (2023-01-15)
 
 
