@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "@crowdstrike/commitlint": "^6.0.0",
-    "@kellyselden/node-template": "3.0.1",
+    "@kellyselden/node-template": "3.0.2",
     "@zeit/ncc": "0.22.3",
     "chai": "^4.3.7",
     "eslint": "^8.31.0",
