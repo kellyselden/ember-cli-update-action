@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 4.0.17 (2023-01-15)
+
+
+### Bug Fixes
+
+* update node14 in action ([2c9b88b](https://github.com/kellyselden/ember-cli-update-action/commit/2c9b88be978c442340998d7a5b067e61d4c84d26))
+
 ### 4.0.16 (2023-01-15)
 
 ### 4.0.15 (2023-01-15)
