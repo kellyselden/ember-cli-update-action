@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 4.0.18 (2023-01-15)
+
+
+### Bug Fixes
+
+* actions only support node12 and node16 ([facc12d](https://github.com/kellyselden/ember-cli-update-action/commit/facc12d7e9d1d36e529a584837e58de646c69f47))
+
 ### 4.0.17 (2023-01-15)
 
 
