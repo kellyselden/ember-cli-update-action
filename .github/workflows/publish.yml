@@ -19,7 +19,7 @@ jobs:
     - run: |
         git config user.email "$(git show -s --format=%ae)"
         git config user.name "$(git show -s --format=%an)"
-    - run: npm run --ignore-scripts=false release
+    - run: npm --ignore-scripts=false run release
 
     - uses: kellyselden/move-semver-tags-action@v3
       with:
