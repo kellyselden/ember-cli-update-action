@@ -14,5 +14,5 @@ inputs:
   autofix_command:
     description: 'post-update linting autofix code'
 runs:
-  using: 'node14'
+  using: 'node16'
   main: 'dist/index.js'
