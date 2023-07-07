@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 5.0.0 (2023-07-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* node 16
+
+* node 16 ([0362514](https://github.com/kellyselden/ember-cli-update-action/commit/03625145b10dd625a1d9723179ed55a5694f1375))
+
 ### 4.0.23 (2023-07-07)
 
 ### 4.0.22 (2023-07-07)
