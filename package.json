@@ -60,7 +60,7 @@
     "mocha-helpers": "^7.1.0",
     "renovate-config-standard": "2.1.2",
     "sinon": "^15.0.0",
-    "standard-node-template": "3.3.0",
+    "standard-node-template": "4.0.1",
     "standard-version": "^9.0.0"
   }
 }
