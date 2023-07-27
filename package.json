@@ -45,7 +45,7 @@
     "yn": "^5.0.0"
   },
   "devDependencies": {
-    "@crowdstrike/commitlint": "^6.0.0",
+    "@crowdstrike/commitlint": "^7.0.0",
     "@kellyselden/node-template": "4.0.0",
     "@zeit/ncc": "0.22.3",
     "chai": "^4.3.7",
