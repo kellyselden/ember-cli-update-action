@@ -32578,10 +32578,9 @@ const fs = __nccwpck_require__(5630);
 async function spawn(bin, args = [], options) {
   let { execa } = await __nccwpck_require__.e(/* import() */ 346).then(__nccwpck_require__.bind(__nccwpck_require__, 5346));
 
-  console.log(...[[bin, ...args].join(' '), options].filter(Boolean));
-
   let ps = execa(bin, args, {
     stdio: ['ignore', 'pipe', 'inherit'],
+    verbose: true,
     ...options
   });
 
@@ -32593,10 +32592,9 @@ async function spawn(bin, args = [], options) {
 async function exec(command, options) {
   let { execaCommand } = await __nccwpck_require__.e(/* import() */ 346).then(__nccwpck_require__.bind(__nccwpck_require__, 5346));
 
-  console.log(...[command, options].filter(Boolean));
-
   let ps = execaCommand(command, {
     stdio: ['ignore', 'pipe', 'inherit'],
+    verbose: true,
     ...options
   });
 
@@ -33168,7 +33166,7 @@ module.exports = require("zlib");
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"private":false,"name":"ember-cli-update-action","version":"6.0.12","description":"Run ember-cli-update updates on CI","bin":{"ember-cli-update-action":"bin/index.js"},"files":["bin","src"],"scripts":{"lint:git":"commitlint --from HEAD~1","lint":"eslint . --ext js,json","test":"mocha","release":"standard-version --commit-all"},"standard-version":{"scripts":{"prerelease":"ncc build src/action.js -o dist && git add -A dist","posttag":"git push --follow-tags --atomic"}},"repository":{"type":"git","url":"git+https://github.com/kellyselden/ember-cli-update-action.git"},"author":"Kelly Selden","license":"MIT","bugs":{"url":"https://github.com/kellyselden/ember-cli-update-action/issues"},"homepage":"https://github.com/kellyselden/ember-cli-update-action#readme","engines":{"node":">=18.12"},"dependencies":{"@actions/core":"^1.2.6","@actions/github":"^6.0.0","execa":"^8.0.0","fs-extra":"^11.0.0","request":"^2.88.0","yargs":"^17.0.0","yn":"^5.0.0"},"devDependencies":{"@crowdstrike/commitlint":"^7.0.0","@kellyselden/node-template":"5.0.0","@vercel/ncc":"0.38.1","chai":"^4.3.7","eslint":"^8.44.0","eslint-config-sane":"^1.0.2","eslint-config-sane-node":"^1.1.1","eslint-plugin-json-files":"^3.0.0","eslint-plugin-mocha":"^10.1.0","eslint-plugin-node":"^11.1.0","eslint-plugin-prefer-let":"^3.0.1","mocha":"^10.2.0","mocha-helpers":"^8.0.0","renovate-config-standard":"2.1.2","sinon":"^17.0.0","standard-node-template":"6.0.0","standard-version":"^9.0.0"}}');
+module.exports = JSON.parse('{"private":false,"name":"ember-cli-update-action","version":"6.0.13","description":"Run ember-cli-update updates on CI","bin":{"ember-cli-update-action":"bin/index.js"},"files":["bin","src"],"scripts":{"lint:git":"commitlint --from HEAD~1","lint":"eslint . --ext js,json","test":"mocha","release":"standard-version --commit-all"},"standard-version":{"scripts":{"prerelease":"ncc build src/action.js -o dist && git add -A dist","posttag":"git push --follow-tags --atomic"}},"repository":{"type":"git","url":"git+https://github.com/kellyselden/ember-cli-update-action.git"},"author":"Kelly Selden","license":"MIT","bugs":{"url":"https://github.com/kellyselden/ember-cli-update-action/issues"},"homepage":"https://github.com/kellyselden/ember-cli-update-action#readme","engines":{"node":">=18.12"},"dependencies":{"@actions/core":"^1.2.6","@actions/github":"^6.0.0","execa":"^8.0.0","fs-extra":"^11.0.0","request":"^2.88.0","yargs":"^17.0.0","yn":"^5.0.0"},"devDependencies":{"@crowdstrike/commitlint":"^7.0.0","@kellyselden/node-template":"5.0.0","@vercel/ncc":"0.38.1","chai":"^4.3.7","eslint":"^8.44.0","eslint-config-sane":"^1.0.2","eslint-config-sane-node":"^1.1.1","eslint-plugin-json-files":"^3.0.0","eslint-plugin-mocha":"^10.1.0","eslint-plugin-node":"^11.1.0","eslint-plugin-prefer-let":"^3.0.1","mocha":"^10.2.0","mocha-helpers":"^8.0.0","renovate-config-standard":"2.1.2","sinon":"^17.0.0","standard-node-template":"6.0.0","standard-version":"^9.0.0"}}');
 
 /***/ })
 

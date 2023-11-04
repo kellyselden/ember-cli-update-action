@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 6.1.0 (2023-11-04)
+
+
+### Features
+
+* use execa verbose option ([cfa38c0](https://github.com/kellyselden/ember-cli-update-action/commit/cfa38c0a282d6790eecb4edb32f6395218a56741))
+
 ### 6.0.13 (2023-11-04)
 
 
