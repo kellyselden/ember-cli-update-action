@@ -1,7 +1,7 @@
 {
   "private": false,
   "name": "ember-cli-update-action",
-  "version": "6.0.5",
+  "version": "6.0.6",
   "description": "Run ember-cli-update updates on CI",
   "bin": {
     "ember-cli-update-action": "bin/index.js"
