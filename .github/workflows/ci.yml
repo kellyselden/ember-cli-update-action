@@ -20,7 +20,7 @@ jobs:
         ref: ${{ github.head_ref }}
     - run: |
         git fetch --prune --unshallow
-        git branch master origin/master
+        git branch main origin/main
 
     - uses: actions/setup-node@v3
       with:
