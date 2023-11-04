@@ -1,0 +1,20 @@
+name: Publish
+
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    - uses: kellyselden/move-semver-tags-action@v5
+      with:
+        copy-annotations: true
