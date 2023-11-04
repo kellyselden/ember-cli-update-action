@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/kellyselden/ember-cli-update-action#readme",
   "engines": {
-    "node": ">=16.13"
+    "node": ">=18.12"
   },
   "dependencies": {
     "@actions/core": "^1.2.6",
@@ -60,7 +60,7 @@
     "mocha-helpers": "^8.0.0",
     "renovate-config-standard": "2.1.2",
     "sinon": "^15.0.0",
-    "standard-node-template": "4.0.1",
+    "standard-node-template": "4.1.0",
     "standard-version": "^9.0.0"
   }
 }
