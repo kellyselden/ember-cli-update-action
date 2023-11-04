@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "@crowdstrike/commitlint": "^7.0.0",
-    "@kellyselden/node-template": "4.1.0",
+    "@kellyselden/node-template": "5.0.0",
     "@vercel/ncc": "0.38.1",
     "chai": "^4.3.7",
     "eslint": "^8.44.0",
