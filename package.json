@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/kellyselden/ember-cli-update-action#readme",
   "engines": {
-    "node": ">=16.13"
+    "node": ">=18.12"
   },
   "dependencies": {
     "@actions/core": "^1.2.6",
