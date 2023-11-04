@@ -1,4 +1,4 @@
-name: Publish
+name: Move SemVer Tags
 
 on:
   push:
