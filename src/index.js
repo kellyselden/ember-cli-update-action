@@ -1,9 +1,10 @@
 'use strict';
 
-const execa = require('execa');
 const fs = require('fs-extra');
 
-function spawn(bin, args = [], options) {
+async function spawn(bin, args = [], options) {
+  let { execa } = await import('execa');
+
   console.log(...[[bin, ...args].join(' '), options].filter(Boolean));
 
   let ps = execa(bin, args, {
@@ -17,9 +18,11 @@ function spawn(bin, args = [], options) {
 }
 
 async function exec(command, options) {
+  let { execaCommand } = await import('execa');
+
   console.log(...[command, options].filter(Boolean));
 
-  let ps = execa.command(command, {
+  let ps = execaCommand(command, {
     stdio: ['ignore', 'pipe', 'inherit'],
     ...options
   });
