@@ -83,3 +83,4 @@ jobs:
       with:
         autofix_command: npm run lint -- --fix
         ignore_to: true
+        commit_prefix: "chore: "
