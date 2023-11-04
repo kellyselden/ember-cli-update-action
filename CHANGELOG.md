@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [5.0.7](https://github.com/kellyselden/ember-cli-update-action/compare/v5.0.5...v5.0.7) (2023-11-04)
+
 ### 5.0.5 (2023-11-04)
 
 ### 5.0.4 (2023-07-28)
