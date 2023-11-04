@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.0.0](https://github.com/kellyselden/ember-cli-update-action/compare/v5.0.6...v6.0.0) (2023-11-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* use node 18
+
+* extract move-semver-tags.yml ([884a677](https://github.com/kellyselden/ember-cli-update-action/commit/884a677b09ef8e6346ed135854d6094d4c27a653))
+
 ### 5.0.6 (2023-11-04)
 
 ### 5.0.5 (2023-11-04)
