@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 6.0.13 (2023-11-04)
+
+
+### Bug Fixes
+
+* support esm execa ([e4b3f67](https://github.com/kellyselden/ember-cli-update-action/commit/e4b3f67227c5b00590dfc91f64daa670cbaab56b))
+
 ### 6.0.12 (2023-11-04)
 
 ### 6.0.11 (2023-11-04)
