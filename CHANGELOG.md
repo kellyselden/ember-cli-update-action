@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 6.2.0 (2023-11-04)
+
+
+### Features
+
+* run action with node20 ([8b4ee7a](https://github.com/kellyselden/ember-cli-update-action/commit/8b4ee7acdcdf0159c9ac32bbba84776224a691ad))
+
 ## 6.1.0 (2023-11-04)
 
 
