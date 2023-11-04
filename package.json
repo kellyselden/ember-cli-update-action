@@ -11,7 +11,7 @@
     "src"
   ],
   "scripts": {
-    "lint:git": "commitlint",
+    "lint:git": "commitlint --from HEAD~1",
     "lint": "eslint . --ext js,json",
     "test": "mocha",
     "release": "standard-version --commit-all"
