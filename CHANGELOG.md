@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 6.2.6 (2024-07-22)
+
+
+### Bug Fixes
+
+* add npm install --force ([ad44072](https://github.com/kellyselden/ember-cli-update-action/commit/ad44072f2c6b4b43f17fb61f69a572540dab4782))
+
 ### 6.2.5 (2023-11-10)
 
 ### 6.2.4 (2023-11-10)
