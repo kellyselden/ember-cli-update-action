@@ -176,7 +176,10 @@ async function emberCliUpdateAction({
 
     if (hasPackageLock) {
       await spawn('npm', [
-        'install'
+        'install',
+
+        // https://github.com/npm/cli/issues/5222
+        '--force'
       ]);
     } else {
       let hasYarnLock = await fs.pathExists('yarn.lock');
