@@ -14,9 +14,9 @@
     "lint:git": "commitlint --from HEAD~1",
     "lint": "eslint . --ext js,json",
     "test": "mocha",
-    "release": "standard-version --commit-all"
+    "release": "commit-and-tag-version --commit-all"
   },
-  "standard-version": {
+  "commit-and-tag-version": {
     "scripts": {
       "prerelease": "ncc build src/action.js -o dist && git add -A dist",
       "posttag": "git push --follow-tags --atomic"
@@ -61,6 +61,6 @@
     "renovate-config-standard": "2.1.2",
     "sinon": "^21.0.0",
     "standard-node-template": "7.0.0",
-    "standard-version": "^9.0.0"
+    "commit-and-tag-version": "^9.5.0"
   }
 }
