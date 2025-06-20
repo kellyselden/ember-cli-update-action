@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 7.0.0 (2025-06-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* node 20
+
+* ember-cli-update-action ([65942bd](https://github.com/kellyselden/ember-cli-update-action/commit/65942bdcdadee711cc9d9e8b7a6e012321abfab9))
+
 ### 6.2.14 (2025-06-20)
 
 ### 6.2.13 (2025-06-20)
