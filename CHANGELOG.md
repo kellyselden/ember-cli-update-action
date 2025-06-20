@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+### 7.0.5 (2025-06-20)
+
+
+### Bug Fixes
+
+* **deps:** update dependency execa to v9 ([4a40f9a](https://github.com/kellyselden/ember-cli-update-action/commit/4a40f9a9b266c46c327b22720ad678f8d1f2d76e))
+
 ### 7.0.4 (2025-06-20)
 
 ### 7.0.3 (2025-06-20)
