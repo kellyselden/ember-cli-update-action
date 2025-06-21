@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+### 7.0.6 (2025-06-21)
+
+
+### Bug Fixes
+
+* verbose is now string instead of bool ([4bc1350](https://github.com/kellyselden/ember-cli-update-action/commit/4bc13508fda5b9902a6f3881d4f0ae10a5386ef5))
+
 ### 7.0.5 (2025-06-20)
 
 
