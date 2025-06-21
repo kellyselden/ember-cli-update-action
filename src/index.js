@@ -7,7 +7,7 @@ async function spawn(bin, args = [], options) {
 
   let ps = execa(bin, args, {
     stdio: ['ignore', 'pipe', 'inherit'],
-    verbose: true,
+    verbose: 'full',
     ...options
   });
 
@@ -21,7 +21,7 @@ async function exec(command, options) {
 
   let ps = execaCommand(command, {
     stdio: ['ignore', 'pipe', 'inherit'],
-    verbose: true,
+    verbose: 'full',
     ...options
   });
 
