@@ -11,7 +11,7 @@
     "src"
   ],
   "scripts": {
-    "lint:git": "commitlint --from HEAD~1",
+    "lint:git": "node node_modules/@crowdstrike/commitlint/bin --from HEAD~1",
     "lint": "eslint . --ext js,json",
     "test": "mocha",
     "release": "commit-and-tag-version --commit-all"
