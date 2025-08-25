@@ -10,6 +10,7 @@ const {
 } = index;
 
 describe(getMatch, function() {
+
   beforeEach(function() {
     sinon.stub(console, 'log');
   });
