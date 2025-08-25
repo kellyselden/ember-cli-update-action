@@ -19,6 +19,7 @@ function match(fixture, regex) {
 }
 
 describe(function() {
+
   it('renovate', function() {
     let matches = match('renovate.md', renovateRegex);
 
