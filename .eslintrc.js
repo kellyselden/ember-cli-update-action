@@ -3,35 +3,35 @@
 module.exports = {
   root: true,
   parserOptions: {
-    ecmaVersion: 2022
+    ecmaVersion: 2022,
   },
   env: {
-    es6: true
+    es6: true,
   },
   extends: [
-    'sane-node'
+    'sane-node',
   ],
   rules: {
-    'no-console': 'off'
+    'no-console': 'off',
   },
   overrides: [
     {
       files: [
-        'test/**/*-test.js'
+        'test/**/*-test.js',
       ],
       env: {
-        mocha: true
+        mocha: true,
       },
       plugins: [
-        'mocha'
+        'mocha',
       ],
       extends: [
-        'plugin:mocha/recommended'
+        'plugin:mocha/recommended',
       ],
       rules: {
         'mocha/no-exclusive-tests': 'error',
-        'mocha/no-empty-description': 'off'
-      }
-    }
-  ]
+        'mocha/no-empty-description': 'off',
+      },
+    },
+  ],
 };

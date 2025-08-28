@@ -6,7 +6,7 @@ const index = require('../../src');
 const sinon = require('sinon');
 
 const {
-  getMatch
+  getMatch,
 } = index;
 
 describe(getMatch, function() {
@@ -27,11 +27,11 @@ latest version: 4.5.6
 
     let {
       isMatch,
-      blueprintName
+      blueprintName,
     } = await getMatch({
       packageName: 'ember-cli',
       from: '1.2.3',
-      to: '4.5.6'
+      to: '4.5.6',
     });
 
     expect(isMatch).to.be.true;
@@ -47,11 +47,11 @@ latest version: 4.5.6
 
     let {
       isMatch,
-      blueprintName
+      blueprintName,
     } = await getMatch({
       packageName: 'my-test-package',
       from: '1.2.3',
-      to: '4.5.6'
+      to: '4.5.6',
     });
 
     expect(isMatch).to.be.true;
@@ -62,11 +62,11 @@ latest version: 4.5.6
     sinon.stub(index, 'getStats').withArgs('my-test-package').resolves('');
 
     let {
-      isMatch
+      isMatch,
     } = await getMatch({
       packageName: 'my-test-package',
       from: '1.2.3',
-      to: '4.5.6'
+      to: '4.5.6',
     });
 
     expect(isMatch).to.be.false;
@@ -81,12 +81,12 @@ latest version: 7.8.9
 
     let {
       isMatch,
-      blueprintName
+      blueprintName,
     } = await getMatch({
       packageName: 'my-test-package',
       from: '1.2.3',
       to: '4.5.6',
-      ignoreTo: true
+      ignoreTo: true,
     });
 
     expect(isMatch).to.be.true;
@@ -103,11 +103,11 @@ latest version: 4.5.6
 
     let {
       isMatch,
-      blueprintName
+      blueprintName,
     } = await getMatch({
       packageName: 'my-test-package',
       from: '1.2.3',
-      to: '4.5.6'
+      to: '4.5.6',
     });
 
     expect(isMatch).to.be.true;

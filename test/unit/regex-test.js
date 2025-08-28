@@ -7,7 +7,7 @@ const path = require('path');
 const {
   renovateRegex,
   dependabotRegex,
-  greenkeeperRegex
+  greenkeeperRegex,
 } = require('../../src');
 
 const fixturesDir = path.resolve(__dirname, '../fixtures');
@@ -25,7 +25,7 @@ describe(function() {
     expect(matches.slice(1)).to.deep.equal([
       'npm-package-arg',
       '7.0.0',
-      '8.0.0'
+      '8.0.0',
     ]);
   });
 
@@ -35,7 +35,7 @@ describe(function() {
     expect(matches.slice(1)).to.deep.equal([
       'sinon',
       '7.5.0',
-      '9.0.2'
+      '9.0.2',
     ]);
   });
 
@@ -45,7 +45,7 @@ describe(function() {
     expect(matches.slice(1)).to.deep.equal([
       'semver',
       '6.3.0',
-      '7.0.0'
+      '7.0.0',
     ]);
   });
 });
