@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "@crowdstrike/commitlint": "^8.0.0",
-    "@kellyselden/node-template": "6.5.2",
+    "@kellyselden/node-template": "6.9.0",
     "@vercel/ncc": "0.38.3",
     "chai": "^4.5.0",
     "commit-and-tag-version": "^12.0.0",
