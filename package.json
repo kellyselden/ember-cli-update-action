@@ -1,8 +1,18 @@
 {
-  "private": false,
   "name": "ember-cli-update-action",
   "version": "7.0.19",
+  "private": false,
   "description": "Run ember-cli-update updates on CI",
+  "homepage": "https://github.com/kellyselden/ember-cli-update-action#readme",
+  "bugs": {
+    "url": "https://github.com/kellyselden/ember-cli-update-action/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kellyselden/ember-cli-update-action.git"
+  },
+  "license": "MIT",
+  "author": "Kelly Selden",
   "bin": {
     "ember-cli-update-action": "bin/index.js"
   },
@@ -11,29 +21,10 @@
     "src"
   ],
   "scripts": {
+    "lint": "eslint",
     "lint:git": "node node_modules/@crowdstrike/commitlint/bin --from HEAD~1",
-    "lint": "eslint . --ext js,json",
-    "test": "mocha",
-    "release": "commit-and-tag-version --commit-all"
-  },
-  "commit-and-tag-version": {
-    "scripts": {
-      "prerelease": "ncc build src/action.js -o dist && git add -A dist",
-      "posttag": "git push --follow-tags --atomic"
-    }
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/kellyselden/ember-cli-update-action.git"
-  },
-  "author": "Kelly Selden",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/kellyselden/ember-cli-update-action/issues"
-  },
-  "homepage": "https://github.com/kellyselden/ember-cli-update-action#readme",
-  "engines": {
-    "node": ">=20.9"
+    "release": "commit-and-tag-version --commit-all",
+    "test": "mocha"
   },
   "dependencies": {
     "@actions/core": "^1.2.6",
@@ -50,17 +41,22 @@
     "@vercel/ncc": "0.38.3",
     "chai": "^4.5.0",
     "commit-and-tag-version": "^12.0.0",
-    "eslint": "^8.57.1",
-    "eslint-config-sane": "^1.0.2",
-    "eslint-config-sane-node": "^2.0.0",
-    "eslint-plugin-json-files": "^5.1.0",
+    "eslint": "^9.34.0",
+    "eslint-config-sane-node": "^6.0.0",
     "eslint-plugin-mocha": "^10.5.0",
-    "eslint-plugin-n": "^17.20.0",
-    "eslint-plugin-prefer-let": "^4.0.0",
-    "mocha": "^11.7.0",
-    "mocha-helpers": "^10.0.0",
-    "renovate-config-standard": "2.3.0",
+    "mocha": "^11.7.1",
+    "mocha-helpers": "^10.2.1",
+    "renovate-config-standard": "2.4.2",
     "sinon": "^21.0.0",
     "standard-node-template": "7.2.0"
+  },
+  "engines": {
+    "node": ">=20.9"
+  },
+  "commit-and-tag-version": {
+    "scripts": {
+      "prerelease": "ncc build src/action.js -o dist && git add -A dist",
+      "posttag": "git push --follow-tags --atomic"
+    }
   }
 }

@@ -8,7 +8,7 @@ async function spawn(bin, args = [], options) {
   let ps = execa(bin, args, {
     stdio: ['ignore', 'pipe', 'inherit'],
     verbose: 'full',
-    ...options
+    ...options,
   });
 
   ps.stdout.pipe(process.stdout);
@@ -22,7 +22,7 @@ async function exec(command, options) {
   let ps = execaCommand(command, {
     stdio: ['ignore', 'pipe', 'inherit'],
     verbose: 'full',
-    ...options
+    ...options,
   });
 
   ps.stdout.pipe(process.stdout);
@@ -40,8 +40,8 @@ async function getStats(packageName) {
     'stats',
     ...packageName ? [
       '-b',
-      packageName
-    ] : []
+      packageName,
+    ] : [],
   ])).stdout;
 }
 
@@ -49,7 +49,7 @@ async function getMatch({
   packageName,
   from,
   to,
-  ignoreTo
+  ignoreTo,
 }) {
   let escapeSemVer = str => str.replace(/\./g, '\\.');
 
@@ -84,7 +84,7 @@ async function getMatch({
 
   return {
     isMatch: !!matches,
-    blueprintName
+    blueprintName,
   };
 }
 
@@ -96,7 +96,7 @@ async function emberCliUpdateAction({
   gitName,
   amend,
   ignoreTo,
-  commitPrefix = ''
+  commitPrefix = '',
 }) {
   let { name, version } = require('../package');
   console.log({ name, version });
@@ -131,12 +131,12 @@ async function emberCliUpdateAction({
 
   let {
     isMatch,
-    blueprintName
+    blueprintName,
   } = await getMatch({
     packageName,
     from,
     to,
-    ignoreTo
+    ignoreTo,
   });
 
   if (!isMatch) {
@@ -151,14 +151,14 @@ async function emberCliUpdateAction({
     '-b',
     blueprintName,
     '--to',
-    to
+    to,
   ];
 
   await spawn('npx', updateArgs);
 
   let status = (await spawn('git', [
     'status',
-    '--porcelain'
+    '--porcelain',
   ])).stdout;
 
   if (!status) {
@@ -179,7 +179,7 @@ async function emberCliUpdateAction({
         'install',
 
         // https://github.com/npm/cli/issues/5222
-        '--force'
+        '--force',
       ]);
     } else {
       let hasYarnLock = await fs.pathExists('yarn.lock');
@@ -196,7 +196,7 @@ async function emberCliUpdateAction({
         if (hasPnpmLock) {
           await spawn('pnpm', [
             'install',
-            '--frozen-lockfile=false'
+            '--frozen-lockfile=false',
           ]);
         }
       }
@@ -208,14 +208,14 @@ async function emberCliUpdateAction({
   if (autofixCommand) {
     try {
       await exec(autofixCommand);
-    } catch (err) {}
+    } catch {}
   }
 
   if (!gitEmail) {
     gitEmail = (await spawn('git', [
       'show',
       '-s',
-      '--format=%ae'
+      '--format=%ae',
     ])).stdout;
   }
 
@@ -223,25 +223,25 @@ async function emberCliUpdateAction({
     gitName = (await spawn('git', [
       'show',
       '-s',
-      '--format=%an'
+      '--format=%an',
     ])).stdout;
   }
 
   await spawn('git', [
     'config',
     'user.email',
-    `"${gitEmail}"`
+    `"${gitEmail}"`,
   ]);
 
   await spawn('git', [
     'config',
     'user.name',
-    `"${gitName}"`
+    `"${gitName}"`,
   ]);
 
   await spawn('git', [
     'add',
-    '-A'
+    '-A',
   ]);
 
   console.log({ amend });
@@ -250,7 +250,7 @@ async function emberCliUpdateAction({
     await spawn('git', [
       'commit',
       '--amend',
-      '--no-edit'
+      '--no-edit',
     ]);
   } else {
     await spawn('git', [
@@ -258,14 +258,14 @@ async function emberCliUpdateAction({
       '-m',
       `${commitPrefix}${name}
 
-${updateArgs.join(' ')}`
+${updateArgs.join(' ')}`,
     ]);
   }
 
   let branch = (await spawn('git', [
     'rev-parse',
     '--abbrev-ref',
-    'HEAD'
+    'HEAD',
   ])).stdout;
 
   console.log({ branch });
@@ -274,7 +274,7 @@ ${updateArgs.join(' ')}`
     'push',
     'origin',
     branch,
-    ...[amend ? '-f' : ''].filter(Boolean)
+    ...[amend ? '-f' : ''].filter(Boolean),
   ]);
 }
 

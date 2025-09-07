@@ -7,33 +7,33 @@ const yn = require('yn');
 const { argv } = require('yargs')
   .options({
     'body': {
-      type: 'string'
+      type: 'string',
     },
     'pull-request-url': {
-      type: 'string'
+      type: 'string',
     },
     'install-command': {
-      type: 'string'
+      type: 'string',
     },
     'autofix-command': {
-      type: 'string'
+      type: 'string',
     },
     'git-email': {
-      type: 'string'
+      type: 'string',
     },
     'git-name': {
-      type: 'string'
+      type: 'string',
     },
     'amend': {
-      type: 'boolean'
+      type: 'boolean',
     },
     'ignore-to': {
-      type: 'boolean'
+      type: 'boolean',
     },
     'commit-prefix': {
       type: 'string',
-      default: ''
-    }
+      default: '',
+    },
   });
 
 const { promisify } = require('util');
@@ -42,7 +42,7 @@ const request = promisify(require('request'));
 (async() => {
   let {
     body,
-    pullRequestUrl
+    pullRequestUrl,
   } = argv;
 
   if (!body) {
@@ -54,9 +54,9 @@ const request = promisify(require('request'));
       url: pullRequestUrl,
       headers: {
         'User-Agent': require('../package').name,
-        ...GITHUB_TOKEN ? { 'Authorization': `token ${GITHUB_TOKEN}` } : {}
+        ...GITHUB_TOKEN ? { 'Authorization': `token ${GITHUB_TOKEN}` } : {},
       },
-      json: true
+      json: true,
     });
 
     console.log({ response });
