@@ -27,7 +27,7 @@ const emberCliUpdateAction = require('.');
     let ignoreTo = yn(core.getInput('ignore_to'));
 
     let commitPrefix = core.getInput('commit_prefix', {
-      trimWhitespace: false
+      trimWhitespace: false,
     });
 
     await emberCliUpdateAction({
@@ -38,7 +38,7 @@ const emberCliUpdateAction = require('.');
       gitName,
       amend,
       ignoreTo,
-      commitPrefix
+      commitPrefix,
     });
   } catch (err) {
     core.setFailed(err.message);
