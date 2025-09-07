@@ -32677,7 +32677,7 @@ async function spawn(bin, args = [], options) {
   let ps = execa(bin, args, {
     stdio: ['ignore', 'pipe', 'inherit'],
     verbose: 'full',
-    ...options
+    ...options,
   });
 
   ps.stdout.pipe(process.stdout);
@@ -32691,7 +32691,7 @@ async function exec(command, options) {
   let ps = execaCommand(command, {
     stdio: ['ignore', 'pipe', 'inherit'],
     verbose: 'full',
-    ...options
+    ...options,
   });
 
   ps.stdout.pipe(process.stdout);
@@ -32709,8 +32709,8 @@ async function getStats(packageName) {
     'stats',
     ...packageName ? [
       '-b',
-      packageName
-    ] : []
+      packageName,
+    ] : [],
   ])).stdout;
 }
 
@@ -32718,7 +32718,7 @@ async function getMatch({
   packageName,
   from,
   to,
-  ignoreTo
+  ignoreTo,
 }) {
   let escapeSemVer = str => str.replace(/\./g, '\\.');
 
@@ -32753,7 +32753,7 @@ async function getMatch({
 
   return {
     isMatch: !!matches,
-    blueprintName
+    blueprintName,
   };
 }
 
@@ -32765,7 +32765,7 @@ async function emberCliUpdateAction({
   gitName,
   amend,
   ignoreTo,
-  commitPrefix = ''
+  commitPrefix = '',
 }) {
   let { name, version } = __nccwpck_require__(8330);
   console.log({ name, version });
@@ -32800,12 +32800,12 @@ async function emberCliUpdateAction({
 
   let {
     isMatch,
-    blueprintName
+    blueprintName,
   } = await getMatch({
     packageName,
     from,
     to,
-    ignoreTo
+    ignoreTo,
   });
 
   if (!isMatch) {
@@ -32820,14 +32820,14 @@ async function emberCliUpdateAction({
     '-b',
     blueprintName,
     '--to',
-    to
+    to,
   ];
 
   await spawn('npx', updateArgs);
 
   let status = (await spawn('git', [
     'status',
-    '--porcelain'
+    '--porcelain',
   ])).stdout;
 
   if (!status) {
@@ -32848,7 +32848,7 @@ async function emberCliUpdateAction({
         'install',
 
         // https://github.com/npm/cli/issues/5222
-        '--force'
+        '--force',
       ]);
     } else {
       let hasYarnLock = await fs.pathExists('yarn.lock');
@@ -32865,7 +32865,7 @@ async function emberCliUpdateAction({
         if (hasPnpmLock) {
           await spawn('pnpm', [
             'install',
-            '--frozen-lockfile=false'
+            '--frozen-lockfile=false',
           ]);
         }
       }
@@ -32877,14 +32877,14 @@ async function emberCliUpdateAction({
   if (autofixCommand) {
     try {
       await exec(autofixCommand);
-    } catch (err) {}
+    } catch {}
   }
 
   if (!gitEmail) {
     gitEmail = (await spawn('git', [
       'show',
       '-s',
-      '--format=%ae'
+      '--format=%ae',
     ])).stdout;
   }
 
@@ -32892,25 +32892,25 @@ async function emberCliUpdateAction({
     gitName = (await spawn('git', [
       'show',
       '-s',
-      '--format=%an'
+      '--format=%an',
     ])).stdout;
   }
 
   await spawn('git', [
     'config',
     'user.email',
-    `"${gitEmail}"`
+    `"${gitEmail}"`,
   ]);
 
   await spawn('git', [
     'config',
     'user.name',
-    `"${gitName}"`
+    `"${gitName}"`,
   ]);
 
   await spawn('git', [
     'add',
-    '-A'
+    '-A',
   ]);
 
   console.log({ amend });
@@ -32919,7 +32919,7 @@ async function emberCliUpdateAction({
     await spawn('git', [
       'commit',
       '--amend',
-      '--no-edit'
+      '--no-edit',
     ]);
   } else {
     await spawn('git', [
@@ -32927,14 +32927,14 @@ async function emberCliUpdateAction({
       '-m',
       `${commitPrefix}${name}
 
-${updateArgs.join(' ')}`
+${updateArgs.join(' ')}`,
     ]);
   }
 
   let branch = (await spawn('git', [
     'rev-parse',
     '--abbrev-ref',
-    'HEAD'
+    'HEAD',
   ])).stdout;
 
   console.log({ branch });
@@ -32943,7 +32943,7 @@ ${updateArgs.join(' ')}`
     'push',
     'origin',
     branch,
-    ...[amend ? '-f' : ''].filter(Boolean)
+    ...[amend ? '-f' : ''].filter(Boolean),
   ]);
 }
 
@@ -34938,7 +34938,7 @@ module.exports = parseParams
 /***/ ((module) => {
 
 "use strict";
-module.exports = /*#__PURE__*/JSON.parse('{"private":false,"name":"ember-cli-update-action","version":"7.0.18","description":"Run ember-cli-update updates on CI","bin":{"ember-cli-update-action":"bin/index.js"},"files":["bin","src"],"scripts":{"lint:git":"node node_modules/@crowdstrike/commitlint/bin --from HEAD~1","lint":"eslint . --ext js,json","test":"mocha","release":"commit-and-tag-version --commit-all"},"commit-and-tag-version":{"scripts":{"prerelease":"ncc build src/action.js -o dist && git add -A dist","posttag":"git push --follow-tags --atomic"}},"repository":{"type":"git","url":"git+https://github.com/kellyselden/ember-cli-update-action.git"},"author":"Kelly Selden","license":"MIT","bugs":{"url":"https://github.com/kellyselden/ember-cli-update-action/issues"},"homepage":"https://github.com/kellyselden/ember-cli-update-action#readme","engines":{"node":">=20.9"},"dependencies":{"@actions/core":"^1.2.6","@actions/github":"^6.0.0","execa":"^9.0.0","fs-extra":"^11.0.0","request":"^2.88.0","yargs":"^17.0.0","yn":"^5.0.0"},"devDependencies":{"@crowdstrike/commitlint":"^8.0.0","@kellyselden/node-template":"6.5.2","@vercel/ncc":"0.38.3","chai":"^4.5.0","commit-and-tag-version":"^12.0.0","eslint":"^8.57.1","eslint-config-sane":"^1.0.2","eslint-config-sane-node":"^2.0.0","eslint-plugin-json-files":"^5.1.0","eslint-plugin-mocha":"^10.5.0","eslint-plugin-n":"^17.20.0","eslint-plugin-prefer-let":"^4.0.0","mocha":"^11.7.0","mocha-helpers":"^10.0.0","renovate-config-standard":"2.3.0","sinon":"^21.0.0","standard-node-template":"7.2.0"}}');
+module.exports = /*#__PURE__*/JSON.parse('{"name":"ember-cli-update-action","version":"7.0.19","private":false,"description":"Run ember-cli-update updates on CI","homepage":"https://github.com/kellyselden/ember-cli-update-action#readme","bugs":{"url":"https://github.com/kellyselden/ember-cli-update-action/issues"},"repository":{"type":"git","url":"git+https://github.com/kellyselden/ember-cli-update-action.git"},"license":"MIT","author":"Kelly Selden","bin":{"ember-cli-update-action":"bin/index.js"},"files":["bin","src"],"scripts":{"lint":"eslint","lint:git":"node node_modules/@crowdstrike/commitlint/bin --from HEAD~1","release":"commit-and-tag-version --commit-all","test":"mocha"},"dependencies":{"@actions/core":"^1.2.6","@actions/github":"^6.0.0","execa":"^9.0.0","fs-extra":"^11.0.0","request":"^2.88.0","yargs":"^17.0.0","yn":"^5.0.0"},"devDependencies":{"@crowdstrike/commitlint":"^8.0.0","@kellyselden/node-template":"6.9.0","@vercel/ncc":"0.38.3","chai":"^4.5.0","commit-and-tag-version":"^12.0.0","eslint":"^9.34.0","eslint-config-sane-node":"^6.0.0","eslint-plugin-mocha":"^10.5.0","mocha":"^11.7.1","mocha-helpers":"^10.2.1","renovate-config-standard":"2.4.2","sinon":"^21.0.0","standard-node-template":"7.2.0"},"engines":{"node":">=20.9"},"commit-and-tag-version":{"scripts":{"prerelease":"ncc build src/action.js -o dist && git add -A dist","posttag":"git push --follow-tags --atomic"}}}');
 
 /***/ })
 
@@ -35097,7 +35097,7 @@ const emberCliUpdateAction = __nccwpck_require__(5105);
     let ignoreTo = yn(core.getInput('ignore_to'));
 
     let commitPrefix = core.getInput('commit_prefix', {
-      trimWhitespace: false
+      trimWhitespace: false,
     });
 
     await emberCliUpdateAction({
@@ -35108,7 +35108,7 @@ const emberCliUpdateAction = __nccwpck_require__(5105);
       gitName,
       amend,
       ignoreTo,
-      commitPrefix
+      commitPrefix,
     });
   } catch (err) {
     core.setFailed(err.message);
