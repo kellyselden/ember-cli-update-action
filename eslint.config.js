@@ -10,13 +10,11 @@ const saneNode = require('eslint-config-sane-node');
 
 module.exports = defineConfig([
   saneNode,
-
   {
     rules: {
       'no-console': 'off',
     },
   },
-
   {
     ...mocha.configs.flat.recommended,
     files: [
