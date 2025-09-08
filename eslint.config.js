@@ -28,7 +28,8 @@ module.exports = defineConfig([
   },
   globalIgnores([
     'test/fixtures/',
-
+  ]),
+  globalIgnores([
     'dist/',
   ]),
 ]);
