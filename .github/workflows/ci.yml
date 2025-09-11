@@ -18,6 +18,7 @@ jobs:
     - uses: actions/checkout@v5
       with:
         ref: ${{ github.head_ref }}
+
     - run: |
         git fetch --prune --unshallow
         git branch main origin/main
@@ -27,6 +28,7 @@ jobs:
         node-version: 20
 
     - run: npm ci
+
     - run: npm run lint:git
 
   lint:
@@ -36,11 +38,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v5
+
     - uses: actions/setup-node@v5
       with:
         node-version: 20
 
     - run: npm ci
+
     - run: npm run lint
 
   test:
@@ -57,11 +61,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v5
+
     - uses: actions/setup-node@v5
       with:
         node-version: ${{ matrix.node }}
 
     - run: npm ci
+
     - run: npm test
 
   ember-cli-update:
@@ -75,6 +81,7 @@ jobs:
       with:
         ref: ${{ github.head_ref }}
         token: ${{ secrets.GitHubToken }}
+
     - uses: actions/setup-node@v5
       with:
         node-version: 20
