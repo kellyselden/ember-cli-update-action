@@ -119,6 +119,11 @@ async function emberCliUpdateAction({
   let { name, version } = require('../package');
   console.log({ name, version });
 
+  await spawn('npx', [
+    'ember-cli-update',
+    '--version',
+  ], { cwd });
+
   console.log({ body });
 
   let matches;
