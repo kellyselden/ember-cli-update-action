@@ -43,6 +43,7 @@
     "chai": "^4.5.0",
     "commit-and-tag-version": "^12.0.0",
     "eslint": "^9.34.0",
+    "git-fixtures": "^9.1.1",
     "mocha": "^11.7.1",
     "mocha-helpers": "^10.2.1",
     "renovate-config-standard": "2.4.2",
