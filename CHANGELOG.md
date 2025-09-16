@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## 7.3.0 (2025-09-16)
+
+
+### Features
+
+* pin ember-cli-update ([c5a9dd7](https://github.com/kellyselden/ember-cli-update-action/commit/c5a9dd791b1d3d0bdb3c7238482c026ec561fb7e))
+
 ## 7.2.0 (2025-09-16)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "ember-cli-update-action",
-  "version": "7.2.0",
+  "version": "7.3.0",
   "private": false,
   "description": "Run ember-cli-update updates on CI",
   "homepage": "https://github.com/kellyselden/ember-cli-update-action#readme",
