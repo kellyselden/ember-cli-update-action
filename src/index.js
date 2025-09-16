@@ -1,6 +1,7 @@
 'use strict';
 
 const fs = require('fs-extra');
+const path = require('path');
 
 async function spawn(bin, args = [], options) {
   let { execa } = await import('execa');
@@ -34,7 +35,10 @@ const renovateRegex = /^\| \[([^ ]+)\][^ ]*.*\[`[~^]*(.+)` -> `[~^]*(.+)`\]/m;
 const dependabotRegex = /^Bumps \[(.+)\].* from (.+) to (.+)\.$/m;
 const greenkeeperRegex = /^## The .+ \[(.+)\].* was updated from `(.+)` to `(.+)`\.$/m;
 
-async function getStats(packageName) {
+async function getStats({
+  cwd,
+  packageName,
+}) {
   return (await spawn('npx', [
     'ember-cli-update',
     'stats',
@@ -42,10 +46,11 @@ async function getStats(packageName) {
       '-b',
       packageName,
     ] : [],
-  ])).stdout;
+  ], { cwd })).stdout;
 }
 
 async function getMatch({
+  cwd,
   packageName,
   from,
   to,
@@ -64,11 +69,16 @@ async function getMatch({
   let regex;
 
   if (packageName === 'ember-cli') {
-    stats = await module.exports.getStats();
+    stats = await module.exports.getStats({
+      cwd,
+    });
 
     regex = new RegExp(`^package name: ember-cli\nblueprint name: (.+)\ncurrent version: ${fromRegex}\nlatest version: ${toRegex}`);
   } else {
-    stats = await module.exports.getStats(packageName);
+    stats = await module.exports.getStats({
+      cwd,
+      packageName,
+    });
 
     regex = new RegExp(`^package name: .+\n(?:package location: .+\n)?blueprint name: (.+)\ncurrent version: ${fromRegex}\nlatest version: ${toRegex}`);
   }
@@ -88,7 +98,15 @@ async function getMatch({
   };
 }
 
+async function emberCliUpdate({
+  cwd,
+  updateArgs,
+}) {
+  await spawn('npx', updateArgs, { cwd });
+}
+
 async function emberCliUpdateAction({
+  cwd = process.cwd(),
   body,
   installCommand,
   autofixCommand,
@@ -133,6 +151,7 @@ async function emberCliUpdateAction({
     isMatch,
     blueprintName,
   } = await getMatch({
+    cwd,
     packageName,
     from,
     to,
@@ -154,12 +173,15 @@ async function emberCliUpdateAction({
     to,
   ];
 
-  await spawn('npx', updateArgs);
+  await module.exports.emberCliUpdate({
+    cwd,
+    updateArgs,
+  });
 
   let status = (await spawn('git', [
     'status',
     '--porcelain',
-  ])).stdout;
+  ], { cwd })).stdout;
 
   if (!status) {
     return;
@@ -168,9 +190,9 @@ async function emberCliUpdateAction({
   console.log({ installCommand });
 
   if (installCommand) {
-    await exec(installCommand);
+    await exec(installCommand, { cwd });
   } else {
-    let hasPackageLock = await fs.pathExists('package-lock.json');
+    let hasPackageLock = await fs.pathExists(path.join(cwd, 'package-lock.json'));
 
     console.log({ hasPackageLock });
 
@@ -180,16 +202,16 @@ async function emberCliUpdateAction({
 
         // https://github.com/npm/cli/issues/5222
         '--force',
-      ]);
+      ], { cwd });
     } else {
-      let hasYarnLock = await fs.pathExists('yarn.lock');
+      let hasYarnLock = await fs.pathExists(path.join(cwd, 'yarn.lock'));
 
       console.log({ hasYarnLock });
 
       if (hasYarnLock) {
-        await spawn('yarn');
+        await spawn('yarn', { cwd });
       } else {
-        let hasPnpmLock = await fs.pathExists('pnpm-lock.yaml');
+        let hasPnpmLock = await fs.pathExists(path.join(cwd, 'pnpm-lock.yaml'));
 
         console.log({ hasPnpmLock });
 
@@ -197,7 +219,7 @@ async function emberCliUpdateAction({
           await spawn('pnpm', [
             'install',
             '--frozen-lockfile=false',
-          ]);
+          ], { cwd });
         }
       }
     }
@@ -207,7 +229,7 @@ async function emberCliUpdateAction({
 
   if (autofixCommand) {
     try {
-      await exec(autofixCommand);
+      await exec(autofixCommand, { cwd });
     } catch {}
   }
 
@@ -216,7 +238,7 @@ async function emberCliUpdateAction({
       'show',
       '-s',
       '--format=%ae',
-    ])).stdout;
+    ], { cwd })).stdout;
   }
 
   if (!gitName) {
@@ -224,25 +246,25 @@ async function emberCliUpdateAction({
       'show',
       '-s',
       '--format=%an',
-    ])).stdout;
+    ], { cwd })).stdout;
   }
 
   await spawn('git', [
     'config',
     'user.email',
     `"${gitEmail}"`,
-  ]);
+  ], { cwd });
 
   await spawn('git', [
     'config',
     'user.name',
     `"${gitName}"`,
-  ]);
+  ], { cwd });
 
   await spawn('git', [
     'add',
     '-A',
-  ]);
+  ], { cwd });
 
   console.log({ amend });
 
@@ -251,7 +273,7 @@ async function emberCliUpdateAction({
       'commit',
       '--amend',
       '--no-edit',
-    ]);
+    ], { cwd });
   } else {
     await spawn('git', [
       'commit',
@@ -259,14 +281,14 @@ async function emberCliUpdateAction({
       `${commitPrefix}${name}
 
 ${updateArgs.join(' ')}`,
-    ]);
+    ], { cwd });
   }
 
   let branch = (await spawn('git', [
     'rev-parse',
     '--abbrev-ref',
     'HEAD',
-  ])).stdout;
+  ], { cwd })).stdout;
 
   console.log({ branch });
 
@@ -275,7 +297,7 @@ ${updateArgs.join(' ')}`,
     'origin',
     branch,
     ...[amend ? '-f' : ''].filter(Boolean),
-  ]);
+  ], { cwd });
 }
 
 module.exports = emberCliUpdateAction;
@@ -284,3 +306,4 @@ module.exports.dependabotRegex = dependabotRegex;
 module.exports.greenkeeperRegex = greenkeeperRegex;
 module.exports.getStats = getStats;
 module.exports.getMatch = getMatch;
+module.exports.emberCliUpdate = emberCliUpdate;

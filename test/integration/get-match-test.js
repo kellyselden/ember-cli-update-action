@@ -10,6 +10,8 @@ const {
 } = index;
 
 describe(getMatch, function() {
+  let cwd = 'test-cwd';
+
   beforeEach(function() {
     sinon.stub(console, 'log');
   });
@@ -19,7 +21,9 @@ describe(getMatch, function() {
   });
 
   it('default blueprint', async function() {
-    sinon.stub(index, 'getStats').withArgs().resolves(`package name: ember-cli
+    sinon.stub(index, 'getStats').withArgs({
+      cwd,
+    }).resolves(`package name: ember-cli
 blueprint name: app
 current version: 1.2.3
 latest version: 4.5.6
@@ -29,6 +33,7 @@ latest version: 4.5.6
       isMatch,
       blueprintName,
     } = await getMatch({
+      cwd,
       packageName: 'ember-cli',
       from: '1.2.3',
       to: '4.5.6',
@@ -39,7 +44,10 @@ latest version: 4.5.6
   });
 
   it('custom blueprint', async function() {
-    sinon.stub(index, 'getStats').withArgs('my-test-package').resolves(`package name: my-test-package
+    sinon.stub(index, 'getStats').withArgs({
+      cwd,
+      packageName: 'my-test-package',
+    }).resolves(`package name: my-test-package
 blueprint name: my-test-blueprint
 current version: 1.2.3
 latest version: 4.5.6
@@ -49,6 +57,7 @@ latest version: 4.5.6
       isMatch,
       blueprintName,
     } = await getMatch({
+      cwd,
       packageName: 'my-test-package',
       from: '1.2.3',
       to: '4.5.6',
@@ -59,11 +68,15 @@ latest version: 4.5.6
   });
 
   it('not a blueprint', async function() {
-    sinon.stub(index, 'getStats').withArgs('my-test-package').resolves('');
+    sinon.stub(index, 'getStats').withArgs({
+      cwd,
+      packageName: 'my-test-package',
+    }).resolves('');
 
     let {
       isMatch,
     } = await getMatch({
+      cwd,
       packageName: 'my-test-package',
       from: '1.2.3',
       to: '4.5.6',
@@ -73,7 +86,10 @@ latest version: 4.5.6
   });
 
   it('ignore to', async function() {
-    sinon.stub(index, 'getStats').withArgs('my-test-package').resolves(`package name: my-test-package
+    sinon.stub(index, 'getStats').withArgs({
+      cwd,
+      packageName: 'my-test-package',
+    }).resolves(`package name: my-test-package
 blueprint name: my-test-blueprint
 current version: 1.2.3
 latest version: 7.8.9
@@ -83,6 +99,7 @@ latest version: 7.8.9
       isMatch,
       blueprintName,
     } = await getMatch({
+      cwd,
       packageName: 'my-test-package',
       from: '1.2.3',
       to: '4.5.6',
@@ -94,7 +111,10 @@ latest version: 7.8.9
   });
 
   it('local blueprint', async function() {
-    sinon.stub(index, 'getStats').withArgs('my-test-package').resolves(`package name: my-test-package
+    sinon.stub(index, 'getStats').withArgs({
+      cwd,
+      packageName: 'my-test-package',
+    }).resolves(`package name: my-test-package
 package location: .
 blueprint name: my-test-blueprint
 current version: 1.2.3
@@ -105,6 +125,7 @@ latest version: 4.5.6
       isMatch,
       blueprintName,
     } = await getMatch({
+      cwd,
       packageName: 'my-test-package',
       from: '1.2.3',
       to: '4.5.6',
