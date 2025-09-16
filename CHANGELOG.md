@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## 7.1.0 (2025-09-16)
+
+
+### Features
+
+* make testable and add acceptance test ([a5d3eb5](https://github.com/kellyselden/ember-cli-update-action/commit/a5d3eb59174c8ceef2700e4b67b5050d76747ad4))
+
 ## 7.0.25 (2025-09-11)
 
 ## 7.0.24 (2025-09-11)
