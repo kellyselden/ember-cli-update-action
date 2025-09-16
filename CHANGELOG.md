@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## 7.2.0 (2025-09-16)
+
+
+### Features
+
+* add ember-cli-update version check ([1dfcf96](https://github.com/kellyselden/ember-cli-update-action/commit/1dfcf96008235b3ea5a84c44e9cb374bcb61cb64))
+
 ## 7.1.0 (2025-09-16)
 
 
