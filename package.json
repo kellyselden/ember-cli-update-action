@@ -40,7 +40,7 @@
     "@crowdstrike/commitlint": "^8.0.0",
     "@kellyselden/eslint-config": "^1.0.0",
     "@kellyselden/node-template": "6.11.1",
-    "@vercel/ncc": "0.38.3",
+    "@vercel/ncc": "0.38.4",
     "chai": "^4.5.0",
     "commit-and-tag-version": "^12.0.0",
     "eslint": "^9.34.0",
