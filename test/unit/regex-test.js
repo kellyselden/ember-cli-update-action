@@ -23,9 +23,9 @@ describe(function() {
     let matches = match('renovate.md', renovateRegex);
 
     expect(matches.slice(1)).to.deep.equal([
-      'npm-package-arg',
-      '7.0.0',
-      '8.0.0',
+      '@kellyselden/node-template',
+      '6.11.1',
+      '6.11.2',
     ]);
   });
 
