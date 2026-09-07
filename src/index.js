@@ -31,7 +31,7 @@ async function exec(command, options) {
   return ps;
 }
 
-const renovateRegex = /^\| \[([^ ]+)\][^ ]*.*\[`[~^]*(.+)` -> `[~^]*(.+)`\]/m;
+const renovateRegex = /^\| (?:\[)?([^|\] ]+)(?:\][^|]*)? \| [^|]*`[~^]*(.+)` → `[~^]*(.+)`/m;
 const dependabotRegex = /^Bumps \[(.+)\].* from (.+) to (.+)\.$/m;
 const greenkeeperRegex = /^## The .+ \[(.+)\].* was updated from `(.+)` to `(.+)`\.$/m;
 

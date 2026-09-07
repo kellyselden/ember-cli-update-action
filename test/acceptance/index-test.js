@@ -36,7 +36,7 @@ describe(emberCliUpdateAction, function() {
     let blueprintName = packageName;
     let from = '1.2.3';
     let to = '4.5.6';
-    let body = `| [${packageName}][\`${from}\` -> \`${to}\`]`;
+    let body = `| ${packageName} | \`${from}\` → \`${to}\` |`;
 
     sinon.stub(emberCliUpdateAction, 'getStats').withArgs({
       cwd,
