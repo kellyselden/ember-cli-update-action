@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## 8.0.0 (2026-09-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* use node 22
+
+* ember-cli-update-action ([d3d59e6](https://github.com/kellyselden/ember-cli-update-action/commit/d3d59e624347b712f83b19d3699093c332b84817))
+
 ## 7.3.21 (2026-09-07)
 
 ## 7.3.20 (2026-09-07)
