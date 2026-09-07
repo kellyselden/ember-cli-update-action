@@ -41,7 +41,7 @@ jobs:
 
     - uses: actions/setup-node@v5
       with:
-        node-version: 20
+        node-version: 22
 
     - run: npm ci
 
@@ -55,7 +55,7 @@ jobs:
         os:
         - ubuntu-latest
         node:
-        - 20
+        - 22
 
     runs-on: ${{ matrix.os }}
 
@@ -84,7 +84,7 @@ jobs:
 
     - uses: actions/setup-node@v5
       with:
-        node-version: 20
+        node-version: 22
 
     - uses: kellyselden/ember-cli-update-action@v7
       with:
