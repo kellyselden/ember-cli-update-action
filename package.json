@@ -39,7 +39,7 @@
   "devDependencies": {
     "@commitlint/cli": "^21.2.2",
     "@commitlint/config-conventional": "^21.2.2",
-    "@kellyselden/eslint-config": "^1.0.0",
+    "@kellyselden/eslint-config": "^2.0.0",
     "@kellyselden/node-template": "7.7.0",
     "@vercel/ncc": "0.38.3",
     "chai": "^4.5.0",
@@ -47,8 +47,7 @@
     "eslint": "^9.34.0",
     "git-fixtures": "^9.1.1",
     "mocha": "^11.7.1",
-    "mocha-helpers": "^10.2.1",
-    "renovate-config-standard": "2.4.2",
+    "mocha-helpers": "^11.0.0",
     "sinon": "^21.0.0",
     "standard-node-template": "8.0.0"
   },
