@@ -27,7 +27,7 @@
     "test": "mocha"
   },
   "dependencies": {
-    "@actions/core": "^1.2.6",
+    "@actions/core": "^2.0.0",
     "@actions/github": "^6.0.0",
     "ember-cli-update": "^1.0.1",
     "execa": "^9.0.0",
