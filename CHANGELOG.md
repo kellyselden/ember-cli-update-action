@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## 8.0.17 (2026-09-15)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @actions/github to v8 ([b941bb1](https://github.com/kellyselden/ember-cli-update-action/commit/b941bb1421a0c82d760f1ba129b01735b7d91f89))
+
 ## 8.0.16 (2026-09-15)
 
 
