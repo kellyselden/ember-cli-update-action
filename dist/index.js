@@ -34966,7 +34966,7 @@ module.exports = parseParams
 /***/ ((module) => {
 
 "use strict";
-module.exports = /*#__PURE__*/JSON.parse('{"name":"ember-cli-update-action","version":"8.0.12","private":false,"description":"Run ember-cli-update updates on CI","homepage":"https://github.com/kellyselden/ember-cli-update-action#readme","bugs":{"url":"https://github.com/kellyselden/ember-cli-update-action/issues"},"repository":{"type":"git","url":"git+https://github.com/kellyselden/ember-cli-update-action.git"},"license":"MIT","author":"Kelly Selden","bin":{"ember-cli-update-action":"bin/index.js"},"files":["bin","src"],"scripts":{"lint":"eslint","lint:git":"commitlint","release":"commit-and-tag-version --commit-all","test":"mocha"},"dependencies":{"@actions/core":"^1.2.6","@actions/github":"^6.0.0","ember-cli-update":"^1.0.1","execa":"^9.0.0","fs-extra":"^11.0.0","request":"^2.88.0","yargs":"^17.0.0","yn":"^5.0.0"},"devDependencies":{"@commitlint/cli":"^21.2.2","@commitlint/config-conventional":"^21.2.2","@kellyselden/eslint-config":"^2.0.0","@kellyselden/node-template":"7.7.0","@vercel/ncc":"0.44.1","chai":"^4.5.0","commit-and-tag-version":"^12.0.0","eslint":"^9.34.0","git-fixtures":"^10.0.0","mocha":"^11.7.1","mocha-helpers":"^11.0.0","sinon":"^22.0.0","standard-node-template":"8.0.0"},"engines":{"node":">=22.11"},"commit-and-tag-version":{"scripts":{"prerelease":"ncc build src/action.js -o dist && git add -A dist","posttag":"git push --follow-tags --atomic"}}}');
+module.exports = /*#__PURE__*/JSON.parse('{"name":"ember-cli-update-action","version":"8.0.13","private":false,"description":"Run ember-cli-update updates on CI","homepage":"https://github.com/kellyselden/ember-cli-update-action#readme","bugs":{"url":"https://github.com/kellyselden/ember-cli-update-action/issues"},"repository":{"type":"git","url":"git+https://github.com/kellyselden/ember-cli-update-action.git"},"license":"MIT","author":"Kelly Selden","bin":{"ember-cli-update-action":"bin/index.js"},"files":["bin","src"],"scripts":{"lint":"eslint","lint:git":"commitlint","release":"commit-and-tag-version --commit-all","test":"mocha"},"dependencies":{"@actions/core":"^1.2.6","@actions/github":"^6.0.0","ember-cli-update":"^1.0.1","execa":"^9.0.0","fs-extra":"^11.0.0","request":"^2.88.0","yargs":"^17.0.0","yn":"^5.0.0"},"devDependencies":{"@commitlint/cli":"^21.2.2","@commitlint/config-conventional":"^21.2.2","@kellyselden/eslint-config":"^2.0.0","@kellyselden/node-template":"7.7.0","@vercel/ncc":"0.45.0","chai":"^4.5.0","commit-and-tag-version":"^12.0.0","eslint":"^9.34.0","git-fixtures":"^10.0.0","mocha":"^11.7.1","mocha-helpers":"^11.0.0","sinon":"^22.0.0","standard-node-template":"8.0.0"},"engines":{"node":">=22.11"},"commit-and-tag-version":{"scripts":{"prerelease":"ncc build src/action.js -o dist && git add -A dist","posttag":"git push --follow-tags --atomic"}}}');
 
 /***/ })
 
@@ -35006,6 +35006,9 @@ module.exports = /*#__PURE__*/JSON.parse('{"name":"ember-cli-update-action","ver
 /******/ 	__nccwpck_require__.m = __webpack_modules__;
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/asset-relocator-loader */
+/******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
+/******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
@@ -35044,10 +35047,6 @@ module.exports = /*#__PURE__*/JSON.parse('{"name":"ember-cli-update-action","ver
 /******/ 	(() => {
 /******/ 		__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
 /******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/compat */
-/******/ 	
-/******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /******/ 	/* webpack/runtime/require chunk loading */
 /******/ 	(() => {
