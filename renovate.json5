@@ -3,4 +3,12 @@
   "extends": [
     "github>kellyselden/renovate-config:default.json5",
   ],
+  "packageRules": [
+    {
+      "matchPackageNames": [
+        "@vercel/ncc",
+      ],
+      "separateMultipleMinor": true,
+    },
+  ],
 }
