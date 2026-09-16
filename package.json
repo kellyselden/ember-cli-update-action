@@ -43,7 +43,7 @@
     "@kellyselden/node-template": "7.8.0",
     "@vercel/ncc": "0.45.0",
     "chai": "^4.5.0",
-    "commit-and-tag-version": "^12.0.0",
+    "commit-and-tag-version": "^13.0.0",
     "eslint": "^9.34.0",
     "git-fixtures": "^10.0.0",
     "mocha": "^11.7.1",
